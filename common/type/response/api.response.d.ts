@@ -3,3 +3,7 @@ type ApiResponse<T> = {
   message: string;
   data: T;
 };
+
+type ApiNoDataResponse = {
+  result: boolean;
+};

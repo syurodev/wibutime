@@ -1,3 +1,11 @@
+"use client";
+
+import TestComponent from "@/components/TestComponent";
+
 export default function Home() {
-  return <div></div>;
+  return (
+    <div>
+      <TestComponent />
+    </div>
+  );
 }

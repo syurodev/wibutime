@@ -38,11 +38,11 @@ export default {
                 username,
                 password,
               }),
+              cache: "no-cache",
             }
           );
 
           const existingUser: ApiResponse<UserResponse> = await res.json();
-
           if (!res.ok || existingUser.status !== 200 || !existingUser.data) {
             return null;
           }

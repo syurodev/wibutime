@@ -1,7 +1,16 @@
 import React from "react";
+import { redirect } from "next/navigation";
 
-const AuthPage = () => {
-  return <div>AuthPage</div>;
+import AuthPageWrapper from "@/components/page/auth/AuthPageWrapper";
+import { useServerSession } from "@/hooks/server/useServerSession";
+
+const Auth = async () => {
+  const session = await useServerSession();
+
+  if (session) {
+    redirect("/");
+  }
+  return <AuthPageWrapper />;
 };
 
-export default AuthPage;
+export default Auth;
