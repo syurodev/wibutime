@@ -40,9 +40,11 @@ const LoginForm = () => {
       const res: ServerActionResponse<UserResponse | null> = await login(
         values
       );
-      console.log(res);
-      if (!res.data) {
-        toast.warning("Đăng nhập không thành công!");
+      if (!res || res.status !== 200) {
+        toast.warning(res.message, {
+          description:
+            "Lỗi có thể do username/email của bạn không tồn tại hoặc mật khẩu không chính xác",
+        });
         return;
       }
 

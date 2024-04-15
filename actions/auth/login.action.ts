@@ -22,22 +22,23 @@ export const login = async (
 
     const { username, password } = validateFields.data;
 
-    await signIn("credentials", {
-      username,
-      password: nextBase64.encode(password),
-      redirect: false,
-    })
-      .then((res) => {
-        console.log("res", res);
-      })
-      .catch((err) => {
-        console.log("error", err);
+    try {
+      await signIn("credentials", {
+        username,
+        password: nextBase64.encode(password),
+        redirect: false,
       });
 
-    return serverActionResponse({
-      status: 200,
-      message: "Đăng nhập thành công!",
-    });
+      return serverActionResponse({
+        status: 200,
+        message: "Đăng nhập thành công!",
+      });
+    } catch (error) {
+      return serverActionResponse({
+        status: 400,
+        message: "Đăng nhập không thành công!",
+      });
+    }
   } catch (error) {
     console.log(error);
     return serverActionResponse({

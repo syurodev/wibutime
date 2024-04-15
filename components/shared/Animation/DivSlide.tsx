@@ -14,10 +14,11 @@ const DivSlide: FC<IProps> = ({ delay, className, children }) => {
   return (
     <motion.div
       layout
-      initial={{ y: 50, opacity: 0 }}
+      initial={{ y: 50, opacity: 0, scale: 0.95 }}
       animate={{
         y: 0,
         opacity: 1,
+        scale: 1,
         transition: {
           duration: 0.5,
           ease: [0.76, 0, 0.24, 1],
@@ -27,6 +28,7 @@ const DivSlide: FC<IProps> = ({ delay, className, children }) => {
       exit={{
         y: -50,
         opacity: 0,
+        scale: 0.8,
         transition: { duration: 0.25, ease: [0.76, 0, 0.24, 1] },
       }}
       className={cn("w-full h-full", className)}

@@ -15,6 +15,6 @@ type UserResponse = {
 
 type TokenResponse = {
   accessToken: string;
-  expires_in: number;
+  expires_in: string | number;
   refreshToken?: string;
 };

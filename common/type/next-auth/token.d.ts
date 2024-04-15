@@ -1,6 +1,6 @@
 interface AccessToken {
   accessToken: string;
-  expires_in: number;
+  expires_in: string;
 }
 
 interface RefreshTokenResponse {

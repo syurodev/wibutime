@@ -1,34 +1,17 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import dynamic from "next/dynamic";
-import { AnimatePresence } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
 
 import { cn } from "@/lib/utils";
 import AnimationLogo from "@/components/shared/Animation/Logo/AnimationLogo";
-
-const RegisterForm = dynamic(() => import("../register/form/RegisterForm"), {
-  ssr: false,
-});
-const VerificationForm = dynamic(
-  () => import("../verification/form/VerificationForm"),
-  {
-    ssr: false,
-  }
-);
-const LoginForm = dynamic(() => import("../login/form/LoginForm"), {
-  ssr: false,
-});
-const ForgotPasswordForm = dynamic(
-  () => import("../forgot-password/form/ForgotPasswordForm"),
-  {
-    ssr: false,
-  }
-);
+import LoginForm from "../login/form/LoginForm";
+import RegisterForm from "../register/form/RegisterForm";
+import VerificationForm from "../verification/form/VerificationForm";
+import ForgotPasswordForm from "../forgot-password/form/ForgotPasswordForm";
 
 type IProps = {
   className?: string;
@@ -39,7 +22,8 @@ export type PageContent =
   | "register"
   | "verification"
   | "change-password"
-  | "forgot-password";
+  | "forgot-password"
+  | "error";
 
 const FormWrapper: React.FC<IProps> = ({ className }) => {
   const searchParams = useSearchParams();
@@ -52,6 +36,7 @@ const FormWrapper: React.FC<IProps> = ({ className }) => {
         "verification",
         "change-password",
         "forgot-password",
+        "error",
       ].includes(searchParams.get("page") ?? "")
     ) {
       return "login";
@@ -59,6 +44,8 @@ const FormWrapper: React.FC<IProps> = ({ className }) => {
       return searchParams.get("page") as PageContent;
     }
   };
+
+  const [email, setEmail] = useState<string | null>(null);
 
   const pageContent: PageContent = getParams();
 
@@ -78,48 +65,51 @@ const FormWrapper: React.FC<IProps> = ({ className }) => {
     >
       <AnimationLogo />
 
-      <AnimatePresence mode="wait">
-        <div>
-          {(() => {
-            switch (pageContent) {
-              case "login":
-                return <LoginForm />;
+      <div>
+        {(() => {
+          switch (pageContent) {
+            case "login":
+              return <LoginForm key={"LoginForm"} />;
 
-              case "register":
-                return <RegisterForm />;
+            case "register":
+              return <RegisterForm key={"RegisterForm"} setEmail={setEmail} />;
 
-              case "verification":
-                return <VerificationForm />;
+            case "verification":
+              return (
+                <VerificationForm key={"VerificationForm"} email={email} />
+              );
 
-              case "forgot-password":
-                return <ForgotPasswordForm />;
+            case "forgot-password":
+              return <ForgotPasswordForm key={"ForgotPasswordForm"} />;
 
-              default:
-                return <LoginForm />;
+            case "error":
+              return <div>error</div>;
+
+            default:
+              return <LoginForm key={"LoginFormDefault"} />;
+          }
+        })()}
+
+        <motion.div className="mx-auto w-fit mt-3" layout>
+          <span className="text-xs">
+            {pageContent === "register"
+              ? "Đã có tài khoản?"
+              : "Chưa có tài khoản?"}
+          </span>
+          <Button
+            variant={"link"}
+            size={"sm"}
+            onClick={() =>
+              router.push(
+                pageContent === "login" ? "?page=register" : "?page=login"
+              )
             }
-          })()}
-
-          <motion.div className="mx-auto w-fit mt-3" layout>
-            <span className="text-xs">
-              {pageContent === "register"
-                ? "Đã có tài khoản?"
-                : "Chưa có tài khoản?"}
-            </span>
-            <Button
-              variant={"link"}
-              size={"sm"}
-              onClick={() =>
-                router.push(
-                  pageContent === "login" ? "?page=register" : "?page=login"
-                )
-              }
-              className="-ml-1"
-            >
-              {pageContent === "login" ? "Đăng ký" : "Đăng nhập"}
-            </Button>
-          </motion.div>
-        </div>
-      </AnimatePresence>
+            className="-ml-1"
+          >
+            {pageContent === "login" ? "Đăng ký" : "Đăng nhập"}
+          </Button>
+        </motion.div>
+      </div>
 
       <h6 className="text-xs text-center text-pretty">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate,

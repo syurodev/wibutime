@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { toast } from "sonner";
-import { LuArrowLeft } from "react-icons/lu";
+import { LuArrowLeft, LuPenSquare, LuX } from "react-icons/lu";
 
 import {
   Form,
@@ -24,10 +24,12 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
 
 import DivSlide from "@/components/shared/Animation/DivSlide";
 import { verifiForgotPasswordCodeSchema } from "@/schemas/zod/auth/verifi-forgot-password-code.schema";
 import { verifiResetPasswordCode } from "@/actions/auth/verifi-reset-password-code.action";
+import { Input } from "@/components/ui/input";
 
 type IProps = {
   email: string | null;
@@ -39,18 +41,13 @@ const VerificationForgotPassword: React.FC<IProps> = ({
   setVerification,
 }) => {
   const [isPending, startTransiton] = React.useTransition();
+  const [disableEmailInput, setDisableEmailInput] =
+    React.useState<boolean>(true);
 
-  if (!email) {
-    setVerification(0);
-    toast.warning("Không tìm thấy email");
-  }
-
-  const verificationForgotPassword = useForm<
-    z.infer<typeof verifiForgotPasswordCodeSchema>
-  >({
+  const form = useForm<z.infer<typeof verifiForgotPasswordCodeSchema>>({
     resolver: zodResolver(verifiForgotPasswordCodeSchema),
     defaultValues: {
-      email: email!,
+      email: email ?? "",
     },
   });
 
@@ -74,61 +71,96 @@ const VerificationForgotPassword: React.FC<IProps> = ({
   }
 
   return (
-    <Form {...verificationForgotPassword}>
+    <Form {...form}>
       <form
-        onSubmit={verificationForgotPassword.handleSubmit(
-          onSubmitVerificationCode
-        )}
+        onSubmit={form.handleSubmit(onSubmitVerificationCode)}
         className="w-full max-w-lg min-w-96 flex flex-col items-center"
       >
         <FormField
-          control={verificationForgotPassword.control}
-          name="code"
+          control={form.control}
+          name="email"
           render={({ field }) => (
-            <FormItem>
-              <DivSlide key={"back-btn"}>
+            <FormItem className="w-[257px] mb-3">
+              <DivSlide className="flex items-center justify-between">
+                <div>
+                  <Button
+                    variant={"ghost"}
+                    rounded={"full"}
+                    size={"icon"}
+                    className="size-8 mr-3"
+                    type="button"
+                  >
+                    <LuArrowLeft />
+                  </Button>
+                  <FormLabel>Email</FormLabel>
+                </div>
                 <Button
+                  type="button"
                   variant={"outline"}
                   size={"icon"}
                   rounded={"full"}
-                  className="size-7 mr-2"
-                  onClick={() => setVerification(0)}
+                  className="size-8"
+                  onClick={() => setDisableEmailInput(!disableEmailInput)}
                 >
-                  <LuArrowLeft />
+                  {disableEmailInput ? <LuPenSquare /> : <LuX />}
                 </Button>
-                <FormLabel>Email: {email}</FormLabel>
               </DivSlide>
-
               <FormControl>
-                <InputOTP maxLength={6} onChange={(e) => field.onChange(e)}>
+                <DivSlide delay={0.05}>
+                  <Input
+                    placeholder="example@example.com"
+                    {...field}
+                    disabled={disableEmailInput}
+                  />
+                </DivSlide>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="code"
+          render={({ field }) => (
+            <FormItem>
+              <DivSlide delay={0.1}>
+                <FormLabel>Mã xác thực</FormLabel>{" "}
+              </DivSlide>
+              <FormControl>
+                <InputOTP
+                  maxLength={6}
+                  pattern={REGEXP_ONLY_DIGITS}
+                  onChange={(e) => field.onChange(e)}
+                >
                   <InputOTPGroup>
-                    <DivSlide key={"InputOTPSlot-1"} delay={0.05}>
+                    <DivSlide key={"InputOTPSlot-1"} delay={0.15}>
                       <InputOTPSlot index={0} />
                     </DivSlide>
-                    <DivSlide key={"InputOTPSlot-2"} delay={0.1}>
+                    <DivSlide key={"InputOTPSlot-2"} delay={0.2}>
                       <InputOTPSlot index={1} />
                     </DivSlide>
-                    <DivSlide key={"InputOTPSlot-3"} delay={0.15}>
+                    <DivSlide key={"InputOTPSlot-3"} delay={0.25}>
                       <InputOTPSlot index={2} />
                     </DivSlide>
                   </InputOTPGroup>
-                  <DivSlide key={"InputOTPSlot-InputOTPSeparator"} delay={0.22}>
+                  <DivSlide key={"InputOTPSlot-InputOTPSeparator"} delay={0.3}>
                     <InputOTPSeparator />
                   </DivSlide>
                   <InputOTPGroup>
-                    <DivSlide key={"InputOTPSlot-4"} delay={0.2}>
+                    <DivSlide key={"InputOTPSlot-4"} delay={0.35}>
                       <InputOTPSlot index={3} />
                     </DivSlide>
-                    <DivSlide key={"InputOTPSlot-5"} delay={0.25}>
+                    <DivSlide key={"InputOTPSlot-5"} delay={0.4}>
                       <InputOTPSlot index={4} />
                     </DivSlide>
-                    <DivSlide key={"InputOTPSlot-6"} delay={0.3}>
+                    <DivSlide key={"InputOTPSlot-6"} delay={0.45}>
                       <InputOTPSlot index={5} />
                     </DivSlide>
                   </InputOTPGroup>
                 </InputOTP>
               </FormControl>
-              <DivSlide key={"verification-FormDescription"} delay={0.3}>
+              <DivSlide delay={0.5}>
                 <FormDescription>
                   Vui lòng nhập code đã được gửi qua email.
                 </FormDescription>

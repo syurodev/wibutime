@@ -1,10 +1,13 @@
 import NextAuth from "next-auth";
+import moment from "moment";
 
 import authConfig from "@/auth.config";
 import { JWT } from "next-auth/jwt";
+import { CredentialsSignin } from "next-auth";
+import { AuthError } from "next-auth";
 
 async function refreshToken(token: JWT): Promise<JWT | null> {
-  console.log("refreshToken");
+  console.log("refreshToken", token.backendToken?.expires_in);
   const res = await fetch(process.env.CONFIG_GATEWAY_URL + "/auth/refresh", {
     method: "POST",
     headers: {
@@ -22,14 +25,13 @@ async function refreshToken(token: JWT): Promise<JWT | null> {
   if (!res.ok) return null;
 
   const result: ApiResponse<AccessToken> = await res.json();
-  console.log(result.data.expires_in);
-
   if (!result.data) return null;
 
   return {
     ...token,
     backendToken: {
-      ...result.data,
+      accessToken: result.data.accessToken,
+      expires_in: Number(result.data.expires_in),
       refreshToken: token.backendToken?.refreshToken,
     },
   };
@@ -42,8 +44,8 @@ export const {
   signOut,
 } = NextAuth({
   pages: {
-    signIn: "/auth",
-    error: "/auth",
+    signIn: "/auth?page=login",
+    // error: "/auth&error",
   },
   callbacks: {
     async signIn({ user, account }): Promise<any> {
@@ -51,9 +53,10 @@ export const {
         //Alow OAuth without email verification
         // console.log("signIn", { user });
         if (account?.provider !== "credentials") return true;
-
-        if (!user) return false;
-
+        console.log("user", user);
+        if (!user) {
+          return false;
+        }
         // const res = await fetch(
         //   `${process.env.CONFIG_GATEWAY_URL}/users/${user.id}`,
         //   {
@@ -96,20 +99,16 @@ export const {
             return false;
           }
 
-          return {
-            status: 1,
-            message: "Tài khoản chưa được xác minh!",
-          };
+          throw new Error("Tài khoản chưa được xác minh!");
         }
         return true;
       } catch (error) {
         console.log(error);
-        return false;
+        throw new Error("Có lỗi trong quá trình đăng nhập, vui lòng thử lại!");
       }
     },
 
     async session({ session, user, token }) {
-      // console.log("session", { token });
       session.user = {
         id: token.id,
         email: token.email,
@@ -133,16 +132,22 @@ export const {
       // console.log("jwt user", user);
       if (user) return { ...token, ...user } as JWT;
 
-      console.log(
-        "token.backendToken?.expires_in",
-        token.backendToken?.expires_in
-      ); //1708697827823
-      console.log("new Date().getTime()", new Date().getTime()); //1712992765563
+      // Chuyển đổi thời gian hiện tại của hệ thống sang múi giờ +7
+      const systemTime = moment().utcOffset("+07:00");
 
-      if (new Date().getTime() < token.backendToken?.expires_in!) {
+      // Chuyển đổi thời gian hết hạn từ milliseconds thành đối tượng Moment
+      const expirationTime = moment(
+        Number(token.backendToken?.expires_in)
+      ).utcOffset("+07:00");
+
+      // So sánh thời gian hiện tại của hệ thống với thời gian hết hạn của token
+      if (systemTime.isBefore(expirationTime)) {
+        // Token còn hiệu lực
         return token;
+      } else {
+        // Token đã hết hạn, thực hiện refresh token
+        return await refreshToken(token);
       }
-      return await refreshToken(token);
     },
   },
   session: { strategy: "jwt" },

@@ -74,7 +74,12 @@ const ResetPasswordForm: React.FC<IProps> = ({ email, setVerification }) => {
               </DivSlide>
               <FormControl>
                 <DivSlide delay={0.05}>
-                  <Input placeholder="******" minLength={6} {...field} />
+                  <Input
+                    placeholder="******"
+                    minLength={6}
+                    {...field}
+                    type="password"
+                  />
                 </DivSlide>
               </FormControl>
               <FormMessage />

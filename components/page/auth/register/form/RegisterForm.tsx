@@ -25,7 +25,11 @@ import { register } from "@/actions/auth/register.action";
 import DivSlide from "@/components/shared/Animation/DivSlide";
 import { AnimatePresence } from "framer-motion";
 
-const RegisterForm = () => {
+type IProps = {
+  setEmail: React.Dispatch<React.SetStateAction<string | null>>;
+};
+
+const RegisterForm: React.FC<IProps> = ({ setEmail }) => {
   const [isPending, startTransiton] = React.useTransition();
   const router = useRouter();
 
@@ -41,16 +45,14 @@ const RegisterForm = () => {
   });
 
   function onSubmit(values: z.infer<typeof registerSchema>) {
+    setEmail(values.email);
     startTransiton(async () => {
       const res: ServerActionResponse<UserResponse | null> = await register(
         values
       );
 
       if (!res.data) {
-        toast.warning(res.message, {
-          description:
-            "Có thể nguyên nhân là mật khẩu không hợp lệ hoặc tên người dùng/email của bạn đã được sử dụng.",
-        });
+        toast.warning(res.message);
 
         return;
       }
