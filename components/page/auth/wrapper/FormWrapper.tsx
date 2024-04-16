@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 
@@ -11,7 +12,6 @@ import LoginForm from "../login/form/LoginForm";
 import RegisterForm from "../register/form/RegisterForm";
 import VerificationForm from "../verification/form/VerificationForm";
 import ForgotPasswordForm from "../forgot-password/form/ForgotPasswordForm";
-import Link from "next/link";
 
 type IProps = {
   className?: string;
