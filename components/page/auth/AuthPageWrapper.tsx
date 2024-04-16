@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-import FormWrapper, { PageContent } from "./wrapper/FormWrapper";
+import FormWrapper from "./wrapper/FormWrapper";
 
 const AuthPageWrapper = () => {
   return (
