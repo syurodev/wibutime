@@ -96,6 +96,7 @@ const HomeNews: React.FC<IProps> = ({ data }) => {
                     src={item.image}
                     alt={item.name}
                     fill
+                    priority
                     sizes="full"
                     className="object-cover"
                   />

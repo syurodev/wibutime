@@ -1,3 +1,16 @@
+interface UserSummaryInfo {
+  id: number;
+  name: string;
+  created_at: number;
+  username?: string;
+  image?: string;
+}
+
+interface TopUser extends UserSummaryInfo {
+  like: number;
+  upload: number;
+}
+
 type UserResponse = {
   id: string;
   name: string;
