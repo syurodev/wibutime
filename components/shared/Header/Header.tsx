@@ -1,13 +1,16 @@
 import React from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 
 import { buttonVariants } from "@/components/ui/button";
 
 import { NavigationHeaderMenu } from "./NavigationHeaderMenu/NavigationHeaderMenu";
 import LoginButton from "../Button/LoginButton";
 import DivSlide from "../Animation/DivSlide";
-import ThemeToggle from "../Button/ThemeToggle";
-// import AnimationLogo from "../Animation/Logo/AnimationLogo";
+
+const ThemeToggle = dynamic(() => import("../Button/ThemeToggle"), {
+  ssr: false,
+});
 
 const Header = () => {
   return (

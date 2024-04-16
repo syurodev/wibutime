@@ -45,4 +45,4 @@ const ThemeToggle: React.FC<IProps> = ({ size = "default", blur = false }) => {
   );
 };
 
-export default React.memo(ThemeToggle);
+export default ThemeToggle;
