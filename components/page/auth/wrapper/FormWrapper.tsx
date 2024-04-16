@@ -7,11 +7,11 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
 import { cn } from "@/lib/utils";
-import AnimationLogo from "@/components/shared/Animation/Logo/AnimationLogo";
 import LoginForm from "../login/form/LoginForm";
 import RegisterForm from "../register/form/RegisterForm";
 import VerificationForm from "../verification/form/VerificationForm";
 import ForgotPasswordForm from "../forgot-password/form/ForgotPasswordForm";
+import Link from "next/link";
 
 type IProps = {
   className?: string;
@@ -63,7 +63,9 @@ const FormWrapper: React.FC<IProps> = ({ className }) => {
         className
       )}
     >
-      <AnimationLogo />
+      <Link href={"/"} className="font-semibold text-sm">
+        WIBUTIME
+      </Link>
 
       <div>
         {(() => {

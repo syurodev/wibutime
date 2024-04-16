@@ -52,6 +52,9 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        anime: "hsl(var(--anime))",
+        manga: "hsl(var(--manga))",
+        lightnovel: "hsl(var(--lightnovel))",
       },
       borderRadius: {
         lg: "var(--radius)",

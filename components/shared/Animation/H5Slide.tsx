@@ -2,7 +2,6 @@
 
 import React, { FC, ReactNode, memo } from "react";
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
 
 type IProps = {
   delay?: number;
@@ -10,9 +9,9 @@ type IProps = {
   children: ReactNode;
 };
 
-const DivSlide: FC<IProps> = ({ delay, className, children }) => {
+const H5Slide: FC<IProps> = ({ delay, className, children }) => {
   return (
-    <motion.div
+    <motion.h3
       layout
       initial={{ y: 50, opacity: 0, scale: 1.2 }}
       animate={{
@@ -35,11 +34,11 @@ const DivSlide: FC<IProps> = ({ delay, className, children }) => {
           delay: delay ? delay / 2 : 0,
         },
       }}
-      className={cn("w-full h-full", className)}
+      className={className}
     >
       {children}
-    </motion.div>
+    </motion.h3>
   );
 };
 
-export default memo(DivSlide);
+export default memo(H5Slide);

@@ -53,7 +53,7 @@ export const {
         //Alow OAuth without email verification
         // console.log("signIn", { user });
         if (account?.provider !== "credentials") return true;
-        console.log("user", user);
+
         if (!user) {
           return false;
         }

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Roboto } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 
 import { Toaster } from "@/components/ui/sonner";
@@ -8,7 +8,10 @@ import { auth } from "@/auth";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 
-const inter = Inter({ subsets: ["latin"] });
+const roboto = Roboto({
+  subsets: ["vietnamese"],
+  weight: ["100", "300", "400", "500", "700", "900"],
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -24,7 +27,7 @@ export default async function RootLayout({
   return (
     <SessionProvider session={session}>
       <html lang="vi" suppressHydrationWarning>
-        <body className={inter.className}>
+        <body className={roboto.className}>
           <ThemeProvider attribute="class" defaultTheme="dark">
             {children}
             <Toaster />
