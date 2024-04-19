@@ -2,9 +2,9 @@
 
 import React from "react";
 
-import VerificationForgotPassword from "./VerificationForgotPassword";
-import ResetPasswordForm from "./ResetPasswordForm";
-import SendForgotPasswordVerficationCode from "./SendForgotPasswordVerficationCode";
+import VerificationForgotPassword from "@/components/page/Auth/forgot-password/form/VerificationForgotPassword";
+import ResetPasswordForm from "@/components/page/Auth/forgot-password/form/ResetPasswordForm";
+import SendForgotPasswordVerficationCode from "@/components/page/Auth/forgot-password/form/SendForgotPasswordVerficationCode";
 
 const ForgotPasswordForm = () => {
   const [verification, setVerification] = React.useState<0 | 1 | 2>(0);

@@ -7,6 +7,7 @@ import * as z from "zod";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { toast } from "sonner";
 import { LuArrowLeft, LuPenSquare, LuX } from "react-icons/lu";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
 
 import {
   Form,
@@ -24,12 +25,11 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { Input } from "@/components/ui/input";
 
 import DivSlide from "@/components/shared/Animation/DivSlide";
 import { verifiForgotPasswordCodeSchema } from "@/schemas/zod/auth/verifi-forgot-password-code.schema";
 import { verifiResetPasswordCode } from "@/actions/auth/verifi-reset-password-code.action";
-import { Input } from "@/components/ui/input";
 
 type IProps = {
   email: string | null;

@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-import FormWrapper from "./wrapper/FormWrapper";
+import FormWrapper from "@/components/page/Auth/wrapper/FormWrapper";
 
 const AuthPageWrapper = () => {
   return (

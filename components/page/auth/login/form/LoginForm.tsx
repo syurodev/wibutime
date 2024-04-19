@@ -5,6 +5,9 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 import {
   Form,
@@ -19,10 +22,7 @@ import { Input } from "@/components/ui/input";
 import { loginSchema } from "@/schemas/zod/auth/auth.schema";
 import { login } from "@/actions/auth/login.action";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { ReloadIcon } from "@radix-ui/react-icons";
 import DivSlide from "@/components/shared/Animation/DivSlide";
-import { redirect } from "next/navigation";
 
 const LoginForm = () => {
   const [isPending, startTransiton] = React.useTransition();

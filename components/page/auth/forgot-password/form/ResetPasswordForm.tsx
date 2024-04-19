@@ -5,8 +5,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
+import { useRouter } from "next/navigation";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
-import { resetPasswordSchema } from "@/schemas/zod/auth/reset-password.schema";
 import {
   Form,
   FormControl,
@@ -17,10 +18,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+
+import { resetPasswordSchema } from "@/schemas/zod/auth/reset-password.schema";
 import { resetPassword } from "@/actions/auth/reset-password.action";
-import { useRouter } from "next/navigation";
 import DivSlide from "@/components/shared/Animation/DivSlide";
-import { ReloadIcon } from "@radix-ui/react-icons";
 
 type IProps = {
   email: string | null;

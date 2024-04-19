@@ -8,10 +8,10 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 import { cn } from "@/lib/utils";
-import LoginForm from "../login/form/LoginForm";
-import RegisterForm from "../register/form/RegisterForm";
-import VerificationForm from "../verification/form/VerificationForm";
-import ForgotPasswordForm from "../forgot-password/form/ForgotPasswordForm";
+import LoginForm from "@/components/page/Auth/login/form/LoginForm";
+import RegisterForm from "@/components/page/Auth/register/form/RegisterForm";
+import VerificationForm from "@/components/page/Auth/verification/form/VerificationForm";
+import ForgotPasswordForm from "@/components/page/Auth/forgot-password/form/ForgotPasswordForm";
 
 type IProps = {
   className?: string;
