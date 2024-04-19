@@ -1,0 +1,1 @@
+type UserPermissions = "UPLOAD" | "COMMENT";
