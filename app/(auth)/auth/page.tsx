@@ -1,7 +1,7 @@
 import React from "react";
 import { redirect } from "next/navigation";
 
-// import AuthPageWrapper from "@/components/page/Auth/AuthPageWrapper";
+import AuthPageWrapper from "@/components/page/Auth/AuthPageWrapper";
 import { useServerSession } from "@/hooks/server/useServerSession";
 
 const Auth = async () => {
@@ -10,8 +10,8 @@ const Auth = async () => {
   if (session) {
     redirect("/");
   }
-  // <AuthPageWrapper />;
-  return <div>hello</div>;
+
+  return <AuthPageWrapper />;
 };
 
 export default Auth;
