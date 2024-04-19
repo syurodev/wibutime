@@ -1,0 +1,30 @@
+{
+    "display": "standalone",
+    "scope": "/",
+    "start_url": "/",
+    "name": "WibuTime",
+    "short_name": "WibuTime",
+    "description": "\u0110\u1ecdc Light Novel, Manga, xem Anime online, b\u00ecnh lu\u1eadn. Th\u01b0 vi\u1ec7n Light Novel, Manga, Anime Ti\u1ebfng Vi\u1ec7t ch\u1ea5t l\u01b0\u1ee3ng cao, c\u1eadp nh\u1eadt li\u00ean t\u1ee5c.",
+    "icons": [
+        {
+            "src": "/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/icon-256x256.png",
+            "sizes": "256x256",
+            "type": "image/png"
+        },
+        {
+            "src": "/icon-384x384.png",
+            "sizes": "384x384",
+            "type": "image/png"
+        },
+        {
+            "src": "/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
