@@ -91,7 +91,7 @@ export default function Home() {
 
       <TopViews />
 
-      <TopUsers title="Top User" userData={sampleUser} />
+      <TopUsers userData={sampleUser} />
     </div>
   );
 }
