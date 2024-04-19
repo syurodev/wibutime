@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import VerificationForgotPassword from "@/components/page/Auth/forgot-password/form/VerificationForgotPassword";
+// import VerificationForgotPassword from "@/components/page/Auth/forgot-password/form/VerificationForgotPassword";
 import ResetPasswordForm from "@/components/page/Auth/forgot-password/form/ResetPasswordForm";
 import SendForgotPasswordVerficationCode from "@/components/page/Auth/forgot-password/form/SendForgotPasswordVerficationCode";
 
@@ -14,10 +14,11 @@ const ForgotPasswordForm = () => {
     // <AnimatePresence mode="wait">
     // {
     verification === 1 ? (
-      <VerificationForgotPassword
-        email={email}
-        setVerification={setVerification}
-      />
+      // <VerificationForgotPassword
+      //   email={email}
+      //   setVerification={setVerification}
+      // />
+      <div>login</div>
     ) : verification === 2 ? (
       <ResetPasswordForm email={email} setVerification={setVerification} />
     ) : (
