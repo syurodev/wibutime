@@ -101,7 +101,11 @@ html {
 
 ::-webkit-scrollbar-thumb {
   border-radius: 50px;
-  @apply dark:bg-secondary bg-gray-400
+  @apply dark:bg-secondary bg-gray-200 !transition-all !duration-150
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply dark:bg-gray-700 bg-gray-400
 }
 
 .showScroll::-webkit-scrollbar {

@@ -15,10 +15,10 @@ export default function HomeLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main className="px-4 min-h-dvh overflow-y-auto pb-4 pt-[88px] flex flex-col gap-4">
+    <div className="px-4 max-w-[1300px] mx-auto h-dvh overflow-y-auto pb-4 pt-[82px] flex flex-col gap-4 showScroll">
       {children}
       {top_views}
       {top_user}
-    </main>
+    </div>
   );
 }

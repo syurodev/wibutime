@@ -42,7 +42,7 @@ const HomeNews: React.FC<IProps> = ({ data }) => {
             index === currentIndex && (
               <div
                 key={item.id}
-                className="h-[calc(100dvh-104px)] flex flex-col md:flex-row gap-4"
+                className="h-[calc(100dvh-94px)] flex flex-col md:flex-row gap-4"
               >
                 <div className="flex-auto z-10 flex flex-col md:flex-[3] gap-3">
                   <H3Slide

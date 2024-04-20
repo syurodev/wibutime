@@ -55,23 +55,32 @@ const TopViews: React.FC<IProps> = ({ data }) => {
           </ToggleGroupItem>
         </ToggleGroup>
       </CardHeader>
-      <CardContent className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 items-center">
+      <CardContent className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 items-center overflow-hidden">
         <AnimatePresence mode="wait">
           {contentType === "anime"
             ? data.animes.map((item, index) => (
-                <DivSlide key={item.url_id} delay={0.05 + index / 5}>
+                <DivSlide
+                  key={`${contentType}-${item.url_id}`}
+                  delay={0.05 + index / 15}
+                >
                   <ContentCard data={item} />
                 </DivSlide>
               ))
             : contentType === "manga"
             ? data.mangas.map((item, index) => (
-                <DivSlide key={item.url_id} delay={0.05 + index / 5}>
+                <DivSlide
+                  key={`${contentType}-${item.url_id}`}
+                  delay={0.05 + index / 15}
+                >
                   <ContentCard data={item} />
                 </DivSlide>
               ))
             : contentType === "lightnovel"
             ? data.lightnovels.map((item, index) => (
-                <DivSlide key={item.url_id} delay={0.05 + index / 5}>
+                <DivSlide
+                  key={`${contentType}-${item.url_id}`}
+                  delay={0.05 + index / 15}
+                >
                   <ContentCard data={item} />
                 </DivSlide>
               ))

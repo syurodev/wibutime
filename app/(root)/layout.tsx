@@ -15,9 +15,7 @@ export default function NavbarLayout({
   return (
     <>
       <Header />
-      <main className="w-full max-w-[1300px] mx-auto h-dvh overflow-y-auto">
-        {children}
-      </main>
+      <main className="w-full h-full">{children}</main>
     </>
   );
 }

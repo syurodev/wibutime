@@ -4,14 +4,21 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import TopUser from "@/components/shared/User/TopUser";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { AnimatePresence } from "framer-motion";
+import DivSlide from "@/components/shared/Animation/DivSlide";
 
 type IProps = {
-  userData: TopUser[];
+  data: {
+    daily: TopUser[];
+    weekly: TopUser[];
+    monthly: TopUser[];
+    all: TopUser[];
+  };
 };
 
 type TierType = "daily" | "weekly" | "monthly" | "all";
 
-const TopUsers: React.FC<IProps> = ({ userData }) => {
+const TopUsers: React.FC<IProps> = ({ data }) => {
   const [contentType, setContentType] = useState<TierType>("daily");
 
   return (
@@ -55,18 +62,46 @@ const TopUsers: React.FC<IProps> = ({ userData }) => {
           </ToggleGroupItem>
         </ToggleGroup>
       </CardHeader>
-      <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-        {userData &&
-          userData.length > 0 &&
-          userData.map((user, index) => {
-            return (
-              <TopUser
-                key={`top-user-${user.id}`}
-                userData={user}
-                index={index}
-              />
-            );
-          })}
+      <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 overflow-hidden">
+        <AnimatePresence mode="wait">
+          {contentType === "daily"
+            ? data.daily.map((item, index) => (
+                <DivSlide
+                  key={`top-user-${contentType}-${item.id}`}
+                  delay={0.05 + index / 15}
+                >
+                  <TopUser userData={item} index={index} />
+                </DivSlide>
+              ))
+            : contentType === "weekly"
+            ? data.weekly.map((item, index) => (
+                <DivSlide
+                  key={`top-user-${contentType}-${item.id}`}
+                  delay={0.05 + index / 15}
+                >
+                  <TopUser userData={item} index={index} />
+                </DivSlide>
+              ))
+            : contentType === "monthly"
+            ? data.monthly.map((item, index) => (
+                <DivSlide
+                  key={`top-user-${contentType}-${item.id}`}
+                  delay={0.05 + index / 15}
+                >
+                  <TopUser userData={item} index={index} />
+                </DivSlide>
+              ))
+            : contentType === "all"
+            ? data.all.map((item, index) => (
+                <DivSlide
+                  key={`top-user-${contentType}-${item.id}`}
+                  delay={0.05 + index / 15}
+                >
+                  <TopUser userData={item} index={index} />
+                </DivSlide>
+              ))
+            : null}
+        </AnimatePresence>
       </CardContent>
     </Card>
   );
