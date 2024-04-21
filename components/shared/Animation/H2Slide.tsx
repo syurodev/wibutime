@@ -9,9 +9,9 @@ type IProps = {
   children: ReactNode;
 };
 
-const H3Slide: FC<IProps> = ({ delay, className, children }) => {
+const H2Slide: FC<IProps> = ({ delay, className, children }) => {
   return (
-    <motion.h3
+    <motion.h2
       layout
       initial={{
         y: 50,
@@ -41,8 +41,8 @@ const H3Slide: FC<IProps> = ({ delay, className, children }) => {
       className={className}
     >
       {children}
-    </motion.h3>
+    </motion.h2>
   );
 };
 
-export default memo(H3Slide);
+export default memo(H2Slide);
