@@ -20,74 +20,76 @@ const TopViews: React.FC<IProps> = ({ data }) => {
   const [contentType, setContentType] = useState<ContentType>("anime");
 
   return (
-    <Card>
-      <CardHeader className="flex items-center justify-between flex-row">
-        <CardTitle>Top Views</CardTitle>
-        <ToggleGroup
-          type="single"
-          // defaultValue={contentType}
-          value={contentType}
-          onValueChange={(e) =>
-            setContentType(!e ? "anime" : (e as ContentType))
-          }
-          className="!mt-0"
-        >
-          <ToggleGroupItem
-            value="anime"
-            aria-label="Toggle anime"
-            className="rounded-full !mt-0"
+    <DivSlide delay={0.5}>
+      <Card>
+        <CardHeader className="flex items-center justify-between flex-row">
+          <CardTitle>Top Views</CardTitle>
+          <ToggleGroup
+            type="single"
+            // defaultValue={contentType}
+            value={contentType}
+            onValueChange={(e) =>
+              setContentType(!e ? "anime" : (e as ContentType))
+            }
+            className="!mt-0"
           >
-            Anime
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="manga"
-            aria-label="Toggle manga"
-            className="rounded-full !mt-0"
-          >
-            Manga
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="lightnovel"
-            aria-label="Toggle lightnovel"
-            className="rounded-full !mt-0"
-          >
-            Lightnovel
-          </ToggleGroupItem>
-        </ToggleGroup>
-      </CardHeader>
-      <CardContent className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 items-center overflow-hidden">
-        <AnimatePresence mode="wait">
-          {contentType === "anime"
-            ? data.animes.map((item, index) => (
-                <DivSlide
-                  key={`${contentType}-${item.url_id}`}
-                  delay={0.05 + index / 15}
-                >
-                  <ContentCard data={item} />
-                </DivSlide>
-              ))
-            : contentType === "manga"
-            ? data.mangas.map((item, index) => (
-                <DivSlide
-                  key={`${contentType}-${item.url_id}`}
-                  delay={0.05 + index / 15}
-                >
-                  <ContentCard data={item} />
-                </DivSlide>
-              ))
-            : contentType === "lightnovel"
-            ? data.lightnovels.map((item, index) => (
-                <DivSlide
-                  key={`${contentType}-${item.url_id}`}
-                  delay={0.05 + index / 15}
-                >
-                  <ContentCard data={item} />
-                </DivSlide>
-              ))
-            : null}
-        </AnimatePresence>
-      </CardContent>
-    </Card>
+            <ToggleGroupItem
+              value="anime"
+              aria-label="Toggle anime"
+              className="rounded-full !mt-0"
+            >
+              Anime
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="manga"
+              aria-label="Toggle manga"
+              className="rounded-full !mt-0"
+            >
+              Manga
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="lightnovel"
+              aria-label="Toggle lightnovel"
+              className="rounded-full !mt-0"
+            >
+              Lightnovel
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </CardHeader>
+        <CardContent className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 items-center overflow-hidden">
+          <AnimatePresence mode="wait">
+            {contentType === "anime"
+              ? data.animes.map((item, index) => (
+                  <DivSlide
+                    key={`${contentType}-${item.url_id}`}
+                    delay={0.05 + index / 15}
+                  >
+                    <ContentCard data={item} />
+                  </DivSlide>
+                ))
+              : contentType === "manga"
+              ? data.mangas.map((item, index) => (
+                  <DivSlide
+                    key={`${contentType}-${item.url_id}`}
+                    delay={0.05 + index / 15}
+                  >
+                    <ContentCard data={item} />
+                  </DivSlide>
+                ))
+              : contentType === "lightnovel"
+              ? data.lightnovels.map((item, index) => (
+                  <DivSlide
+                    key={`${contentType}-${item.url_id}`}
+                    delay={0.05 + index / 15}
+                  >
+                    <ContentCard data={item} />
+                  </DivSlide>
+                ))
+              : null}
+          </AnimatePresence>
+        </CardContent>
+      </Card>
+    </DivSlide>
   );
 };
 
