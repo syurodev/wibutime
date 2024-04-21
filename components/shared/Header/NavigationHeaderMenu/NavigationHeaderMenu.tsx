@@ -59,8 +59,9 @@ export function NavigationHeaderMenu() {
       <NavigationMenuList>
         <NavigationMenuItem>
           <DivSlide delay={0.05}>
-            <NavigationMenuTrigger className="bg-transparent rounded-full">
-              Anime
+            <NavigationMenuTrigger className="bg-transparent rounded-full text-clip">
+              <span className="hidden md:inline-block">Anime</span>
+              <span className="md:hidden">A</span>
             </NavigationMenuTrigger>
           </DivSlide>
           <NavigationMenuContent>
@@ -97,7 +98,8 @@ export function NavigationHeaderMenu() {
         <NavigationMenuItem>
           <DivSlide delay={0.1}>
             <NavigationMenuTrigger className="bg-transparent rounded-full">
-              Manga
+              <span className="hidden md:inline-block">Manga</span>
+              <span className="md:hidden">M</span>
             </NavigationMenuTrigger>
           </DivSlide>
           <NavigationMenuContent>
@@ -117,7 +119,8 @@ export function NavigationHeaderMenu() {
         <NavigationMenuItem>
           <DivSlide delay={0.15}>
             <NavigationMenuTrigger className="bg-transparent rounded-full">
-              Lightnovel
+              <span className="hidden md:inline-block">Lightnovel</span>
+              <span className="md:hidden">L</span>
             </NavigationMenuTrigger>
           </DivSlide>
           <NavigationMenuContent>
