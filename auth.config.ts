@@ -2,7 +2,7 @@ import { CredentialsSignin, type NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import { loginSchema } from "./schemas/zod/auth/auth.schema";
-import { ResponseMessage } from "./common/response/message.response";
+import { AUTH_API_ENDPOINT } from "./common/endpoint/auth";
 
 export default {
   // debug: true,
@@ -32,7 +32,7 @@ export default {
         const { username, password } = validatedField.data;
 
         const res = await fetch(
-          `${process.env.CONFIG_GATEWAY_URL}/auth/login`,
+          process.env.CONFIG_GATEWAY_URL + AUTH_API_ENDPOINT.LOGIN_V1,
           {
             method: "POST",
             headers: {
@@ -46,9 +46,12 @@ export default {
           }
         );
 
+        if (!res.ok) {
+          throw new CredentialsSignin();
+        }
         const existingUser: ApiResponse<UserResponse> = await res.json();
 
-        if (!res.ok || existingUser.status !== 200 || !existingUser.data) {
+        if (existingUser.status !== 200 || !existingUser.data) {
           throw new CredentialsSignin(existingUser.message, {
             name: existingUser.message,
           });

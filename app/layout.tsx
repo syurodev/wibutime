@@ -28,7 +28,7 @@ export default async function RootLayout({
     <SessionProvider session={session}>
       <html lang="vi" suppressHydrationWarning>
         <body className={roboto.className}>
-          <ThemeProvider attribute="class" defaultTheme="dark">
+          <ThemeProvider attribute="class" defaultTheme="system">
             {children}
             <Toaster />
           </ThemeProvider>

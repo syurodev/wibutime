@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { toast } from "sonner";
-import { LuArrowLeft, LuPenSquare, LuX } from "react-icons/lu";
+import { ArrowLeft, PenSquare, X } from "lucide-react";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 
 import {
@@ -90,7 +90,7 @@ const VerificationForgotPassword: React.FC<IProps> = ({
                     className="size-8 mr-3"
                     type="button"
                   >
-                    <LuArrowLeft />
+                    <ArrowLeft />
                   </Button>
                   <FormLabel>Email</FormLabel>
                 </div>
@@ -102,7 +102,7 @@ const VerificationForgotPassword: React.FC<IProps> = ({
                   className="size-8"
                   onClick={() => setDisableEmailInput(!disableEmailInput)}
                 >
-                  {disableEmailInput ? <LuPenSquare /> : <LuX />}
+                  {disableEmailInput ? <PenSquare /> : <X />}
                 </Button>
               </DivSlide>
               <FormControl>

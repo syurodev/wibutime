@@ -11,7 +11,7 @@ declare module "next-auth/jwt" {
     coins: number;
     username?: string;
     password?: string;
-    backendToken?: TokenResponse;
+    backend_token?: TokenResponse;
     roles?: string[];
     permissions?: string[];
   }

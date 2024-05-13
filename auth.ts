@@ -3,25 +3,27 @@ import moment from "moment";
 
 import authConfig from "@/auth.config";
 import { JWT } from "next-auth/jwt";
-import { CredentialsSignin } from "next-auth";
-import { AuthError } from "next-auth";
+import { AUTH_API_ENDPOINT } from "./common/endpoint/auth";
 
 async function refreshToken(token: JWT): Promise<JWT | null> {
-  console.log("refreshToken", token.backendToken?.expires_in);
-  const res = await fetch(process.env.CONFIG_GATEWAY_URL + "/auth/refresh", {
-    method: "POST",
-    headers: {
-      authorization: `refreshToken ${token.backendToken?.refreshToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      id: token.id,
-      email: token.email,
-      name: token.name,
-      refreshToken: token.backendToken?.refreshToken,
-    }),
-    cache: "no-cache",
-  });
+  console.log("refreshToken", token.backend_token?.expires_in);
+  const res = await fetch(
+    process.env.CONFIG_GATEWAY_URL + AUTH_API_ENDPOINT.REFRESH_TOKEN_V1,
+    {
+      method: "POST",
+      headers: {
+        authorization: `refreshToken ${token.backend_token?.refresh_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: token.id,
+        email: token.email,
+        name: token.name,
+        refreshToken: token.backend_token?.refresh_token,
+      }),
+      cache: "no-cache",
+    }
+  );
   if (!res.ok) return null;
 
   const result: ApiResponse<AccessToken> = await res.json();
@@ -30,9 +32,9 @@ async function refreshToken(token: JWT): Promise<JWT | null> {
   return {
     ...token,
     backendToken: {
-      accessToken: result.data.accessToken,
+      accessToken: result.data.access_token,
       expires_in: Number(result.data.expires_in),
-      refreshToken: token.backendToken?.refreshToken,
+      refreshToken: token.backend_token?.refresh_token,
     },
   };
 }
@@ -76,7 +78,8 @@ export const {
         // if (existingUser.data && !existingUser?.data.email_verified) {
         if (userData && !userData.email_verified) {
           const res = await fetch(
-            process.env.CONFIG_GATEWAY_URL + "/auth/send-verification-email",
+            process.env.CONFIG_GATEWAY_URL +
+              AUTH_API_ENDPOINT.SEND_VERIFICATION_CODE_V1,
             {
               method: "POST",
               headers: {
@@ -123,7 +126,7 @@ export const {
         emailVerified: null,
       };
 
-      session.backendToken = token.backendToken!;
+      session.backend_token = token.backend_token!;
 
       return session;
     },
@@ -137,7 +140,7 @@ export const {
 
       // Chuyển đổi thời gian hết hạn từ milliseconds thành đối tượng Moment
       const expirationTime = moment(
-        Number(token.backendToken?.expires_in)
+        Number(token.backend_token?.expires_in)
       ).utcOffset("+07:00");
 
       // So sánh thời gian hiện tại của hệ thống với thời gian hết hạn của token

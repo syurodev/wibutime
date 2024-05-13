@@ -1,18 +1,11 @@
 import React from "react";
 import Image from "next/image";
-import {
-  LuCaseSensitive,
-  LuEye,
-  LuHeart,
-  LuMessageCircle,
-  LuStar,
-} from "react-icons/lu";
+import { Heart, Eye, CaseSensitive, MessageCircle, Star } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import BadgeLink from "@/components/shared/Badge/BadgeLink/BadgeLink";
 import LinkButton from "@/components/shared/Button/LinkButton";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 
 import { numberFormat } from "@/common/format-data/number-format";
 import DivSlide from "../Animation/DivSlide";
@@ -105,7 +98,10 @@ const ContentDetailHeroSection = () => {
                   "Misoneta Dozaemon (ミソネタ・ドざえもん)"
                 )}`}
               >
-                Misoneta Dozaemon (ミソネタ・ドざえもん)
+                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Velit
+                illum excepturi nihil eum officia consectetur neque ipsam beatae
+                dolor est atque autem incidunt fuga, nemo placeat quas labore
+                numquam maxime
               </LinkButton>
             </h3>
 
@@ -147,13 +143,13 @@ const ContentDetailHeroSection = () => {
           <Card className="flex items-center justify-between w-full p-4">
             {/* Số từ */}
             <div className="flex flex-col items-center justify-center w-full">
-              <LuCaseSensitive />
+              <CaseSensitive className="size-5" />
               <p className="font-medium text-xs">{numberFormat(32131421)}</p>
             </div>
 
             {/* Số lượt xem */}
             <div className="flex flex-col items-center justify-center w-full">
-              <LuEye />
+              <Eye className="size-5" />
               <p className="font-medium text-xs">{numberFormat(32131421)}</p>
             </div>
 
@@ -163,7 +159,7 @@ const ContentDetailHeroSection = () => {
               variant={"ghost"}
               rounded={"lg"}
             >
-              <LuMessageCircle />
+              <MessageCircle className="size-5" />
               <p className="font-medium text-xs">{numberFormat(120)}</p>
             </Button>
 
@@ -173,7 +169,7 @@ const ContentDetailHeroSection = () => {
               variant={"ghost"}
               rounded={"lg"}
             >
-              <LuHeart />
+              <Heart className="size-5" />
               <p className="font-medium text-xs">{numberFormat(31421)}</p>
             </Button>
 
@@ -183,7 +179,7 @@ const ContentDetailHeroSection = () => {
               variant={"ghost"}
               rounded={"lg"}
             >
-              <LuStar />
+              <Star className="size-5" />
               <p className="font-medium text-xs">4.5</p>
             </Button>
           </Card>

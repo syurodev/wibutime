@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useTheme } from "next-themes";
-import { LuMonitor, LuMoon, LuSun } from "react-icons/lu";
+import { SunMedium, MoonStar, SunMoon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -29,20 +29,20 @@ const ThemeToggle: React.FC<IProps> = ({ size = "default", blur = false }) => {
       className={blur ? "bg-background/30" : "bg-background"}
     >
       {theme === "dark" ? (
-        <LuMoon
-          className={`text-base rotate-90 scale-0 transition-all dark:rotate-0 transition-none duration-150 dark:scale-100 right-0 ${
+        <MoonStar
+          className={`text-base rotate-90 scale-0 transition-all dark:rotate-0 transition-none duration-150 dark:scale-100 right-0 size-4 ${
             size !== "icon" ? "mr-2" : ""
           }`}
         />
       ) : theme === "light" ? (
-        <LuSun
-          className={`text-base rotate-0 scale-100 transition-all dark:-rotate-90 transition-none duration-150 dark:scale-0 ${
+        <SunMedium
+          className={`text-base rotate-0 scale-100 transition-all dark:-rotate-90 transition-none duration-150 dark:scale-0 size-4 ${
             size !== "icon" ? "mr-2" : ""
           }`}
         />
       ) : (
-        <LuMonitor
-          className={`text-base rotate-0 transition-all ${
+        <SunMoon
+          className={`text-base rotate-0 transition-all size-4 ${
             size !== "icon" ? "mr-2" : ""
           } ${theme === "system" ? "scale-100" : "scale-0"}`}
         />

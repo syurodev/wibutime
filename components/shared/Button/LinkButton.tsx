@@ -15,9 +15,7 @@ const LinkButton: React.FC<IProps> = ({ url, className, children }) => {
     <Link
       href={url}
       className={cn(
-        `${buttonVariants({
-          variant: "link",
-        })} p-0 h-fit transition-all duration-150`,
+        `h-fit transition-all duration-150 max-w-full line-clamp-1 hover:!decoration-dashed hover:bg-secondary rounded-md p-1 w-fit`,
         className
       )}
     >

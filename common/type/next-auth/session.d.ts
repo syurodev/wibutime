@@ -15,6 +15,6 @@ declare module "next-auth" {
       permissions?: string[];
     };
 
-    backendToken: TokenResponse;
+    backend_token: TokenResponse;
   }
 }

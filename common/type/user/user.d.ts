@@ -21,13 +21,13 @@ type UserResponse = {
   coins: number;
   username?: string;
   password?: string;
-  backendToken?: TokenResponse;
+  backend_token?: TokenResponse;
   roles?: string[];
   permissions?: string[];
 };
 
 type TokenResponse = {
-  accessToken: string;
+  access_token: string;
   expires_in: string | number;
-  refreshToken?: string;
+  refresh_token?: string;
 };

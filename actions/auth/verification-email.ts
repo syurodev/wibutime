@@ -5,10 +5,11 @@ import * as z from "zod";
 import { serverActionResponse } from "@/common/response/action.response";
 import { ResponseMessage } from "@/common/response/message.response";
 import { verificationEmailSchema } from "@/schemas/zod/auth/verification-email.schema";
+import { AUTH_API_ENDPOINT } from "@/common/endpoint/auth";
 
 export const verifiEmailCode = async (
   values: z.infer<typeof verificationEmailSchema>
-): Promise<ServerActionResponse<ApiNoDataResponse>> => {
+): Promise<ServerActionResponse<ApiResponse<null>>> => {
   try {
     const validateFields = verificationEmailSchema.safeParse(values);
 
@@ -21,7 +22,7 @@ export const verifiEmailCode = async (
     const { email, code } = validateFields.data;
 
     const res = await fetch(
-      `${process.env.CONFIG_GATEWAY_URL}/auth/verification-email`,
+      process.env.CONFIG_GATEWAY_URL + AUTH_API_ENDPOINT.VERIFICATION_EMAIL_V1,
       {
         method: "POST",
         headers: {
@@ -31,6 +32,7 @@ export const verifiEmailCode = async (
           email,
           code,
         }),
+        cache: "no-cache",
       }
     );
 
@@ -41,7 +43,7 @@ export const verifiEmailCode = async (
       });
     }
 
-    return serverActionResponse<ApiNoDataResponse>({
+    return serverActionResponse<ApiResponse<null>>({
       apiResponse: await res.json(),
     });
   } catch (error) {

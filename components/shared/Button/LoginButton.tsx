@@ -2,8 +2,8 @@
 
 import React from "react";
 import { signOut } from "next-auth/react";
-import { LuLogIn, LuLogOut } from "react-icons/lu";
 import Link from "next/link";
+import { LogIn, LogOut } from "lucide-react";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { useClientSession } from "@/hooks/client/useClientSession";
@@ -24,6 +24,7 @@ const LoginButton: React.FC<IProps> = ({
   className,
 }) => {
   const session = useClientSession();
+  console.log(session);
   return (
     <DivSlide delay={delay ?? 0} className="w-fit h-fit">
       {session ? (
@@ -35,10 +36,10 @@ const LoginButton: React.FC<IProps> = ({
           onClick={() => signOut()}
           type="button"
         >
-          <LuLogOut
+          <LogOut
             className={`${
               size !== "icon" ? "mr-2" : ""
-            } group-hover:text-destructive transition-colors duration-150`}
+            } group-hover:text-destructive transition-colors duration-150 size-4`}
           />
           <span className="font-semibold group-hover:text-destructive transition-colors duration-150">
             {size !== "icon" && "Đăng xuất"}
@@ -56,7 +57,7 @@ const LoginButton: React.FC<IProps> = ({
             className
           )}
         >
-          <LuLogIn className={`${size !== "icon" ? "mr-2" : ""}`} />
+          <LogIn className={`${size !== "icon" ? "mr-2" : ""} size-4`} />
           <span className="font-semibold">
             {size !== "icon" && "Đăng nhập"}
           </span>

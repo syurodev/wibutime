@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { AnimatePresence } from "framer-motion";
 
 import {
   Form,
@@ -23,7 +24,6 @@ import { Button } from "@/components/ui/button";
 import { registerSchema } from "@/schemas/zod/auth/register.schema";
 import { register } from "@/actions/auth/register.action";
 import DivSlide from "@/components/shared/Animation/DivSlide";
-import { AnimatePresence } from "framer-motion";
 
 type IProps = {
   setEmail: React.Dispatch<React.SetStateAction<string | null>>;
@@ -51,7 +51,7 @@ const RegisterForm: React.FC<IProps> = ({ setEmail }) => {
         values
       );
 
-      if (!res.data) {
+      if (res.status !== 200) {
         toast.warning(res.message);
 
         return;

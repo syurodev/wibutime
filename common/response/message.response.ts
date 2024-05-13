@@ -3,6 +3,7 @@ export enum ResponseMessage {
 
   //auth
   LOGIN_ERROR = "Đăng nhập thất bại vui lòng thử lại!",
+  REGISTER_ERROR = "Đăng ký thất bại vui lòng thử lại!",
   REPASSWORD_INCORRECT = "Nhập lại mật khẩu không đúng, vui lòng thử lại!",
 
   //DATA INPUT

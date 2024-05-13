@@ -6,6 +6,7 @@ import nextBase64 from "next-base64";
 import { registerSchema } from "@/schemas/zod/auth/register.schema";
 import { serverActionResponse } from "@/common/response/action.response";
 import { ResponseMessage } from "@/common/response/message.response";
+import { AUTH_API_ENDPOINT } from "@/common/endpoint/auth";
 
 export async function register(
   values: z.infer<typeof registerSchema>
@@ -33,24 +34,27 @@ export async function register(
       });
     }
 
-    const res = await fetch(`${process.env.CONFIG_GATEWAY_URL}/auth/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username,
-        password: nextBase64.encode(password),
-        name,
-        email,
-        provider: "credentials",
-      }),
-    });
+    const res = await fetch(
+      process.env.CONFIG_GATEWAY_URL + AUTH_API_ENDPOINT.REGISTER_V1,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          password: nextBase64.encode(password),
+          name,
+          email,
+          provider: "credentials",
+        }),
+      }
+    );
 
     if (!res.ok) {
       return serverActionResponse({
         status: 400,
-        message: ResponseMessage.LOGIN_ERROR,
+        message: ResponseMessage.REGISTER_ERROR,
       });
     }
 

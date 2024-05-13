@@ -2,7 +2,7 @@
 
 import { memo } from "react";
 import Link from "next/link";
-import { LuCrown, LuFlame, LuHeart, LuUpload } from "react-icons/lu";
+import { Crown, Heart, Upload } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button";
@@ -36,7 +36,7 @@ const TopUser: React.FC<IProps> = ({ userData, index }) => {
 
         <div className=" flex flex-col flex-wrap w-full relative overflow-hidden">
           <div className=" w-full flex gap-1 items-center">
-            {index === 0 && <LuCrown className="text-yellow-500" />}
+            {index === 0 && <Crown className="text-yellow-500 size-4" />}
             <span className="text-sm whitespace-normal !line-clamp-1">
               {userData.name}
             </span>
@@ -49,11 +49,11 @@ const TopUser: React.FC<IProps> = ({ userData, index }) => {
 
       <div className="flex w-full gap-3 mx-3 border-t pt-3">
         <div className="flex gap-1 w-full items-center justify-center">
-          <LuHeart />
+          <Heart className="size-4" />
           <span className="text-xs">{numberFormat(userData.like)}</span>
         </div>
         <div className="flex gap-1 w-full items-center justify-center">
-          <LuUpload />
+          <Upload className="size-4" />
           <span className="text-xs">{userData.upload}</span>
         </div>
       </div>

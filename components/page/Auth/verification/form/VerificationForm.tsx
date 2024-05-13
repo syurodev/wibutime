@@ -29,7 +29,7 @@ import DivSlide from "@/components/shared/Animation/DivSlide";
 import { verifiEmailCode } from "@/actions/auth/verification-email";
 import { Input } from "@/components/ui/input";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import { LuPenSquare, LuX } from "react-icons/lu";
+import { PenSquare, X } from "lucide-react";
 
 type IProps = {
   email: string | null;
@@ -56,17 +56,14 @@ const VerificationForm: React.FC<IProps> = ({ email }) => {
     startTransiton(async () => {
       const res = await verifiEmailCode(data);
 
-      if (!res.data || res.data.result === false) {
-        toast.warning("Xác thực không thành công", {
-          description: "Có thể code của bạn đã hết thời hạn sử dụng.",
-        });
+      console.log(res);
+      if (res.status !== 200) {
+        toast.warning(res.message);
 
         return;
       }
 
-      toast.success("Xác thực email thành công", {
-        description: "Bạn sẻ được chuyển hướng đến trang đăng nhập.",
-      });
+      toast.success(res.message);
       setTimeout(() => {
         router.push("?page=login");
       }, 2000);
@@ -95,7 +92,7 @@ const VerificationForm: React.FC<IProps> = ({ email }) => {
                     className="size-8"
                     onClick={() => setDisableEmailInput(!disableEmailInput)}
                   >
-                    {disableEmailInput ? <LuPenSquare /> : <LuX />}
+                    {disableEmailInput ? <PenSquare /> : <X />}
                   </Button>
                 </DivSlide>
                 <FormControl>

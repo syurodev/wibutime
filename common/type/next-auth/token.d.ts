@@ -1,5 +1,5 @@
 interface AccessToken {
-  accessToken: string;
+  access_token: string;
   expires_in: string;
 }
 
