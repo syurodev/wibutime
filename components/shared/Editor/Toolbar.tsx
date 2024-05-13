@@ -1,197 +1,191 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-'use client'
+"use client";
 
-import React, { FC, memo, useCallback, useState } from 'react'
-import type { Editor } from '@tiptap/react'
+import React, { FC, memo, useCallback, useState } from "react";
+import type { Editor } from "@tiptap/react";
 import {
-  LuHeading2,
-  LuBold,
-  LuItalic,
-  LuQuote,
-  LuList,
-  LuListOrdered,
-  LuStrikethrough,
-  LuImagePlus,
-  LuSuperscript,
-  LuSubscript,
-  LuLink2
-} from "react-icons/lu"
+  Heading2,
+  Bold,
+  Italic,
+  Quote,
+  List,
+  ListOrdered,
+  Strikethrough,
+  ImagePlus,
+  Superscript,
+  Subscript,
+  Link2,
+} from "lucide-react";
 
-import { Toggle } from "@/components/ui/toggle"
-import { compressImage } from '@/lib/compressImage'
+import { Toggle } from "@/components/ui/toggle";
+// import { compressImage } from '@/lib/compressImage'
 // import { deleteFiles } from '@/actions/uploadthing'
-import { uploadFiles } from '@/lib/uploadthing'
-import { ReloadIcon } from '@radix-ui/react-icons'
-import { Button } from '@/components/ui/button'
+// import { uploadFiles } from '@/lib/uploadthing'
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { Button } from "@/components/ui/button";
 
 type IProps = {
-  editor: Editor | null,
-  imageUpload: boolean
-}
+  editor: Editor | null;
+  imageUpload: boolean;
+};
 
 const Toolbar: FC<IProps> = ({ editor, imageUpload }) => {
-  if (!editor) return null
+  if (!editor) return null;
 
   const [image, setImage] = useState<{
-    key: string,
-    url: string
+    key: string;
+    url: string;
   }>({
     key: "",
-    url: ""
-  })
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+    url: "",
+  });
+  // const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return
-    setIsLoading(true)
-    const result = await compressImage(
-      e.target.files, 0.8
-    )
+  // const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (!e.target.files) return
+  //   setIsLoading(true)
+  //   const result = await compressImage(
+  //     e.target.files, 0.8
+  //   )
 
-    // if (image.key !== "") {
-    //   await deleteFiles(image.key)
-    // }
+  //   // if (image.key !== "") {
+  //   //   await deleteFiles(image.key)
+  //   // }
 
-    const [res] = await uploadFiles('smallImage', { files: [result] })
+  //   const [res] = await uploadFiles('smallImage', { files: [result] })
 
-    setImage({
-      key: res.key,
-      url: res.url
-    })
+  //   setImage({
+  //     key: res.key,
+  //     url: res.url
+  //   })
 
-    editor.chain().focus().setImage({ src: res.url }).run()
-    setIsLoading(false)
-  }
+  //   editor.chain().focus().setImage({ src: res.url }).run()
+  //   setIsLoading(false)
+  // }
 
   const setLink = useCallback(() => {
-    const previousUrl = editor.getAttributes('link').href
-    const url = window.prompt('URL', previousUrl)
+    const previousUrl = editor.getAttributes("link").href;
+    const url = window.prompt("URL", previousUrl);
 
     // cancelled
     if (url === null) {
-      return
+      return;
     }
 
     // empty
-    if (url === '') {
-      editor.chain().focus().extendMarkRange('link').unsetLink()
-        .run()
+    if (url === "") {
+      editor.chain().focus().extendMarkRange("link").unsetLink().run();
 
-      return
+      return;
     }
 
     // update link
-    editor.chain().focus().extendMarkRange('link').setLink({ href: url })
-      .run()
-  }, [editor])
+    editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
+  }, [editor]);
 
   return (
-    <div className='flex w-full justify-between'>
-      <div className='flex w-full gap-2 items-center'>
+    <div className="flex w-full justify-between">
+      <div className="flex w-full gap-2 items-center">
         <Toggle
           size={"sm"}
           pressed={editor.isActive("heading", { level: 2 })}
           onPressedChange={() => {
-            editor.chain().focus().toggleHeading({ level: 2 }).run()
+            editor.chain().focus().toggleHeading({ level: 2 }).run();
           }}
         >
-          <LuHeading2 />
+          <Heading2 />
         </Toggle>
 
         <Toggle
           size={"sm"}
-          pressed={editor.isActive('bold')}
+          pressed={editor.isActive("bold")}
           onPressedChange={() => {
-            editor.chain().focus().toggleBold().run()
+            editor.chain().focus().toggleBold().run();
           }}
         >
-          <LuBold />
+          <Bold />
         </Toggle>
 
         <Toggle
           size={"sm"}
-          pressed={editor.isActive('italic')}
+          pressed={editor.isActive("italic")}
           onPressedChange={() => {
-            editor.chain().focus().toggleItalic().run()
+            editor.chain().focus().toggleItalic().run();
           }}
         >
-          <LuItalic />
+          <Italic />
         </Toggle>
 
         <Toggle
           size={"sm"}
-          pressed={editor.isActive('blockquote')}
+          pressed={editor.isActive("blockquote")}
           onPressedChange={() => {
-            editor.chain().focus().toggleBlockquote().run()
+            editor.chain().focus().toggleBlockquote().run();
           }}
         >
-          <LuQuote />
+          <Quote />
         </Toggle>
 
         <Toggle
           size={"sm"}
-          pressed={editor.isActive('bulletList')}
+          pressed={editor.isActive("bulletList")}
           onPressedChange={() => {
-            editor.chain().focus().toggleBulletList().run()
+            editor.chain().focus().toggleBulletList().run();
           }}
         >
-          <LuList />
+          <List />
         </Toggle>
 
         <Toggle
           size={"sm"}
-          pressed={editor.isActive('orderedList')}
+          pressed={editor.isActive("orderedList")}
           onPressedChange={() => {
-            editor.chain().focus().toggleOrderedList().run()
+            editor.chain().focus().toggleOrderedList().run();
           }}
         >
-          <LuListOrdered />
+          <ListOrdered />
         </Toggle>
 
         <Toggle
           size={"sm"}
-          pressed={editor.isActive('strike')}
+          pressed={editor.isActive("strike")}
           onPressedChange={() => {
-            editor.chain().focus().toggleStrike().run()
+            editor.chain().focus().toggleStrike().run();
           }}
         >
-          <LuStrikethrough />
+          <Strikethrough />
         </Toggle>
 
         <Toggle
           size={"sm"}
-          pressed={editor.isActive('subscript')}
+          pressed={editor.isActive("subscript")}
           onPressedChange={() => {
-            editor.chain().focus().toggleSubscript().run()
+            editor.chain().focus().toggleSubscript().run();
           }}
         >
-          <LuSubscript />
+          <Subscript />
         </Toggle>
 
         <Toggle
           size={"sm"}
-          pressed={editor.isActive('superscript')}
+          pressed={editor.isActive("superscript")}
           onPressedChange={() => {
-            editor.chain().focus().toggleSuperscript().run()
+            editor.chain().focus().toggleSuperscript().run();
           }}
         >
-          <LuSuperscript />
+          <Superscript />
         </Toggle>
 
-        <Button
-          size={"sm"}
-          onClick={setLink}
-          variant={"ghost"}
-        >
-          <LuLink2 />
+        <Button size={"sm"} onClick={setLink} variant={"ghost"}>
+          <Link2 />
         </Button>
 
-        <label htmlFor='editorAddImage' className='cursor-pointer rounded-md hover:bg-muted'>
+        {/* <label htmlFor='editorAddImage' className='cursor-pointer rounded-md hover:bg-muted'>
           {
             isLoading ? (
               <ReloadIcon className="size-[14px] animate-spin" />
             ) : (
-              <LuImagePlus className="size-[14px]" />
+              <ImagePlus className="size-[14px]" />
             )
           }
           <input
@@ -200,15 +194,12 @@ const Toolbar: FC<IProps> = ({ editor, imageUpload }) => {
             type="file"
             onChange={(e) => handleUploadImage(e)}
           />
-        </label>
+        </label> */}
       </div>
 
-      {
-        imageUpload && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-      }
-
+      {imageUpload && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
     </div>
-  )
-}
+  );
+};
 
-export default memo(Toolbar)
+export default memo(Toolbar);
