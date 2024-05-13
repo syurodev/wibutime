@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 
 import { forgotPasswordSchema } from "@/schemas/zod/auth/forgot-password.schema";
 import DivSlide from "@/components/shared/Animation/DivSlide";
-import { sendResetPasswordRequest } from "@/actions/auth/send-rest-password-request.action";
+import { sendResetPasswordRequest } from "@/actions/auth/send-reset-password-request.action";
 
 type IProps = {
   setEmail: React.Dispatch<React.SetStateAction<string | null>>;

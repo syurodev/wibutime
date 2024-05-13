@@ -12,7 +12,8 @@ export const serverActionResponse = <T>({
   message?: string;
   data?: T;
   apiResponse?: ApiResponse<T>;
-}): ServerActionResponse<T> => {
+}): ServerActionResponse<T | any> => {
+  console.log("apiResponse", apiResponse);
   if (apiResponse) return apiResponse;
 
   return {

@@ -5,10 +5,12 @@ import * as z from "zod";
 import { serverActionResponse } from "@/common/response/action.response";
 import { ResponseMessage } from "@/common/response/message.response";
 import { forgotPasswordSchema } from "@/schemas/zod/auth/forgot-password.schema";
+import { FETCH_POST } from "@/common/fetch/post";
+import { AUTH_API_ENDPOINT } from "@/common/enum/endpoint/auth";
 
 export const sendResetPasswordRequest = async (
   values: z.infer<typeof forgotPasswordSchema>
-): Promise<ServerActionResponse<ApiNoDataResponse>> => {
+): Promise<ServerActionResponse<any>> => {
   try {
     const validateFields = forgotPasswordSchema.safeParse(values);
 
@@ -20,28 +22,17 @@ export const sendResetPasswordRequest = async (
 
     const { email } = validateFields.data;
 
-    const res = await fetch(
-      `${process.env.CONFIG_GATEWAY_URL}/auth/forgot-password`,
+    const res = await FETCH_POST(
+      AUTH_API_ENDPOINT.SEND_RESET_PASSWORD_VERIFICATION_CODE_V1,
       {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-        }),
-      }
+        email,
+      },
+      false,
+      "no-cache"
     );
 
-    if (!res.ok) {
-      return serverActionResponse({
-        status: 400,
-        message: ResponseMessage.ERROR500,
-      });
-    }
-
-    return serverActionResponse<ApiNoDataResponse>({
-      apiResponse: await res.json(),
+    return serverActionResponse({
+      apiResponse: res,
     });
   } catch (error) {
     console.error(error);

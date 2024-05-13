@@ -3,7 +3,8 @@ import moment from "moment";
 
 import authConfig from "@/auth.config";
 import { JWT } from "next-auth/jwt";
-import { AUTH_API_ENDPOINT } from "./common/endpoint/auth";
+import { AUTH_API_ENDPOINT } from "./common/enum/endpoint/auth";
+import { FETCH_POST } from "./common/fetch/post";
 
 async function refreshToken(token: JWT): Promise<JWT | null> {
   console.log("refreshToken", token.backend_token?.expires_in);
@@ -77,30 +78,17 @@ export const {
 
         // if (existingUser.data && !existingUser?.data.email_verified) {
         if (userData && !userData.email_verified) {
-          const res = await fetch(
-            process.env.CONFIG_GATEWAY_URL +
-              AUTH_API_ENDPOINT.SEND_VERIFICATION_CODE_V1,
+          const res = await FETCH_POST(
+            AUTH_API_ENDPOINT.SEND_VERIFICATION_CODE_V1,
             {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                email: userData.email,
-                name: userData.name,
-              }),
-            }
+              email: userData.email,
+              name: userData.name,
+            },
+            false,
+            "no-cache"
           );
 
-          if (!res.ok) return false;
-
-          const result: ApiResponse<{
-            result: boolean;
-          }> = await res.json();
-
-          if (result.status !== 200 || result.data.result === false) {
-            return false;
-          }
+          if (res.status !== 200) return false;
 
           throw new Error("Tài khoản chưa được xác minh!");
         }

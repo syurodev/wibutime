@@ -5,11 +5,12 @@ import * as z from "zod";
 import { serverActionResponse } from "@/common/response/action.response";
 import { ResponseMessage } from "@/common/response/message.response";
 import { verificationEmailSchema } from "@/schemas/zod/auth/verification-email.schema";
-import { AUTH_API_ENDPOINT } from "@/common/endpoint/auth";
+import { AUTH_API_ENDPOINT } from "@/common/enum/endpoint/auth";
+import { FETCH_POST } from "@/common/fetch/post";
 
 export const verifiEmailCode = async (
   values: z.infer<typeof verificationEmailSchema>
-): Promise<ServerActionResponse<ApiResponse<null>>> => {
+): Promise<ServerActionResponse<any>> => {
   try {
     const validateFields = verificationEmailSchema.safeParse(values);
 
@@ -21,30 +22,18 @@ export const verifiEmailCode = async (
 
     const { email, code } = validateFields.data;
 
-    const res = await fetch(
-      process.env.CONFIG_GATEWAY_URL + AUTH_API_ENDPOINT.VERIFICATION_EMAIL_V1,
+    const res = await FETCH_POST(
+      AUTH_API_ENDPOINT.VERIFICATION_EMAIL_V1,
       {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          code,
-        }),
-        cache: "no-cache",
-      }
+        email,
+        code,
+      },
+      false,
+      "no-cache"
     );
 
-    if (!res.ok) {
-      return serverActionResponse({
-        status: 400,
-        message: ResponseMessage.ERROR500,
-      });
-    }
-
-    return serverActionResponse<ApiResponse<null>>({
-      apiResponse: await res.json(),
+    return serverActionResponse({
+      apiResponse: res,
     });
   } catch (error) {
     console.error(error);

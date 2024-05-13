@@ -56,7 +56,6 @@ const VerificationForm: React.FC<IProps> = ({ email }) => {
     startTransiton(async () => {
       const res = await verifiEmailCode(data);
 
-      console.log(res);
       if (res.status !== 200) {
         toast.warning(res.message);
 

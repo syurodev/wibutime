@@ -1,8 +1,10 @@
-import { CredentialsSignin, type NextAuthConfig } from "next-auth";
+import { CredentialsSignin, NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+
 import { loginSchema } from "./schemas/zod/auth/auth.schema";
-import { AUTH_API_ENDPOINT } from "./common/endpoint/auth";
+import { AUTH_API_ENDPOINT } from "./common/enum/endpoint/auth";
+import { FETCH_POST } from "./common/fetch/post";
 
 export default {
   // debug: true,
@@ -31,33 +33,22 @@ export default {
 
         const { username, password } = validatedField.data;
 
-        const res = await fetch(
-          process.env.CONFIG_GATEWAY_URL + AUTH_API_ENDPOINT.LOGIN_V1,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              username,
-              password,
-            }),
-            cache: "no-cache",
-          }
+        const res = await FETCH_POST<UserResponse>(
+          AUTH_API_ENDPOINT.LOGIN_V1,
+          { username: username, password: password },
+          false,
+          "no-cache"
         );
 
-        if (!res.ok) {
+        console.log(res);
+
+        if (res.status !== 200) {
           throw new CredentialsSignin();
         }
-        const existingUser: ApiResponse<UserResponse> = await res.json();
 
-        if (existingUser.status !== 200 || !existingUser.data) {
-          throw new CredentialsSignin(existingUser.message, {
-            name: existingUser.message,
-          });
-        }
+        const existingUser: UserResponse = res.data!;
 
-        return existingUser.data;
+        return existingUser;
       },
     }),
   ],
