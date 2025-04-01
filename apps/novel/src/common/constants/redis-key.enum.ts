@@ -1,0 +1,3 @@
+export enum REDIS_KEY_PREFIX {
+    VIEWED = 'NOVEL_CHAPTER_VIEWED',
+}

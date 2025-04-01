@@ -1,0 +1,168 @@
+syntax = "proto3";
+
+package com.zen.grpc.nodejs.lightnovel.service;
+
+service LightnovelService {
+  rpc getFullInfoLightNovel (GetDetailDTO) returns (GetFullInfoResponse) {}
+  rpc getListBasicLightNovel (GetListLightNovelDTO) returns (GetListBasicResponse) {}
+
+  rpc getUserHistories (GetUserHistoriesDTO) returns (GetUserHistoriesResponse) {}
+}
+
+message GetDetailDTO {
+  int32 id = 1;
+}
+
+message GetListLightNovelDTO {
+  int32 page = 1;
+  int32 limit = 2;
+  string key_search = 3;
+  int32 status = 4;
+  string category_ids = 5;
+  int32 artist_id = 6;
+  int32 author_id = 7;
+  int32 type = 8;
+  int32 user_id = 9;
+  int32 order_by = 10;
+  int32 order_direction = 11;
+  int32 is_favorite = 12;
+  int32 is_follow_author = 14;
+  int32 is_follow_artist = 15;
+  int32 is_follow_category = 16;
+  int32 is_follow_user = 17;
+}
+
+message Empty {}
+
+message BaseResponse {
+  int32 status = 1;
+  string message = 2;
+  Empty data = 3;
+}
+
+
+message GetFullInfoResponse {
+  int32 status = 1;
+  string message = 2;
+  GetFullInfoDataResponse data = 3;
+}
+
+message GetFullInfoDataResponse {
+  int32 id = 1;
+  string title = 2;
+  string resource_id = 3;
+  string cover_image_url = 4;
+  repeated ContentLine summary = 5;
+  optional Author author = 6;
+  optional Artist artist = 7;
+  int32 status = 8;
+  repeated Category categories = 9;
+  BasicUserDataResponse user = 10;
+  string type = 11;
+  repeated string alternative_names = 12;
+  repeated VolumeBasic volumes = 13;
+  int32 word_count = 14;
+}
+
+
+message Child {
+  string text = 1;         // Nội dung văn bản.
+  bool italic = 2;         // Có phải in nghiêng không? (optional).
+  bool bold = 3;           // Có phải in đậm không? (optional).
+}
+
+message ContentLine {
+  string id = 1;           // ID của item.
+  string type = 2;         // Loại của item.
+  repeated Child children = 3; // Danh sách children.
+}
+
+
+message Author {
+  int32 id = 1;
+  string name = 2;
+}
+
+message Artist {
+  int32 id = 1;
+  string name = 2;
+}
+
+message Category {
+    int32 id = 1;
+    string name = 2;
+}
+
+message BasicUserDataResponse {
+    int32 id = 1;
+    string nick_name = 2;
+    string avatar = 3;
+}
+
+
+message VolumeBasic {
+  int32 id = 1;
+  string title = 2;
+  int32 volume_number = 3;
+  string synopsis = 4;
+  string cover_image_url = 5;
+  string release_date = 6;
+  repeated ChapterBasic chapters = 7;
+}
+
+
+message ChapterBasic {
+  int32 id = 1;
+  string title = 2;
+  int32 index = 3;
+  string updated_at = 4;
+}
+
+
+message GetListBasicResponse {
+    int32 status = 1;
+    string message = 2;
+    repeated LightNovelBasic data = 3;
+}
+
+message LightNovelBasic {
+  int32 id = 1;
+  string title = 2;
+  string cover_image_url = 3;
+  repeated ContentLine summary = 4;
+  repeated Category categories = 5;
+  int32 status = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message GetUserHistoriesDTO {
+  int32 user_id = 1;
+  int32 page = 2;
+  int32 limit = 3;
+}
+
+message ChapterHistory {
+  int32 id = 1;
+  int32 index = 2;
+  string title = 3;
+  int32 status = 4;
+  string bookmark_line = 5;
+}
+
+message UserHistory {
+  int32 id = 1;
+  string title = 2;
+  string cover_image_url = 3;
+  string last_read_at = 4;
+  ChapterHistory chapter = 5;
+}
+
+message GetUserHistoriesResponse {
+  int32 status = 1;
+  string message = 2;
+  string message_code = 3;
+  int32 limit = 4;
+  int32 total_record = 5;
+  repeated UserHistory data = 6;
+}

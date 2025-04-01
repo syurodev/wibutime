@@ -1,0 +1,10 @@
+- [ ] Task 1: Triển khai chức năng xác thực người dùng dựa trên thiết bị.
+  - [ ] Nextjs client:
+    - [ ] Triển khai form đăng nhập và đăng ký trong route `auth`.
+    - [ ] Khi đăng nhập cố gắn thu thập nhiều thông tin thiết bị nhất có thể để gửi đến server đồng thời tạo một mã định danh thiết bị.
+    - [ ] Sử dụng server action để gọi api đăng nhập và đăng ký.
+  - [ ] user service backend triển khai chức năng đăng ký tài khoảng với dữ liệu đầu vào là `username`, `email`, `password`.
+  - [ ] user service backend triển khai chức năng đăng nhập với dữ liệu đầu vào là `username` hoặc `email`, `password` và các dữ liệu liên quan đến thông tin thiết bị của người dùng.
+    - [ ] Tạo table device nếu chưa có.
+    - [ ] Thực hiện lưu thông tin thiết bị vào table device.
+    - [ ] Lưu thông tin xác thực vào redis và sử dụng redis để xác thực token.

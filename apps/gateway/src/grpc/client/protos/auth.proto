@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package com.base.grpc.nodejs.user.auth;
+
+service AuthService {
+  rpc validateToken (ValidateTokenDTO) returns (ValidateTokenResponse) {}
+}
+
+message ValidateTokenDTO {
+  string token = 1;
+}
+
+message Empty {}
+
+message ValidateTokenResponse  {
+  int32 status = 1;
+  string message = 2;
+  string message_code = 3;
+  UserAuth data = 4;
+}
+
+message UserAuth {
+  User user = 1;
+  string access_token = 2;
+}
+
+message User {
+  int32 id = 1;
+  string username = 2;
+  string email = 3;
+  repeated Role roles = 4;
+  repeated Permission permissions = 5;
+}
+
+message Role {
+  int32 id = 1;
+  string name = 2;
+}
+
+message Permission {
+  int32 id = 1;
+  string name = 2;
+  string action = 3;
+  string module = 4;
+}

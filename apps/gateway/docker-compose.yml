@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  gateway:
+    image: syurodev/gateway:1.0.0
+    container_name: gateway-container
+    ports:
+      - "3002:3002"
+    networks:
+      - be_network
+    environment:
+      SERVICE_PORT: 3000
+      ENCRYPTION_SECRET_KEY: GEdbfHB+zG1931WhFs4T1CSP8IP0s1wWFo7arO2hfFI=
+      CONFIG_LOGGER_LEVEL: log,error,warn,debug,verbose
+
+
+networks:
+  be_network:
+    driver: bridge
+

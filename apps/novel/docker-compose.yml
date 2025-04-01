@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:alpine  # Using alpine for smaller image size
+    command: redis-server --requirepass eeba8b1e4fdc1b42a2acb68b51cb2c00 --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - redis_network
+    sysctls:
+      net.core.somaxconn: 1024
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+
+networks:
+  redis_network:
+    driver: bridge
+
+volumes:
+  redis_data:

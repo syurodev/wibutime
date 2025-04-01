@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: wibutime
+  name: gateway
+spec:
+  selector:
+    app: gateway
+  ports:
+    - protocol: TCP
+      port: 3000       # Port của container
+      targetPort: 3000 # Port của ứng dụng
+      nodePort: 30000  # Port cố định của Node
+  type: NodePort
+  

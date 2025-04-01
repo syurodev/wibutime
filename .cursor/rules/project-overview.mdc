@@ -1,0 +1,281 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Wibutime Project Overview
+
+## Summary
+
+This is a project made to serve the purpose of reading stories, reading and watching anime including the basic functions of the reading websites, watching other movies and advanced functions such as using AI to translate stories or novels, with more groups similar to social networks.
+
+## Project Structure
+
+The project adheres to Clean Architecture principles, promoting a clear separation of concerns. Key components include:
+
+- A project setup based on the [Turborepo build system].
+- A back-end microservice architecture built with NestJS.
+- A front-end built with Next.js and Shadcn/ui.
+
+```
+.
+├── .cursor
+├── .turbo
+├── apps
+│   ├── gateway
+│   │   ├── .turbo
+│   │   ├── src
+│   │   │   ├── common
+│   │   │   │   ├── guards
+│   │   │   │   ├── middleware
+│   │   │   ├── config
+│   │   │   ├── grpc
+│   │   │   │   ├── client
+│   │   │   │   │   ├── interfaces
+│   │   │   │   │   ├── protos
+│   │   │   │   │   ├── service
+│   │   │   │   │   ├── grpc.module.ts
+│   │   │   ├── app.controller.ts
+│   │   │   ├── app.module.ts
+│   │   │   ├── app.service.ts
+│   │   │   ├── main.ts
+│   │   ├── test
+│   │   ├── .env
+│   │   ├── .eslintrc.js
+│   │   ├── .gitignore
+│   │   ├── build_and_push.sh
+│   │   ├── deployment.yaml
+│   │   ├── docker-compose.yml
+│   │   ├── Dockerfile
+│   │   ├── nest-cli.json
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── service.yaml
+│   │   ├── tsconfig.build.json
+│   │   ├── tsconfig.json
+│   ├── novel
+│   │   ├── .turbo
+│   │   ├── src
+│   │   │   ├── common
+│   │   │   │   ├── constants
+│   │   │   │   ├── decorators
+│   │   │   │   ├── dto
+│   │   │   │   ├── interfaces
+│   │   │   ├── config
+│   │   │   ├── cron
+│   │   │   ├── data
+│   │   │   │   ├── entities
+│   │   │   │   ├── repositories
+│   │   │   │   ├── stored
+│   │   │   │   ├── data.module.ts
+│   │   │   ├── grpc
+│   │   │   │   ├── client
+│   │   │   │   ├── server
+│   │   │   ├── public
+│   │   │   ├── redis
+│   │   │   ├── v1
+│   │   │   │   ├── artist
+│   │   │   │   ├── author
+│   │   │   │   ├── bookmark
+│   │   │   │   ├── chapter
+│   │   │   │   ├── genre
+│   │   │   │   ├── lightnovel
+│   │   │   │   ├── lightnovel-genre-map
+│   │   │   │   ├── lightnovel-volume-map
+│   │   │   │   ├── reading-history
+│   │   │   │   ├── volume
+│   │   │   │   ├── volume-chapter-map
+│   │   │   │   ├── app.v1.module.ts
+│   │   │   ├── app.module.ts
+│   │   │   ├── main.ts
+│   │   ├── .env
+│   │   ├── .env.dev
+│   │   ├── .gitignore
+│   │   ├── .prettierrc
+│   │   ├── docker-compose.yml
+│   │   ├── nest-cli.json
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── tsconfig.build.json
+│   │   ├── tsconfig.json
+│   ├── user
+│   │   ├── .turbo
+│   │   ├── src
+│   │   │   ├── common
+│   │   │   │   ├── interfaces
+│   │   │   │   ├── all-exceptions.filter.ts
+│   │   │   ├── config
+│   │   │   ├── cron
+│   │   │   ├── data
+│   │   │   ├── grpc
+│   │   │   │   ├── client
+│   │   │   │   ├── server
+│   │   │   ├── public
+│   │   │   ├── redis
+│   │   │   ├── v1
+│   │   │   │   ├── auth
+│   │   │   │   ├── user
+│   │   │   │   ├── app.v1.module.ts
+│   │   │   ├── app.module.ts
+│   │   │   ├── main.ts
+│   │   ├── .env.example
+│   │   ├── .gitignore
+│   │   ├── .prettierrc
+│   │   ├── nest-cli.json
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── tsconfig.build.json
+│   │   ├── tsconfig.json
+│   ├── web
+│   │   ├── actions
+│   │   │   ├── auth
+│   │   ├── app
+│   │   │   ├── (main-layout)
+│   │   │   ├── auth
+│   │   │   ├── favicon.ico
+│   │   │   ├── layout.tsx
+│   │   ├── commons
+│   │   │   ├── constants
+│   │   │   ├── interfaces
+│   │   │   ├── utils
+│   │   ├── components
+│   │   ├── hooks
+│   │   ├── lib
+│   │   ├── node_modules
+│   │   ├── public
+│   │   ├── validation
+│   │   │   ├── zod
+│   │   │   │   ├── auth
+│   │   ├── .env.local
+│   │   ├── components.json
+│   │   ├── eslint.config.js
+│   │   ├── next-env.d.ts
+│   │   ├── next.config.mjs
+│   │   ├── package.json
+│   │   ├── postcss.config.mjs
+│   │   ├── tsconfig.json
+├── node_modules
+├── packages
+│   ├── commons
+│   │   ├── .turbo
+│   │   ├── src
+│   │   │   ├── constants
+│   │   │   ├── pipes
+│   │   │   ├── responses
+│   │   │   ├── utils
+│   │   │   ├── index.ts
+│   │   ├── .eslintrc.js
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   ├── eslint-config
+│   │   ├── node_modules
+│   │   ├── base.js
+│   │   ├── next.js
+│   │   ├── package.json
+│   │   ├── react-internal.js
+│   │   ├── README.md
+│   │   ├── next-commons
+│   ├── typescript-config
+│   ├── types
+│   │   ├── .turbo
+│   │   ├── src
+│   │   │   ├── auth
+│   │   │   ├── defaults
+│   │   │   ├── index.ts
+│   │   ├── .eslintrc.js
+│   │   ├── package.json
+│   ├── ui
+│   │   ├── .turbo
+│   │   ├── src
+│   │   │   ├── components
+│   │   │   ├── hooks
+│   │   │   ├── lib
+│   │   │   ├── styles
+│   │   ├── components.json
+│   │   ├── eslint.config.js
+│   │   ├── package.json
+│   │   ├── postcss.config.mjs
+│   │   ├── tsconfig.json
+│   │   ├── tsconfig.lint.json
+│   ├── .eslintrc.js
+│   ├── .gitignore
+│   ├── .npmrc
+```
+
+## Key Patterns & Concepts
+
+1. Http Request Flow
+   Requests originate from Next.js, passing through the gateway. Each request includes a header x-project-id whose value is the port of the efined in the @projectid.enum.ts file. Upon reaching the gateway, the token is authenticated. (Since most of my routes are public, a failed authentication does not bm proceeding). The @proxy.middleware.ts then directs the request to the appropriate backend service. (Nextjs -> gateway -(proxy)-> -(backend service)-> controller -> service -> repository -> database)
+
+2. Naming Conventions for Variables and Enums
+   Variables and enums are named in SNAKE_CASE and UPPER CASE if they are global or enums.
+
+3. Database Queries (PG)
+
+- Minimize the use of query builders.
+- Employ stored procedures for complex queries.
+- Avoid using any relationships when creating new tables.
+- Entities are stored in the data/entities directory.
+- Query logic is implemented in the data/repositories directory.
+- Stored procedures are located in the data/stored directory; I will execute them manually in the database.
+- Stored procedures are named according to the following convention: `sp_g_*` for stored procedures used for reading data and `sp_u_*` for stored procedures used for writing data.
+- Below is a sample structure of a stored procedure:
+
+```
+CREATE OR REPLACE PROCEDURE sp_g_reading_histories(
+  IN userId integer,
+  OUT result jsonb,
+  OUT status integer,
+  OUT message text
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    -- Thiết lập trạng thái mặc định thành công
+    status := 0;
+    message := 'success';
+
+    SELECT jsonb_agg(novel_data) INTO result
+    FROM (
+        SELECT
+            ln.id,
+            ln.title,
+            rh.last_read_at,
+            jsonb_build_object(
+                'id', ch.id,
+                'title', ch.title,
+                'index', ch.index,
+                'reading_status', rh.status
+            ) AS chapter
+        FROM (
+            -- Lấy duy nhất 1 bản ghi reading_history cho mỗi novel với last_read_at lớn nhất
+            SELECT DISTINCT ON (novel_id) *
+            FROM reading_histories
+            WHERE user_id = userId
+            ORDER BY novel_id, last_read_at DESC
+        ) AS rh
+        JOIN lightnovels ln ON ln.id = rh.novel_id
+        JOIN chapters ch ON ch.id = rh.chapter_id
+    ) novel_data;
+
+EXCEPTION WHEN OTHERS THEN
+    status := 1;
+    message := SQLERRM;
+    result := '{}'::jsonb;
+END;
+$$;
+
+ALTER PROCEDURE sp_g_reading_histories(INTEGER, OUT jsonb, OUT INTEGER, OUT TEXT) OWNER TO syuro;
+```
+
+4. Nextjs call API
+```
+return await fetchData<Session>({
+    url: new AuthEndpointUtils().login,
+    projectId: PROJECT_ID.USER,
+    options: {
+      method: 'POST',
+      body: init,
+    },
+  });
+```
