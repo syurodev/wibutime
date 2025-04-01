@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import { register } from '@/actions/auth/auth';
 import {
@@ -51,15 +52,13 @@ export default function RegisterPage() {
       // Gọi API đăng ký
       const result = await register(values);
 
-      if (result.status === 0) {
-        // Hiển thị thông báo thành công
-        alert('Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.');
+      if (result.status === 200) {
+        toast.success(result.message);
 
         // Chuyển hướng đến trang đăng nhập
         router.push('/auth/login');
       } else {
-        // Hiển thị thông báo lỗi
-        alert(result.message || 'Có lỗi xảy ra khi đăng ký.');
+        toast.error(result.message);
       }
     } catch (error) {
       console.error('Lỗi đăng ký:', error);

@@ -2,6 +2,7 @@
 
 import { collectDeviceInfo } from '@/lib/device-info';
 import { fetchData } from '@/lib/fetch';
+import { createSession } from '@/lib/session';
 import { ILoginValidationSchema } from '@/validation/zod/auth/login.schema';
 import { IRegisterValidationSchema } from '@/validation/zod/auth/register.schema';
 import {
@@ -14,7 +15,7 @@ import { Session } from '@workspace/types';
 export const login = async (
   init: ILoginValidationSchema,
 ): Promise<BaseResponse<Session>> => {
-  return await fetchData<Session>({
+  const result = await fetchData<Session>({
     url: new AuthEndpointUtils().login,
     projectId: PROJECT_ID.USER,
     options: {
@@ -22,6 +23,12 @@ export const login = async (
       body: init,
     },
   });
+
+  if (result.status === 200) {
+    await createSession(result.data);
+  }
+
+  return result;
 };
 
 export const register = async (init: IRegisterValidationSchema) => {

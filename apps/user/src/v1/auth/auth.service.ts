@@ -7,6 +7,7 @@ import {
   MessageCodeDescription,
   PasswordUtil,
 } from '@workspace/commons';
+import { Session } from '@workspace/types';
 import { UserRoleAndPermission } from 'src/common/interfaces/user';
 import { UserDevice } from 'src/data/entities/user-device.entity';
 import { User } from 'src/data/entities/user.entity';
@@ -66,7 +67,7 @@ export class AuthService {
       browserInfo?: string;
       ipAddress?: string;
     },
-  ) {
+  ): Promise<Session> {
     const user: UserRoleAndPermission =
       await this.userRepository.spGetUserRoleAndPermissionByUsername(username);
 
@@ -123,10 +124,10 @@ export class AuthService {
       userDevice.token = token;
       userDevice.last_login_at = new Date();
       userDevice.is_active = 1;
-      userDevice.device_os = deviceInfo.deviceOs || userDevice.device_os;
+      userDevice.device_os = deviceInfo.deviceOs ?? userDevice.device_os;
       userDevice.browser_info =
-        deviceInfo.browserInfo || userDevice.browser_info;
-      userDevice.ip_address = deviceInfo.ipAddress || userDevice.ip_address;
+        deviceInfo.browserInfo ?? userDevice.browser_info;
+      userDevice.ip_address = deviceInfo.ipAddress ?? userDevice.ip_address;
     } else {
       userDevice = new UserDevice();
       userDevice.user_id = user.id;
@@ -160,16 +161,17 @@ export class AuthService {
     return {
       id: user.id,
       username: user.username,
-      email: user.email,
       name: user.name,
+      email: user.email,
       avatar: user.avatar,
-      token,
-      device_id: deviceInfo.deviceId,
-      is_trusted_device: userDevice.is_trusted === 1,
+      roles: user.roles,
+      permissions: user.permissions,
+      access_token: token,
+      refresh_token: token,
     };
   }
 
-  async validateToken(token: string): Promise<any> {
+  async validateToken(token: string): Promise<Session> {
     try {
       const decoded: {
         sub: number;
@@ -182,6 +184,7 @@ export class AuthService {
         decoded.sub,
         token,
       );
+
       if (!cachedToken) {
         throw new HttpException(
           new ExceptionResponseDetail(

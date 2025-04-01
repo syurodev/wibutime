@@ -1,4 +1,5 @@
 import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
+import { PROJECT_ID } from '@workspace/commons';
 import { NextFunction, Request, Response } from 'express';
 import { createProxyMiddleware, fixRequestBody } from 'http-proxy-middleware';
 
@@ -13,8 +14,8 @@ export class ProxyMiddleware implements NestMiddleware {
 
     // Ánh xạ projectId với các URL đích
     const targetMap: Record<string, string> = {
-      '3101': process.env.CONFIG_PROXY_USER_SERVICE,
-      '3102': process.env.CONFIG_PROXY_NOVEL_SERVICE,
+      [PROJECT_ID.USER]: process.env.CONFIG_PROXY_USER_SERVICE,
+      [PROJECT_ID.NOVEL]: process.env.CONFIG_PROXY_NOVEL_SERVICE,
     };
 
     console.log(targetMap[projectId as string]);

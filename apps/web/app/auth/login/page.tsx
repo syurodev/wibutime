@@ -65,25 +65,26 @@ export default function LoginPage() {
       // Gọi API đăng nhập
       const result: BaseResponse<Session> = await login(loginData);
 
-      if (result.status === 0) {
-        toast.success('Đăng nhập thành công');
+      if (result.status === 200) {
+        console.log(result);
+        // toast.success('Đăng nhập thành công');
 
-        // Lưu thông tin phiên đăng nhập
-        localStorage.setItem('token', result?.data?.token.access_token);
-        localStorage.setItem(
-          'user',
-          JSON.stringify({
-            id: result.data.user.id,
-            username: result.data.user.username,
-            email: result.data.user.email,
-            roles: result.data.user.roles,
-            permissions: result.data.user.permissions,
-            avatar: result.data.user.avatar,
-          }),
-        );
+        // // Lưu thông tin phiên đăng nhập
+        // localStorage.setItem('token', result?.data?.token.access_token);
+        // localStorage.setItem(
+        //   'user',
+        //   JSON.stringify({
+        //     id: result.data.user.id,
+        //     username: result.data.user.username,
+        //     email: result.data.user.email,
+        //     roles: result.data.user.roles,
+        //     permissions: result.data.user.permissions,
+        //     avatar: result.data.user.avatar,
+        //   }),
+        // );
 
-        // Chuyển hướng về trang chủ
-        router.push('/');
+        // // Chuyển hướng về trang chủ
+        // router.push('/');
       } else {
         toast.error(result.message || 'Có lỗi xảy ra khi đăng nhập.');
       }

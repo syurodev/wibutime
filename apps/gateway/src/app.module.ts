@@ -13,7 +13,10 @@ export class AppModule {
     consumer
       .apply(AuthMiddleware)
       .exclude({ path: 'health-check', method: RequestMethod.ALL })
-      .forRoutes({ path: '*', method: RequestMethod.ALL })
+      .forRoutes({
+        path: '*prefix/private/*suffix',
+        method: RequestMethod.ALL,
+      })
       // .apply(DecryptMiddleware)
       // .exclude({ path: 'health-check', method: RequestMethod.ALL })
       // .forRoutes({ path: '*', method: RequestMethod.POST })

@@ -1,4 +1,4 @@
 export enum PROJECT_ID {
-  'USER' = 1001,
-  'NOVEL' = 1002,
+  'USER' = 3101,
+  'NOVEL' = 3102,
 }

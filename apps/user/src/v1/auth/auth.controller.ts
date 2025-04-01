@@ -5,6 +5,7 @@ import {
   MessageCode,
   MessageCodeDescription,
 } from '@workspace/commons';
+import { Session } from '@workspace/types';
 import { FastifyReply } from 'fastify';
 import { AllExceptionsFilter } from 'src/common/all-exceptions.filter';
 import { LoginDto } from 'src/v1/auth/dto/login.dto';
@@ -19,6 +20,7 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() registerDto: RegisterDto, @Res() res: FastifyReply) {
+    console.log(registerDto);
     const response = new BaseResponse<any>();
 
     const result = await this.authService.register(
@@ -39,7 +41,7 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() loginDto: LoginDto, @Res() res: FastifyReply) {
-    const response = new BaseResponse<any>();
+    const response = new BaseResponse<Session>();
 
     const userData = await this.authService.login(
       loginDto.username,

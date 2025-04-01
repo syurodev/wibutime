@@ -7,13 +7,13 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { BaseResponse, MessageCode } from '@workspace/commons';
-import { Response } from 'express';
+import { FastifyReply } from 'fastify';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
+    const response = ctx.getResponse<FastifyReply>();
 
     let status: HttpStatus;
     let message: string;
@@ -38,7 +38,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     const contextType = host.getType();
     if (contextType == 'http') {
-      return response.status(HttpStatus.OK).json(res);
+      return response.status(HttpStatus.OK).send(res);
     } else if (contextType == 'rpc') {
       return res;
     }

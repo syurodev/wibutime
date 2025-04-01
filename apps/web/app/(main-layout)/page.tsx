@@ -1,5 +1,4 @@
 import { CONTENT_TYPE } from '@/commons/constants/content-type.enum';
-import { PROJECT_ID } from '@/commons/constants/projectid.enum';
 import { TOP_TYPE } from '@/commons/constants/top-type.enum';
 import { ITopNovel } from '@/commons/interfaces/novels/top-novel';
 import { UserContentHistory } from '@/commons/interfaces/user-history';
@@ -7,6 +6,7 @@ import { NovelEndpointUtils } from '@/commons/utils/endpoint/novel-endpoint.util
 import { fetchData } from '@/commons/utils/fetch.util';
 import { Gallery4 } from '@/components/gallery4';
 import HistoryList from '@/components/HistoryList';
+import { PROJECT_ID } from '@workspace/commons';
 import { notFound } from 'next/navigation';
 
 export default async function Home() {
