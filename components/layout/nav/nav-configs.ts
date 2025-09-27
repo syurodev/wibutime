@@ -10,6 +10,12 @@ export const navConfigs = {
             href: "/users",
             label: "Users",
         },
+        {
+            type: "link",
+            icon: "Settings",
+            href: "/settings",
+            label: "Settings",
+        },
     ] as NavItem[],
 
     // Timer page - timer related actions

@@ -153,5 +153,152 @@
       "description": "Đồng bộ danh sách xem, hàng chờ đọc và wishlist của bạn trên mọi định dạng. Đam mê tiếp theo chỉ cách một cú nhấp.",
       "button": "Tạo tài khoản miễn phí"
     }
+  },
+  "settings": {
+    "title": "Cài đặt",
+    "description": "Quản lý cài đặt tài khoản và tùy chọn của bạn",
+    "tabs": {
+      "account": "Tài khoản",
+      "preferences": "Tùy chọn",
+      "privacy": "Riêng tư & Bảo mật",
+      "display": "Hiển thị",
+      "about": "Thông tin"
+    },
+    "account": {
+      "description": "Cập nhật thông tin tài khoản và cài đặt bảo mật",
+      "profile": {
+        "title": "Thông tin hồ sơ",
+        "description": "Cập nhật chi tiết hồ sơ và ảnh đại diện",
+        "name": "Tên hiển thị",
+        "email": "Địa chỉ email",
+        "avatar": "Ảnh hồ sơ",
+        "changeAvatar": "Thay đổi ảnh đại diện",
+        "removeAvatar": "Xóa ảnh đại diện"
+      },
+      "security": {
+        "title": "Bảo mật",
+        "description": "Quản lý mật khẩu và cài đặt bảo mật",
+        "currentPassword": "Mật khẩu hiện tại",
+        "newPassword": "Mật khẩu mới",
+        "confirmPassword": "Xác nhận mật khẩu mới",
+        "changePassword": "Đổi mật khẩu",
+        "twoFactor": "Xác thực hai bước",
+        "enableTwoFactor": "Bật 2FA",
+        "disableTwoFactor": "Tắt 2FA"
+      },
+      "danger": {
+        "title": "Khu vực nguy hiểm",
+        "description": "Các hành động không thể hoàn tác và mang tính phá hủy",
+        "deleteAccount": "Xóa tài khoản",
+        "deleteAccountDescription": "Xóa vĩnh viễn tài khoản và toàn bộ dữ liệu liên quan",
+        "deleteConfirmation": "Nhập 'DELETE' để xác nhận"
+      }
+    },
+    "preferences": {
+      "description": "Tùy chỉnh trải nghiệm và tùy chọn nội dung",
+      "language": {
+        "title": "Ngôn ngữ",
+        "description": "Chọn ngôn ngữ ưa thích",
+        "current": "Ngôn ngữ hiện tại"
+      },
+      "theme": {
+        "title": "Giao diện",
+        "description": "Chọn chủ đề ưa thích",
+        "light": "Sáng",
+        "dark": "Tối",
+        "system": "Hệ thống"
+      },
+      "notifications": {
+        "title": "Thông báo",
+        "description": "Cấu hình tùy chọn thông báo",
+        "email": "Thông báo email",
+        "push": "Thông báo đẩy",
+        "newEpisodes": "Tập mới",
+        "newChapters": "Chương mới",
+        "releases": "Phát hành mới",
+        "reminders": "Nhắc nhở xem/đọc"
+      },
+      "content": {
+        "title": "Tùy chọn nội dung",
+        "description": "Đặt tùy chọn nội dung mặc định",
+        "defaultView": "Chế độ xem mặc định",
+        "preferredGenres": "Thể loại ưa thích",
+        "adultContent": "Hiển thị nội dung người lớn"
+      }
+    },
+    "privacy": {
+      "description": "Kiểm soát cài đặt riêng tư và bảo mật",
+      "dataManagement": {
+        "title": "Quản lý dữ liệu",
+        "description": "Quản lý dữ liệu cá nhân của bạn",
+        "exportData": "Xuất dữ liệu",
+        "exportDescription": "Tải xuống toàn bộ dữ liệu của bạn định dạng JSON",
+        "importData": "Nhập dữ liệu",
+        "importDescription": "Nhập dữ liệu từ file sao lưu"
+      },
+      "sessions": {
+        "title": "Phiên đăng nhập",
+        "description": "Quản lý các phiên đăng nhập đang hoạt động",
+        "currentSession": "Phiên hiện tại",
+        "lastActive": "Hoạt động lần cuối",
+        "revokeSession": "Thu hồi",
+        "revokeAllSessions": "Thu hồi tất cả phiên khác"
+      },
+      "visibility": {
+        "title": "Hiển thị hồ sơ",
+        "description": "Kiểm soát ai có thể xem hồ sơ và hoạt động của bạn",
+        "publicProfile": "Hồ sơ công khai",
+        "showActivity": "Hiển thị hoạt động gần đây",
+        "showStats": "Hiển thị thống kê đọc/xem"
+      }
+    },
+    "display": {
+      "description": "Tùy chỉnh cách hiển thị nội dung",
+      "layout": {
+        "title": "Tùy chọn bố cục",
+        "description": "Chọn cách hiển thị nội dung",
+        "listView": "Chế độ danh sách",
+        "gridView": "Chế độ lưới",
+        "compactView": "Chế độ gọn"
+      },
+      "sorting": {
+        "title": "Sắp xếp mặc định",
+        "description": "Đặt tùy chọn sắp xếp mặc định",
+        "sortBy": "Sắp xếp theo",
+        "sortOrder": "Thứ tự sắp xếp",
+        "ascending": "Tăng dần",
+        "descending": "Giảm dần"
+      },
+      "filters": {
+        "title": "Bộ lọc nội dung",
+        "description": "Đặt bộ lọc nội dung mặc định",
+        "showCompleted": "Hiển thị mục đã hoàn thành",
+        "showDropped": "Hiển thị mục đã bỏ",
+        "showOnHold": "Hiển thị mục tạm dừng"
+      }
+    },
+    "about": {
+      "description": "Thông tin về ứng dụng và hỗ trợ",
+      "app": {
+        "title": "Ứng dụng",
+        "version": "Phiên bản",
+        "buildDate": "Ngày xây dựng",
+        "description": "WibuTime - Ứng dụng theo dõi anime, manga & light novel cá nhân"
+      },
+      "links": {
+        "title": "Liên kết quan trọng",
+        "terms": "Điều khoản sử dụng",
+        "privacy": "Chính sách bảo mật",
+        "cookies": "Chính sách Cookie",
+        "support": "Liên hệ hỗ trợ",
+        "feedback": "Gửi phản hồi"
+      },
+      "legal": {
+        "title": "Thông tin pháp lý",
+        "copyright": "© 2024 WibuTime. Tất cả quyền được bảo lưu.",
+        "opensource": "Ứng dụng này là mã nguồn mở",
+        "licenses": "Giấy phép bên thứ ba"
+      }
+    }
   }
 }

@@ -4,14 +4,15 @@ import { auth } from "@/lib/auth/auth";
 import { redirect } from "next/navigation";
 
 interface ProtectedPageProps {
-    params: { locale: string };
+    params: Promise<{ locale: string }>;
 }
 
 export default async function ProtectedPage({ params }: ProtectedPageProps) {
     const session = await auth();
+    const { locale } = await params;
 
     if (!session) {
-        redirect(`/${params.locale}/auth/signin`);
+        redirect(`/${locale}/auth/signin`);
     }
 
     return (

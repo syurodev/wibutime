@@ -127,7 +127,7 @@
       "title": "Featured Collections",
       "description": "Hand-picked selections to match every mood tonight.",
       "animeTitle": "Epic anime adventures",
-      "animeDescription": "From shounen clashes to heartfelt slice of life, see what’s trending this week.",
+      "animeDescription": "From shounen clashes to heartfelt slice of life, see what's trending this week.",
       "mangaTitle": "Manga must-reads",
       "mangaDescription": "Catch up on the latest chapters and add classics to your bookshelf.",
       "novelTitle": "Light novel discoveries",
@@ -141,7 +141,7 @@
     "spotlight": {
       "title": "Spotlight Updates",
       "description": "Stay on top of the conversations lighting up the community.",
-      "animeTitle": "Simulcasts you can’t miss",
+      "animeTitle": "Simulcasts you can't miss",
       "animeDescription": "Track release dates, episode reminders and behind-the-scenes features.",
       "mangaTitle": "Freshly translated chapters",
       "mangaDescription": "Get alerts when your followed series drop new chapters worldwide.",
@@ -152,6 +152,153 @@
       "title": "Build your personal library",
       "description": "Sync your watchlist, reading queue and wishlists across every format. Your next obsession is a click away.",
       "button": "Create your free account"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Manage your account settings and preferences",
+    "tabs": {
+      "account": "Account",
+      "preferences": "Preferences",
+      "privacy": "Privacy & Security",
+      "display": "Display",
+      "about": "About"
+    },
+    "account": {
+      "description": "Update your account information and security settings",
+      "profile": {
+        "title": "Profile Information",
+        "description": "Update your profile details and avatar",
+        "name": "Display Name",
+        "email": "Email Address",
+        "avatar": "Profile Picture",
+        "changeAvatar": "Change Avatar",
+        "removeAvatar": "Remove Avatar"
+      },
+      "security": {
+        "title": "Security",
+        "description": "Manage your password and security settings",
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm New Password",
+        "changePassword": "Change Password",
+        "twoFactor": "Two-Factor Authentication",
+        "enableTwoFactor": "Enable 2FA",
+        "disableTwoFactor": "Disable 2FA"
+      },
+      "danger": {
+        "title": "Danger Zone",
+        "description": "Irreversible and destructive actions",
+        "deleteAccount": "Delete Account",
+        "deleteAccountDescription": "Permanently delete your account and all associated data",
+        "deleteConfirmation": "Type 'DELETE' to confirm"
+      }
+    },
+    "preferences": {
+      "description": "Customize your experience and content preferences",
+      "language": {
+        "title": "Language",
+        "description": "Select your preferred language",
+        "current": "Current Language"
+      },
+      "theme": {
+        "title": "Appearance",
+        "description": "Choose your preferred theme",
+        "light": "Light",
+        "dark": "Dark",
+        "system": "System"
+      },
+      "notifications": {
+        "title": "Notifications",
+        "description": "Configure notification preferences",
+        "email": "Email notifications",
+        "push": "Push notifications",
+        "newEpisodes": "New episodes",
+        "newChapters": "New chapters",
+        "releases": "New releases",
+        "reminders": "Watch/Read reminders"
+      },
+      "content": {
+        "title": "Content Preferences",
+        "description": "Set your default content preferences",
+        "defaultView": "Default view",
+        "preferredGenres": "Preferred genres",
+        "adultContent": "Show adult content"
+      }
+    },
+    "privacy": {
+      "description": "Control your privacy and security settings",
+      "dataManagement": {
+        "title": "Data Management",
+        "description": "Manage your personal data",
+        "exportData": "Export Data",
+        "exportDescription": "Download all your data in JSON format",
+        "importData": "Import Data",
+        "importDescription": "Import your data from a backup file"
+      },
+      "sessions": {
+        "title": "Active Sessions",
+        "description": "Manage your active login sessions",
+        "currentSession": "Current session",
+        "lastActive": "Last active",
+        "revokeSession": "Revoke",
+        "revokeAllSessions": "Revoke all other sessions"
+      },
+      "visibility": {
+        "title": "Profile Visibility",
+        "description": "Control who can see your profile and activity",
+        "publicProfile": "Public profile",
+        "showActivity": "Show recent activity",
+        "showStats": "Show reading/watching statistics"
+      }
+    },
+    "display": {
+      "description": "Customize how content is displayed",
+      "layout": {
+        "title": "Layout Options",
+        "description": "Choose how content is displayed",
+        "listView": "List view",
+        "gridView": "Grid view",
+        "compactView": "Compact view"
+      },
+      "sorting": {
+        "title": "Default Sorting",
+        "description": "Set default sorting preferences",
+        "sortBy": "Sort by",
+        "sortOrder": "Sort order",
+        "ascending": "Ascending",
+        "descending": "Descending"
+      },
+      "filters": {
+        "title": "Content Filters",
+        "description": "Set default content filters",
+        "showCompleted": "Show completed items",
+        "showDropped": "Show dropped items",
+        "showOnHold": "Show on-hold items"
+      }
+    },
+    "about": {
+      "description": "Information about the application and support",
+      "app": {
+        "title": "Application",
+        "version": "Version",
+        "buildDate": "Build Date",
+        "description": "WibuTime - Your personal anime, manga & light novel tracker"
+      },
+      "links": {
+        "title": "Important Links",
+        "terms": "Terms of Service",
+        "privacy": "Privacy Policy",
+        "cookies": "Cookie Policy",
+        "support": "Contact Support",
+        "feedback": "Send Feedback"
+      },
+      "legal": {
+        "title": "Legal Information",
+        "copyright": "© 2024 WibuTime. All rights reserved.",
+        "opensource": "This application is open source",
+        "licenses": "Third-party licenses"
+      }
     }
   }
 }

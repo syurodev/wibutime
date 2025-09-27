@@ -45,7 +45,10 @@ export default function LoginPage() {
 
             // Session cookie is now set on the Identity domain. Continue with OIDC.
             // Use window.location to ensure proper redirect and avoid RSC payload issues
-            const signInResult = await signIn("oidc", { callbackUrl: "/", redirect: false });
+            const signInResult = await signIn("oidc", {
+                callbackUrl: "/",
+                redirect: false,
+            });
 
             if (signInResult?.url) {
                 // Force full page navigation instead of client-side routing

@@ -47,7 +47,6 @@ export const authConfig: NextAuthConfig = {
         jwt({ token, account, profile }) {
             // On initial sign-in, persist OAuth tokens and basic profile into the JWT
             if (account) {
-                console.log("Processing account tokens...");
                 // OAuth tokens
                 // @ts-ignore
                 token.accessToken = account.access_token;
@@ -58,7 +57,6 @@ export const authConfig: NextAuthConfig = {
                 token.idToken = account.id_token;
             }
             if (profile) {
-                console.log("Processing profile data...");
                 // Basic profile claims
                 // @ts-ignore
                 token.sub = (profile as any).sub || token.sub;
@@ -71,6 +69,20 @@ export const authConfig: NextAuthConfig = {
                 token.email = (profile as any).email || token.email;
                 // @ts-ignore
                 token.picture = (profile as any).picture || token.picture;
+
+                // Persist roles and permissions
+                // @ts-ignore
+                token.globalRoleNames =
+                    (profile as any).global_role_names || [];
+                // @ts-ignore
+                token.globalPermissions =
+                    (profile as any).global_permissions || [];
+                // @ts-ignore
+                token.tenantRoleNames =
+                    (profile as any).tenant_role_names || [];
+                // @ts-ignore
+                token.tenantPermissions =
+                    (profile as any).tenant_permissions || [];
             }
 
             return token;
@@ -79,6 +91,17 @@ export const authConfig: NextAuthConfig = {
             // Expose access token to the client session
             // @ts-ignore
             session.accessToken = token.accessToken as string | undefined;
+
+            // Map roles and permissions from JWT claims
+            // @ts-ignore
+            session.globalRoleNames = (token as any).globalRoleNames || [];
+            // @ts-ignore
+            session.globalPermissions = (token as any).globalPermissions || [];
+            // @ts-ignore
+            session.tenantRoleNames = (token as any).tenantRoleNames || [];
+            // @ts-ignore
+            session.tenantPermissions = (token as any).tenantPermissions || [];
+
             // Map basic user info from JWT claims
             if (!session.user) {
                 // @ts-ignore
@@ -113,29 +136,6 @@ export const authConfig: NextAuthConfig = {
             } catch (error) {
                 console.error("Failed to call backend logout:", error);
             }
-        },
-        async createUser(message) {
-            console.log("Event createUser:", message);
-        },
-        async updateUser(message) {
-            console.log("Event updateUser:", message);
-        },
-        async linkAccount(message) {
-            console.log("Event linkAccount:", message);
-        },
-        async session(message) {
-            console.log("Event session:", message);
-        },
-    },
-    logger: {
-        error(code, ...message) {
-            console.error("NextAuth ERROR:", code, message);
-        },
-        warn(code, ...message) {
-            console.warn("NextAuth WARN:", code, message);
-        },
-        debug(code, ...message) {
-            console.log("NextAuth DEBUG:", code, message);
         },
     },
 };
