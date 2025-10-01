@@ -70,6 +70,10 @@ export const authConfig: NextAuthConfig = {
                 // @ts-ignore
                 token.picture = (profile as any).picture || token.picture;
 
+                // Persist tenant_id
+                // @ts-ignore
+                token.tenantId = (profile as any).tenant_id || null;
+
                 // Persist roles and permissions
                 // @ts-ignore
                 token.globalRoleNames =
@@ -91,6 +95,10 @@ export const authConfig: NextAuthConfig = {
             // Expose access token to the client session
             // @ts-ignore
             session.accessToken = token.accessToken as string | undefined;
+
+            // Expose tenant_id to the client session
+            // @ts-ignore
+            session.tenantId = (token as any).tenantId || null;
 
             // Map roles and permissions from JWT claims
             // @ts-ignore

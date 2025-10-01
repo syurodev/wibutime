@@ -12,12 +12,13 @@ import {
 import {hasAdminAccess} from "@/lib/auth/permissions";
 import {getIcon, IconName} from "@/lib/icons";
 import {AnimatePresence, motion, Variants} from "framer-motion";
-import {Loader2, LogIn, LogOut, Search, Settings, Shield, User, X,} from "lucide-react";
+import {Loader2, LogIn, LogOut, Settings, Shield, User, X} from "lucide-react";
 import {signOut, useSession} from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import {useEffect, useRef, useState} from "react";
+import {useMemo, useState} from "react";
 import AnimatedIcon from "./animated-icon";
+import NavSearch, {NavSearchResult} from "./nav-search";
 
 export interface NavLinkItem {
   type: "link";
@@ -127,34 +128,44 @@ export default function Nav({items = []}: NavProps) {
   const {data: session} = useSession();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const searchInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (isSearchOpen) {
-      searchInputRef.current?.focus();
-      return;
-    }
-
+  const handleSearchOpen = () => setIsSearchOpen(true);
+  const handleSearchClose = () => {
+    setIsSearchOpen(false);
     setSearchQuery("");
-  }, [isSearchOpen]);
+  };
 
-  useEffect(() => {
-    if (!isSearchOpen) {
-      return;
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+  };
+
+  const handleResultSelect = () => {
+    handleSearchClose();
+  };
+
+  const searchResults = useMemo<NavSearchResult[]>(() => {
+    const normalized = searchQuery.trim().toLowerCase();
+
+    if (!normalized) {
+      return [];
     }
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsSearchOpen(false);
-      }
-    };
+    return items
+        .filter((item): item is NavLinkItem => item.type === "link")
+        .filter((item) => item.label.toLowerCase().includes(normalized))
+        .slice(0, 6)
+        .map((item) => {
+          const Icon = getIcon(item.icon);
 
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isSearchOpen]);
+          return {
+            id: `${item.href}-${item.label}`,
+            title: item.label,
+            description: item.href,
+            href: item.href,
+            icon: <Icon className="h-4 w-4 text-muted-foreground"/>,
+          } satisfies NavSearchResult;
+        });
+  }, [items, searchQuery]);
 
   return (
       <div className="fixed inset-x-0 bottom-4 z-[99999] flex justify-center">
@@ -431,7 +442,7 @@ export default function Nav({items = []}: NavProps) {
                   <motion.button
                       key="nav-close"
                       onClick={() => setIsSearchOpen(false)}
-                      className="absolute inset-0 m-auto flex h-10 w-10 items-center justify-center rounded-full bg-background/80 transition-colors duration-200 bg-transparent"
+                      className="absolute inset-0 m-auto flex h-10 w-10 items-center justify-center rounded-full bg-background/80 transition-colors duration-200"
                       initial={{opacity: 0, scale: 0.6}}
                       animate={{opacity: 1, scale: 1}}
                       exit={{opacity: 0, scale: 0.6}}
@@ -445,50 +456,24 @@ export default function Nav({items = []}: NavProps) {
             </AnimatePresence>
           </motion.nav>
 
-          <motion.div
-              className="flex h-12 items-center"
-              layout
-              transition={{layout: {duration: 0.25, ease: "easeInOut"}}}
-          >
-            <motion.div
-                className="flex h-12 items-center overflow-hidden rounded-full border border-gray-200/50 bg-background/60 shadow-lg backdrop-blur-md"
-                animate={{width: isSearchOpen ? 304 : 48}}
-                transition={{type: "spring", stiffness: 240, damping: 28, delay: isSearchOpen ? 0.05 : 0}}
-                layout
-            >
-              <button
-                  type="button"
-                  onClick={() => setIsSearchOpen(true)}
-                  className="flex h-12 w-12 flex-shrink-0 items-center justify-center"
-                  aria-label="Mở tìm kiếm"
-                  aria-expanded={isSearchOpen}
-                  disabled={isSearchOpen}
-              >
-                <Search className="h-5 w-5 text-gray-700"/>
-              </button>
-              <AnimatePresence initial={false}>
-                {isSearchOpen && (
-                    <motion.div
-                        key="search-field"
-                        className="flex flex-1 items-center gap-2 pr-4"
-                        initial={{opacity: 0, x: 12}}
-                        animate={{opacity: 1, x: 0}}
-                        exit={{opacity: 0, x: 12}}
-                        transition={{duration: 0.18, delay: 0.1}}
-                    >
-                      <input
-                          ref={searchInputRef}
-                          value={searchQuery}
-                          onChange={(event) => setSearchQuery(event.target.value)}
-                          placeholder="Nhập từ khóa..."
-                          className="w-full bg-transparent text-sm placeholder:text-gray-400 outline-none"
-                          aria-label="Tìm kiếm"
-                      />
-                    </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </motion.div>
+          <NavSearch
+              isOpen={isSearchOpen}
+              onOpen={handleSearchOpen}
+              onClose={handleSearchClose}
+              onQueryChange={handleSearchChange}
+              onResultSelect={handleResultSelect}
+              results={searchResults}
+              emptyState={
+                searchQuery
+                    ? (
+                        <span>
+                          Không tìm thấy{" "}
+                          <span className="font-medium text-foreground">{`"${searchQuery}"`}</span>
+                        </span>
+                    )
+                    : undefined
+              }
+          />
         </div>
       </div>
   );

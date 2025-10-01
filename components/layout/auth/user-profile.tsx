@@ -34,6 +34,31 @@ export function UserProfile() {
         <div className="text-sm text-muted-foreground">
           User ID: {session.user?.id || "N/A"}
         </div>
+        {session.tenantId && (
+          <div className="text-sm text-muted-foreground">
+            Tenant ID: {session.tenantId}
+          </div>
+        )}
+        {session.tenantRoleNames && session.tenantRoleNames.length > 0 && (
+          <div className="text-sm">
+            <span className="text-muted-foreground">Tenant Roles: </span>
+            {session.tenantRoleNames.map((role, index) => (
+              <Badge key={index} variant="outline" className="mr-1">
+                {role}
+              </Badge>
+            ))}
+          </div>
+        )}
+        {session.globalRoleNames && session.globalRoleNames.length > 0 && (
+          <div className="text-sm">
+            <span className="text-muted-foreground">Global Roles: </span>
+            {session.globalRoleNames.map((role, index) => (
+              <Badge key={index} variant="outline" className="mr-1">
+                {role}
+              </Badge>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   )
