@@ -171,7 +171,7 @@ export default function Nav({items = []}: NavProps) {
       <div className="fixed inset-x-0 bottom-4 z-[99999] flex justify-center">
         <div className="flex items-center gap-3">
           <motion.nav
-              className={`relative flex h-12 items-center overflow-hidden rounded-full border border-gray-200/50 bg-background/60 shadow-lg backdrop-blur-md transition-colors duration-200 ${isSearchOpen ? "w-12 justify-center" : "px-2"}`}
+              className={`relative flex h-12 items-center overflow-hidden rounded-full border border-gray-200/50 bg-background/60 shadow-lg backdrop-blur-md transition-colors duration-200 ${isSearchOpen ? "w-12 justify-center" : "px-1.5"}`}
               suppressHydrationWarning
               initial={{y: 100, opacity: 0}}
               animate={{y: 0, opacity: 1}}
