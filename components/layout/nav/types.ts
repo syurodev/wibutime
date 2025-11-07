@@ -1,0 +1,130 @@
+import { ReactNode } from "react";
+
+/**
+ * Navigation Type Definitions
+ *
+ * Defines all types for the dynamic navigation system.
+ * Four types of nav items: Link, Action, Trigger, and Search.
+ */
+
+/**
+ * Base properties shared by all nav items
+ */
+export type NavItemBase = {
+  id: string; // Unique identifier for the item
+  icon: ReactNode; // Icon component (usually from lucide-react)
+  label: string; // Display text below the icon
+  badge?: number | string; // Optional badge for notifications/counts
+};
+
+/**
+ * Link Nav Item
+ *
+ * Navigates to a different page when clicked.
+ * Uses Next.js Link component with i18n routing.
+ *
+ * Example:
+ * {
+ *   id: "home",
+ *   type: "link",
+ *   href: "/",
+ *   icon: <Home />,
+ *   label: "Home"
+ * }
+ */
+export type LinkNavItem = NavItemBase & {
+  type: "link";
+  href: string; // Destination path (locale prefix added automatically)
+};
+
+/**
+ * Action Nav Item
+ *
+ * Executes an async operation (API call) when clicked.
+ * Shows loading spinner and displays toast notifications.
+ *
+ * Example:
+ * {
+ *   id: "follow",
+ *   type: "action",
+ *   icon: <Heart />,
+ *   label: "Follow",
+ *   onClick: async () => { await api.follow() },
+ *   successMessage: "Followed!",
+ *   errorMessage: "Failed to follow"
+ * }
+ */
+export type ActionNavItem = NavItemBase & {
+  type: "action";
+  onClick: () => Promise<void>; // Async function to execute
+  loadingText?: string; // Text to show while loading (optional)
+  successMessage?: string; // Toast message on success (optional)
+  errorMessage?: string; // Toast message on error (optional)
+};
+
+/**
+ * Trigger Nav Item
+ *
+ * Executes a synchronous UI action when clicked (no loading state).
+ * Perfect for opening modals, dialogs, sheets, etc.
+ *
+ * Example:
+ * {
+ *   id: "settings",
+ *   type: "trigger",
+ *   icon: <Settings />,
+ *   label: "Settings",
+ *   onClick: () => setModalOpen(true)
+ * }
+ */
+export type TriggerNavItem = NavItemBase & {
+  type: "trigger";
+  onClick: () => void; // Synchronous function to execute
+};
+
+/**
+ * Search Nav Item
+ *
+ * Special item that toggles search mode.
+ * When clicked, nav expands to show full-width search input.
+ *
+ * Example:
+ * {
+ *   id: "search",
+ *   type: "search",
+ *   icon: <Search />,
+ *   label: "Search",
+ *   placeholder: "Search...",
+ *   onSearch: (query) => console.log(query)
+ * }
+ */
+export type SearchNavItem = NavItemBase & {
+  type: "search";
+  onSearch?: (query: string) => void; // Callback when search query changes (optional)
+  placeholder?: string; // Placeholder text for search input (optional)
+};
+
+/**
+ * Union type of all nav item types
+ * Allows type-safe rendering based on item.type
+ */
+export type NavItem =
+  | LinkNavItem
+  | ActionNavItem
+  | TriggerNavItem
+  | SearchNavItem;
+
+/**
+ * Navigation Context Type
+ *
+ * Defines the shape of the navigation context value.
+ * Used by useNav hook to access navigation state.
+ */
+export type NavContextType = {
+  items: NavItem[]; // Current navigation items
+  searchMode: boolean; // Whether search mode is active
+  loadingItems: Set<string>; // Set of item IDs in loading state
+  setNavItems: (items: NavItem[]) => void; // Set nav items for current page
+  toggleSearch: () => void; // Toggle search mode on/off
+  setItemLoading: (itemId: string, loading: boolean) => void; // Set loading state for an item
+};

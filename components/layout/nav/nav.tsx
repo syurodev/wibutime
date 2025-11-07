@@ -1,480 +1,411 @@
 "use client";
 
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {hasAdminAccess} from "@/lib/auth/permissions";
-import {getIcon, IconName} from "@/lib/icons";
-import {AnimatePresence, motion, Variants} from "framer-motion";
-import {Loader2, LogIn, LogOut, Settings, Shield, User, X} from "lucide-react";
-import {signOut, useSession} from "next-auth/react";
-import Image from "next/image";
-import Link from "next/link";
-import {useMemo, useState} from "react";
-import AnimatedIcon from "./animated-icon";
-import NavSearch, {NavSearchResult} from "./nav-search";
+import { cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "framer-motion";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { NavActionItem } from "./NavActionItem";
+import { NavLinkItem } from "./NavLinkItem";
+import { NavSearch } from "./NavSearch";
+import { NavSearchButton } from "./NavSearchButton";
+import { NavTriggerItem } from "./NavTriggerItem";
+import { useNav } from "./useNav";
 
-export interface NavLinkItem {
-  type: "link";
-  icon: IconName;
-  href: string;
-  label: string;
-}
+/**
+ * Main Navigation Component
+ *
+ * Renders a bottom navigation bar that dynamically displays items based on
+ * the current page's configuration. Supports search mode where the nav expands
+ * to show a search bar.
+ *
+ * Both nav items and search content animate with slide-from-bottom effect.
+ */
+const Nav = () => {
+  // Get current pathname to force re-render on page change
+  const pathname = usePathname();
 
-export interface NavActionItem {
-  type: "action";
-  icon: IconName;
-  label: string;
-  onClick: () => void;
-  isActive?: boolean;
-  activeIcon?: IconName;
-  activeLabel?: string;
-  variant?: "default" | "destructive" | "success";
-  isLoading?: boolean;
-}
+  // Get nav state from context
+  const { items, searchMode, toggleSearch } = useNav();
 
-export type NavItem = NavLinkItem | NavActionItem;
+  // Separate search item from other nav items
+  // Search item is handled specially (can expand to full width)
+  const searchItem = items.find((item) => item.type === "search");
+  const otherItems = items.filter((item) => item.type !== "search");
 
-interface NavProps {
-  items?: NavItem[];
-}
+  // State to store measured nav width for smooth transitions
+  const [navWidth, setNavWidth] = useState<number | null>(null);
 
-const containerVariants: Variants = {
-  hidden: {opacity: 0, x: -12},
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.1,
-    },
-  },
-  closing: {
-    opacity: 0,
-    x: -12,
-    transition: {
-      duration: 0.2,
-      delay: 0.12,
-    },
-  },
-};
+  // Initial mount state for entry animation (square → width)
+  const [isInitialMount, setIsInitialMount] = useState(true);
 
-const itemVariants: Variants = {
-  hidden: {opacity: 0, scale: 0.8, y: 10},
-  visible: {
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: {
-      type: "spring",
-      stiffness: 300,
-      damping: 20,
-    },
-  },
-  exit: {
-    opacity: 0,
-    scale: 0.8,
-    y: -10,
-    transition: {
-      duration: 0.2,
-    },
-  },
-};
+  // Delayed state for container dimensions to coordinate with animations
+  const [containerSearchMode, setContainerSearchMode] = useState(searchMode);
 
-const iconVariants: Variants = {
-  idle: {
-    scale: 1,
-    opacity: 1,
-    filter: "blur(0px)",
-  },
-  hover: {
-    scale: 1.05,
-    opacity: 1,
-    filter: "blur(0px)",
-    transition: {duration: 0.2},
-  },
-};
+  // Track hover and focus state for scale animation
+  const [isHovered, setIsHovered] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
-const iconTransitionVariants: Variants = {
-  visible: {
-    opacity: 1,
-    filter: "blur(0px)",
-    scale: 1,
-    rotate: 0,
-    transition: {
-      duration: 0.3,
-      ease: "easeOut",
-    },
-  },
-  hidden: {
-    opacity: 0,
-    filter: "blur(4px)",
-    scale: 0.8,
-    rotate: 10,
-    transition: {
-      duration: 0.2,
-      ease: "easeIn",
-    },
-  },
-};
+  // Timeout refs for delayed scale-down animation
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const focusTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-export default function Nav({items = []}: NavProps) {
-  const {data: session} = useSession();
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  // Hidden ref container for measuring natural width without affecting visible layout
+  const measureContainerRef = useRef<HTMLDivElement>(null);
 
-  const handleSearchOpen = () => setIsSearchOpen(true);
-  const handleSearchClose = () => {
-    setIsSearchOpen(false);
-    setSearchQuery("");
-  };
+  // Ref for nav container to detect click outside
+  const navRef = useRef<HTMLDivElement>(null);
 
-  const handleSearchChange = (value: string) => {
-    setSearchQuery(value);
-  };
+  // Initial mount animation: start as square, then expand to measured width
+  useEffect(() => {
+    if (isInitialMount && navWidth !== null) {
+      // Delay to show square state before expanding
+      const timer = setTimeout(() => {
+        setIsInitialMount(false);
+      }, 200); // 200ms to see the square shape
 
-  const handleResultSelect = () => {
-    handleSearchClose();
-  };
+      return () => clearTimeout(timer);
+    }
+  }, [isInitialMount, navWidth]);
 
-  const searchResults = useMemo<NavSearchResult[]>(() => {
-    const normalized = searchQuery.trim().toLowerCase();
+  // Coordinate container timing with animations
+  // Container resize is delayed to sync with animation sequence
+  useEffect(() => {
+    const timer = setTimeout(
+      () => {
+        setContainerSearchMode(searchMode);
+      },
+      searchMode ? 75 : 0
+    ); // Delay resize when opening, immediate when closing
 
-    if (!normalized) {
-      return [];
+    return () => clearTimeout(timer);
+  }, [searchMode]);
+
+  // Measure nav content width when items change
+  // Measure immediately so width transition happens simultaneously with item animations
+  useEffect(() => {
+    console.log("[Nav Debug] Effect triggered:", {
+      searchMode,
+      itemsLength: items.length,
+      currentNavWidth: navWidth,
+    });
+
+    if (searchMode) {
+      console.log("[Nav Debug] ❌ In search mode, skipping measurement");
+      return;
     }
 
-    return items
-        .filter((item): item is NavLinkItem => item.type === "link")
-        .filter((item) => item.label.toLowerCase().includes(normalized))
-        .slice(0, 6)
-        .map((item) => {
-          const Icon = getIcon(item.icon);
+    console.log(
+      "[Nav Debug] ✓ Measuring immediately. Item count:",
+      items.length
+    );
 
-          return {
-            id: `${item.href}-${item.label}`,
-            title: item.label,
-            description: item.href,
-            href: item.href,
-            icon: <Icon className="h-4 w-4 text-muted-foreground"/>,
-          } satisfies NavSearchResult;
-        });
-  }, [items, searchQuery]);
+    // Small delay to ensure hidden container has rendered with new items
+    const measureDelay = 10; // Just enough for DOM update
+
+    const timeoutId = setTimeout(() => {
+      console.log("[Nav Debug] ⏱️ Measuring hidden container...");
+
+      if (measureContainerRef.current) {
+        // Measure the hidden container width (already includes padding from inline style)
+        // getBoundingClientRect() returns total width including padding
+        const totalWidth =
+          measureContainerRef.current.getBoundingClientRect().width;
+        console.log(
+          "[Nav Debug] 📏 Measured total width (with padding):",
+          totalWidth,
+          "px"
+        );
+
+        // Only set width if it's reasonable (> 100px)
+        if (totalWidth > 100 && totalWidth !== navWidth) {
+          console.log(
+            "[Nav Debug] ✅ Setting navWidth to:",
+            totalWidth,
+            "(will transition from",
+            navWidth,
+            ")"
+          );
+          setNavWidth(totalWidth);
+        } else if (totalWidth === navWidth) {
+          console.log("[Nav Debug] ℹ️ Width unchanged:", totalWidth);
+        } else {
+          console.log(
+            "[Nav Debug] ❌ Width too small, skipping:",
+            totalWidth
+          );
+        }
+      } else {
+        console.log("[Nav Debug] ❌ measureContainerRef.current is null");
+      }
+    }, measureDelay);
+
+    return () => {
+      console.log("[Nav Debug] 🧹 Cleanup: clearing timeout");
+      clearTimeout(timeoutId);
+    };
+  }, [searchMode, items, navWidth]);
+
+  // Debug log for state changes
+  useEffect(() => {
+    let calculatedWidth = "auto";
+    if (containerSearchMode) {
+      calculatedWidth = "400px";
+    } else if (navWidth) {
+      calculatedWidth = `${navWidth}px`;
+    }
+
+    console.log("[Nav Debug] State updated:", {
+      searchMode,
+      containerSearchMode,
+      navWidth,
+      itemsCount: items.length,
+      calculatedWidth,
+    });
+  }, [searchMode, containerSearchMode, navWidth, items.length]);
+
+  // Handlers for hover with delay
+  const handleMouseEnter = () => {
+    // Clear any pending timeout
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    // Delay scale-down by 300ms
+    hoverTimeoutRef.current = setTimeout(() => {
+      setIsHovered(false);
+    }, 300);
+  };
+
+  // Handlers for focus with delay
+  const handleFocus = () => {
+    // Clear any pending timeout
+    if (focusTimeoutRef.current) {
+      clearTimeout(focusTimeoutRef.current);
+      focusTimeoutRef.current = null;
+    }
+    setIsFocused(true);
+  };
+
+  const handleBlur = () => {
+    // Delay scale-down by 300ms
+    focusTimeoutRef.current = setTimeout(() => {
+      setIsFocused(false);
+    }, 300);
+  };
+
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+      if (focusTimeoutRef.current) clearTimeout(focusTimeoutRef.current);
+    };
+  }, []);
+
+  // Handle click outside to close search mode
+  useEffect(() => {
+    if (!searchMode) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      // Check if click is outside nav container
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        toggleSearch();
+      }
+    };
+
+    // Add event listener
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Clean up
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [searchMode, toggleSearch]);
+
+  // Determine if nav should be expanded (full size)
+  const isExpanded = isHovered || isFocused || searchMode;
+
+  // Calculate container width based on current state
+  const getContainerWidth = () => {
+    if (containerSearchMode) {
+      return "400px";
+    }
+    if (isInitialMount) {
+      return "56px"; // Initial: square (width = height)
+    }
+    if (navWidth) {
+      return `${navWidth}px`;
+    }
+    return "auto";
+  };
 
   return (
-      <div className="fixed inset-x-0 bottom-4 z-[99999] flex justify-center">
-        <div className="flex items-center gap-3">
-          <motion.nav
-              className={`relative flex h-12 items-center overflow-hidden rounded-full border border-gray-200/50 bg-background/60 shadow-lg backdrop-blur-md transition-colors duration-200 ${isSearchOpen ? "w-12 justify-center" : "px-1.5"}`}
-              suppressHydrationWarning
-              initial={{y: 100, opacity: 0}}
-              animate={{y: 0, opacity: 1}}
-              transition={{
-                type: "spring",
-                stiffness: 280,
-                damping: 35,
-                delay: 0.1,
-                layout: {
-                  duration: 0.3,
-                  ease: "easeInOut",
-                },
-              }}
-              layout
+    // Fixed position at bottom center of screen
+    <nav
+      className={cn(
+        "fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-300",
+        isExpanded ? "bottom-6" : "bottom-4"
+      )}
+    >
+      {/* Initial mount animation wrapper with hover/focus scale effect */}
+      <motion.div
+        ref={navRef}
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{
+          scale: isExpanded ? 1 : 0.65,
+          opacity: 1,
+        }}
+        transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {/*
+        Nav container with glass morphism effect
+        Uses CSS transition for width animation
+        Width transitions smoothly between measured nav width and search width (400px)
+      */}
+        <div
+          className={cn(
+            "relative shadow-lg rounded-2xl backdrop-blur-sm",
+            "transition-all duration-300 ease-in-out",
+            isInitialMount && "overflow-hidden"
+          )}
+          style={{
+            minHeight: "56px",
+            width: getContainerWidth(),
+          }}
+        >
+          {/*
+          Content wrapper with dynamic height
+          Nav mode: Fixed at 56px total (32px content + 24px padding)
+          Search mode: Expands smoothly up to 600px max
+          Using max-height for smooth CSS transition (height: auto doesn't transition)
+        */}
+          <div
+            className="relative overflow-hidden transition-all duration-300 ease-in-out flex items-center"
+            style={{
+              height: containerSearchMode ? "auto" : "56px",
+              maxHeight: containerSearchMode ? "600px" : "56px",
+              padding: "12px 16px",
+            }}
           >
-            <motion.div
-                className="flex w-full items-center gap-1"
-                variants={containerVariants}
-                initial="hidden"
-                animate={isSearchOpen ? "closing" : "visible"}
-                transition={{ease: "easeInOut", duration: 0.25}}
-                style={{pointerEvents: isSearchOpen ? "none" : "auto"}}
-            >
-              <motion.div
-                  variants={itemVariants}
-                  whileHover="hover"
-                  whileTap={{scale: 0.95}}
-                  layout
-              >
-                <Link
-                    href="/"
-                    className="group flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-200 hover:bg-gray-100/80"
-                    title="Home"
+            {/* AnimatePresence for smooth transitions between modes */}
+            {/* mode="wait" ensures exit completes before enter starts - prevents overlap */}
+            <AnimatePresence initial={false} mode="wait">
+              {searchMode ? (
+                // Search mode: show search input with results (dynamic height)
+                <motion.div
+                  key="search-content"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{
+                    duration: 0.15,
+                    ease: [0.4, 0, 0.2, 1],
+                  }}
+                  className="w-full"
                 >
-                  <motion.div
-                      variants={iconVariants}
-                      initial="idle"
-                      whileHover="hover"
-                  >
-                    <Image
-                        src="/images/logo.png"
-                        alt="wibutime"
-                        width={20}
-                        height={20}
-                        className="object-cover"
+                  {searchItem?.type === "search" && (
+                    <NavSearch
+                      item={searchItem}
+                      onFocus={handleFocus}
+                      onBlur={handleBlur}
                     />
-                  </motion.div>
-                </Link>
-              </motion.div>
-
-              <AnimatePresence mode="popLayout">
-                {items.map((item, index) => {
-                  if (item.type === "link") {
-                    const Icon = getIcon(item.icon);
-                    return (
-                        <motion.div
-                            key={`${item.type}-${item.href}-${index}`}
-                            variants={itemVariants}
-                            initial="hidden"
-                            animate="visible"
-                            exit="exit"
-                            whileHover="hover"
-                            whileTap={{scale: 0.95}}
-                            layout
-                        >
-                          <Link
-                              href={item.href}
-                              className="group flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-200 hover:bg-gray-100/80"
-                              title={item.label}
-                          >
-                            <motion.div
-                                variants={iconVariants}
-                                initial="idle"
-                                animate="idle"
-                                whileHover="hover"
-                            >
-                              <Icon className="h-5 w-5 transition-colors duration-200"/>
-                            </motion.div>
-                          </Link>
-                        </motion.div>
-                    );
-                  }
-
-                  if (item.type === "action") {
-                    const label =
-                        item.isActive && item.activeLabel
-                            ? item.activeLabel
-                            : item.label;
-
-                    const getVariantStyles = () => {
-                      switch (item.variant) {
-                        case "destructive":
-                          return item.isActive
-                              ? "text-red-600 hover:text-red-700"
-                              : "hover:text-red-600";
-                        case "success":
-                          return item.isActive
-                              ? "text-green-600 hover:text-green-700"
-                              : "hover:text-green-600";
+                  )}
+                </motion.div>
+              ) : (
+                // Nav mode: show navigation items with staggered animation
+                <motion.ul
+                  key={`nav-content-${pathname}`}
+                  className="flex items-center gap-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{
+                    duration: 0.15,
+                    ease: [0.4, 0, 0.2, 1],
+                  }}
+                >
+                  <AnimatePresence mode="popLayout">
+                    {/* Render each nav item based on its type with index for stagger */}
+                    {otherItems.map((item, index) => {
+                      switch (item.type) {
+                        case "link":
+                          // Link item: navigate to another page
+                          return (
+                            <NavLinkItem
+                              key={item.id}
+                              item={item}
+                              index={index}
+                            />
+                          );
+                        case "action":
+                          // Action item: async operation (API calls)
+                          return (
+                            <NavActionItem
+                              key={item.id}
+                              item={item}
+                              index={index}
+                            />
+                          );
+                        case "trigger":
+                          // Trigger item: sync UI action (open modal)
+                          return (
+                            <NavTriggerItem
+                              key={item.id}
+                              item={item}
+                              index={index}
+                            />
+                          );
                         default:
-                          return item.isActive
-                              ? "text-blue-600 hover:text-blue-700"
-                              : "hover:text-gray-900";
+                          return null;
                       }
-                    };
-
-                    return (
-                        <motion.div
-                            key={`${item.type}-${item.label}-${index}`}
-                            variants={itemVariants}
-                            initial="hidden"
-                            animate="visible"
-                            exit="exit"
-                            whileHover={!item.isLoading ? "hover" : undefined}
-                            whileTap={!item.isLoading ? {scale: 0.9} : {}}
-                            layout
-                        >
-                          <motion.button
-                              onClick={item.onClick}
-                              disabled={item.isLoading}
-                              className="group flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-200 hover:bg-gray-100/80 outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                              title={label}
-                              whileHover={!item.isLoading ? "hover" : undefined}
-                              whileTap={!item.isLoading ? {scale: 0.95} : {}}
-                              type="button"
-                          >
-                            <AnimatePresence mode="wait" initial={false}>
-                              <motion.div
-                                  key={item.isLoading ? "loading" : "idle"}
-                                  variants={iconTransitionVariants}
-                                  initial="hidden"
-                                  animate="visible"
-                                  exit="hidden"
-                              >
-                                {item.isLoading ? (
-                                    <Loader2 className="h-5 w-5 animate-spin text-gray-500"/>
-                                ) : (
-                                    <AnimatedIcon
-                                        icon={item.isActive && item.activeIcon ? item.activeIcon : item.icon}
-                                        className={`transition-colors duration-200 ${getVariantStyles()}`}
-                                        size={20}
-                                    />
-                                )}
-                              </motion.div>
-                            </AnimatePresence>
-                          </motion.button>
-                        </motion.div>
-                    );
-                  }
-
-                  return null;
-                })}
-              </AnimatePresence>
-
-              <motion.div
-                  variants={itemVariants}
-                  initial="hidden"
-                  animate="visible"
-                  whileHover="hover"
-                  whileTap={{scale: 0.95}}
-                  layout
-              >
-                {session ? (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <motion.button
-                            className="group flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-200 hover:bg-gray-100/80 outline-none"
-                            whileHover={{scale: 1.05}}
-                            whileTap={{scale: 0.95}}
-                        >
-                          <motion.div
-                              variants={iconVariants}
-                              initial="idle"
-                              animate="idle"
-                              whileHover="hover"
-                          >
-                            <Avatar className="h-8 w-8">
-                              <AvatarImage
-                                  src={session.user?.image || ""}
-                                  alt={session.user?.name || "User"}
-                              />
-                              <AvatarFallback className="text-xs font-medium">
-                                {session.user?.name?.charAt(0) ||
-                                    session.user?.email?.charAt(0) ||
-                                    "U"}
-                              </AvatarFallback>
-                            </Avatar>
-                          </motion.div>
-                        </motion.button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent
-                          align="end"
-                          className="w-56"
-                          sideOffset={8}
-                      >
-                        <DropdownMenuLabel>
-                          <div className="flex flex-col space-y-1">
-                            <p className="text-sm font-medium leading-none">
-                              {session.user?.name || "User"}
-                            </p>
-                            <p className="text-xs leading-none text-muted-foreground">
-                              {session.user?.email}
-                            </p>
-                          </div>
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator/>
-                        <DropdownMenuItem asChild>
-                          <Link
-                              href="/profile"
-                              className="flex items-center"
-                          >
-                            <User className="mr-2 h-4 w-4"/>
-                            Profile
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link
-                              href="/settings"
-                              className="flex items-center"
-                          >
-                            <Settings className="mr-2 h-4 w-4"/>
-                            Settings
-                          </Link>
-                        </DropdownMenuItem>
-                        {hasAdminAccess(session) && (
-                            <DropdownMenuItem asChild>
-                              <Link
-                                  href="/admin/system"
-                                  className="flex items-center"
-                              >
-                                <Shield className="mr-2 h-4 w-4"/>
-                                System Management
-                              </Link>
-                            </DropdownMenuItem>
-                        )}
-                        <DropdownMenuSeparator/>
-                        <DropdownMenuItem
-                            onClick={() => signOut({callbackUrl: "/"})}
-                            className="text-red-600 focus:text-red-600"
-                        >
-                          <LogOut className="mr-2 h-4 w-4"/>
-                          Logout
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                ) : (
-                    <Link
-                        href="/auth/login"
-                        className="group flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-200 hover:bg-gray-100/80"
-                        title="Login"
-                    >
-                      <motion.div
-                          variants={iconVariants}
-                          initial="idle"
-                          animate="idle"
-                          whileHover="hover"
-                      >
-                        <LogIn
-                            className="h-5 w-5 text-gray-600 transition-colors duration-200 group-hover:text-gray-900"/>
-                      </motion.div>
-                    </Link>
-                )}
-              </motion.div>
-            </motion.div>
-
-            <AnimatePresence>
-              {isSearchOpen && (
-                  <motion.button
-                      key="nav-close"
-                      onClick={() => setIsSearchOpen(false)}
-                      className="absolute inset-0 m-auto flex h-10 w-10 items-center justify-center rounded-full bg-background/80 transition-colors duration-200"
-                      initial={{opacity: 0, scale: 0.6}}
-                      animate={{opacity: 1, scale: 1}}
-                      exit={{opacity: 0, scale: 0.6}}
-                      transition={{duration: 0.2, delay: 0.15}}
-                      aria-label="Đóng tìm kiếm"
-                      type="button"
-                  >
-                    <X className="h-5 w-5 text-gray-700"/>
-                  </motion.button>
+                    })}
+                    {/* Render search button when not in search mode */}
+                    {searchItem?.type === "search" && (
+                      <NavSearchButton
+                        key="search-button"
+                        item={searchItem}
+                        index={otherItems.length}
+                      />
+                    )}
+                  </AnimatePresence>
+                </motion.ul>
               )}
             </AnimatePresence>
-          </motion.nav>
-
-          <NavSearch
-              isOpen={isSearchOpen}
-              onOpen={handleSearchOpen}
-              onClose={handleSearchClose}
-              onQueryChange={handleSearchChange}
-              onResultSelect={handleResultSelect}
-              results={searchResults}
-              emptyState={
-                searchQuery
-                    ? (
-                        <span>
-                          Không tìm thấy{" "}
-                          <span className="font-medium text-foreground">{`"${searchQuery}"`}</span>
-                        </span>
-                    )
-                    : undefined
-              }
-          />
+          </div>
         </div>
-      </div>
+      </motion.div>
+
+      {/* Hidden measurement container - always renders with width: auto for accurate measurement */}
+      {!searchMode && (
+        <div
+          ref={measureContainerRef}
+          className="fixed pointer-events-none opacity-0 left-0 top-0"
+          style={{
+            width: "auto",
+            padding: "12px 16px",
+          }}
+          aria-hidden="true"
+        >
+          <ul className="flex items-center gap-2">
+            {otherItems.map((item) => {
+              // Render simplified item structure for measurement (no animations/tooltips)
+              return (
+                <li key={item.id} className="p-3">
+                  {item.icon}
+                </li>
+              );
+            })}
+            {searchItem && <li className="p-3">{searchItem.icon}</li>}
+          </ul>
+        </div>
+      )}
+    </nav>
   );
-}
+};
+
+export default Nav;
