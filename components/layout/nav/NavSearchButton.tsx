@@ -1,11 +1,11 @@
 "use client";
 
-import { motion } from "framer-motion";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { motion } from "framer-motion";
 import { SearchNavItem } from "./types";
 import { useNav } from "./useNav";
 
@@ -44,6 +44,7 @@ export function NavSearchButton({ item, index = 0 }: NavSearchButtonProps) {
             className="
               flex items-center justify-center p-3 rounded-xl
               opacity-60 hover:opacity-100 transition-opacity
+              cursor-pointer
             "
           >
             {/* Search icon */}

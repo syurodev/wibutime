@@ -1,4 +1,4 @@
-import Nav from "@/components/layout/nav/Nav";
+import Nav from "@/components/layout/nav/nav";
 import { NavProvider } from "@/components/layout/nav/NavContext";
 import { Toaster } from "@/components/ui/sonner";
 
