@@ -1,0 +1,74 @@
+{
+  "hero": {
+    "featured": "Nổi Bật",
+    "exclusive": "Độc Quyền",
+    "new": "Mới",
+    "hot": "Hot",
+    "trending": "Xu Hướng"
+  },
+  "trending": {
+    "title": "Xu Hướng",
+    "subtitle": "Series phổ biến nhất hôm nay",
+    "empty": "Không có series xu hướng"
+  },
+  "latest": {
+    "title": "Mới Cập Nhật",
+    "subtitle": "Chương mới nhất",
+    "empty": "Chưa có cập nhật mới"
+  },
+  "popular": {
+    "title": "Phổ Biến Tuần Này",
+    "subtitle": "Series được đánh giá cao",
+    "empty": "Không có series phổ biến",
+    "tabs": {
+      "all": "Tất Cả",
+      "anime": "Anime",
+      "manga": "Manga",
+      "novel": "Tiểu Thuyết"
+    }
+  },
+  "recommended": {
+    "title": "Dành Cho Bạn",
+    "subtitle": "Dựa trên sở thích của bạn",
+    "empty": "Không có gợi ý",
+    "loginRequired": "Đăng nhập để xem gợi ý cá nhân"
+  },
+  "newSeries": {
+    "title": "Series Mới",
+    "subtitle": "Tác phẩm mới nhất",
+    "empty": "Chưa có series mới"
+  },
+  "genres": {
+    "title": "Khám Phá Theo Thể Loại",
+    "subtitle": "Tìm nội dung theo danh mục",
+    "viewAll": "Xem Tất Cả Thể Loại"
+  },
+  "cta": {
+    "creators": {
+      "title": "Chia Sẻ Câu Chuyện",
+      "description": "Tham gia cùng hàng nghìn tác giả trên WibuTime",
+      "button": "Trở Thành Tác Giả"
+    }
+  },
+  "common": {
+    "seeAll": "Xem Tất Cả",
+    "readNow": "Đọc Ngay",
+    "watchNow": "Xem Ngay",
+    "addToLibrary": "Thêm Vào Thư Viện",
+    "views": "Lượt Xem",
+    "favorites": "Yêu Thích",
+    "rating": "Đánh Giá",
+    "chapters": "Chương",
+    "episodes": "Tập",
+    "status": {
+      "ongoing": "Đang Tiến Hành",
+      "completed": "Hoàn Thành",
+      "hiatus": "Tạm Ngưng"
+    },
+    "type": {
+      "anime": "Anime",
+      "manga": "Manga",
+      "novel": "Tiểu Thuyết"
+    }
+  }
+}

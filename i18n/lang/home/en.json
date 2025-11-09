@@ -1,0 +1,74 @@
+{
+  "hero": {
+    "featured": "Featured",
+    "exclusive": "Exclusive",
+    "new": "New",
+    "hot": "Hot",
+    "trending": "Trending"
+  },
+  "trending": {
+    "title": "Trending Now",
+    "subtitle": "Most popular series today",
+    "empty": "No trending series available"
+  },
+  "latest": {
+    "title": "Latest Updates",
+    "subtitle": "Recently updated chapters",
+    "empty": "No recent updates"
+  },
+  "popular": {
+    "title": "Popular This Week",
+    "subtitle": "Top rated series",
+    "empty": "No popular series available",
+    "tabs": {
+      "all": "All",
+      "anime": "Anime",
+      "manga": "Manga",
+      "novel": "Novel"
+    }
+  },
+  "recommended": {
+    "title": "Recommended For You",
+    "subtitle": "Based on your preferences",
+    "empty": "No recommendations available",
+    "loginRequired": "Login to see personalized recommendations"
+  },
+  "newSeries": {
+    "title": "New Series",
+    "subtitle": "Latest additions to our library",
+    "empty": "No new series available"
+  },
+  "genres": {
+    "title": "Browse by Genre",
+    "subtitle": "Discover content by category",
+    "viewAll": "View All Genres"
+  },
+  "cta": {
+    "creators": {
+      "title": "Share Your Story",
+      "description": "Join thousands of creators on WibuTime",
+      "button": "Become a Creator"
+    }
+  },
+  "common": {
+    "seeAll": "See All",
+    "readNow": "Read Now",
+    "watchNow": "Watch Now",
+    "addToLibrary": "Add to Library",
+    "views": "Views",
+    "favorites": "Favorites",
+    "rating": "Rating",
+    "chapters": "Chapters",
+    "episodes": "Episodes",
+    "status": {
+      "ongoing": "Ongoing",
+      "completed": "Completed",
+      "hiatus": "Hiatus"
+    },
+    "type": {
+      "anime": "Anime",
+      "manga": "Manga",
+      "novel": "Novel"
+    }
+  }
+}
