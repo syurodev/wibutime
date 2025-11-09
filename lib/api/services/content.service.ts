@@ -256,6 +256,33 @@ export class ContentService {
   }
 
   /**
+   * Get all featured content for carousel
+   *
+   * @example
+   * ```ts
+   * const featuredList = await ContentService.getFeaturedList();
+   * console.log(featuredList.length); // 2
+   * ```
+   */
+  static async getFeaturedList(): Promise<Featured[]> {
+    // Simulate API call delay
+    await mockDelay();
+
+    // Simulate API response with all featured items
+    const response: StandardResponse<FeaturedRaw[]> = {
+      success: true,
+      message: "Featured list retrieved successfully",
+      data: MOCK_FEATURED,
+    };
+
+    if (!isSuccessResponse(response)) {
+      throw new Error(response.message || "Failed to fetch featured list");
+    }
+
+    return Featured.fromApiArray(response.data);
+  }
+
+  /**
    * Get trending series
    *
    * @param limit - Number of series to return (default: 10)

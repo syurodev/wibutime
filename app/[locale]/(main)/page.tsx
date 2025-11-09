@@ -22,11 +22,11 @@ export const metadata: Metadata = {
  * Homepage Server Component
  */
 export default async function HomePage() {
-  // Fetch featured content (with mock delay)
-  const featured = await ContentService.getFeatured();
+  // Fetch featured content list for carousel (with mock delay)
+  const featuredList = await ContentService.getFeaturedList();
 
-  // Convert model instance to plain object for Client Component
-  const featuredData = featured.toJSON();
+  // Convert model instances to plain objects for Client Component
+  const featuredData = featuredList.map((item) => item.toJSON());
 
   return (
     <>
@@ -36,7 +36,7 @@ export default async function HomePage() {
       {/* Main Content */}
       <div className="min-h-screen">
         {/* Hero Section */}
-        <HeroSection featured={featuredData} />
+        <HeroSection featuredList={featuredData} />
 
         {/* Container for upcoming sections */}
         <div className="container py-8">

@@ -1,6 +1,6 @@
 /**
  * Hero Section Component
- * Featured content banner at the top of homepage
+ * Featured content carousel at the top of homepage
  */
 
 "use client";
@@ -10,6 +10,13 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Container } from "@/components/layout/Container";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { ContentBadge } from "@/components/content/ContentBadge";
 import { GenreTag } from "@/components/content/GenreTag";
 import type { BadgeVariant } from "@/lib/api/models/featured";
@@ -44,16 +51,45 @@ export interface FeaturedData {
 
 export interface HeroSectionProps {
   /**
-   * Featured content data (plain object)
+   * List of featured content for carousel
    */
-  featured: FeaturedData;
+  featuredList: FeaturedData[];
 }
 
-export function HeroSection({ featured }: HeroSectionProps) {
+export function HeroSection({ featuredList }: HeroSectionProps) {
+  return (
+    <section className="relative w-full overflow-hidden">
+      <Carousel
+        opts={{
+          align: "start",
+          loop: true,
+        }}
+        className="w-full"
+      >
+        <CarouselContent className="-ml-0">
+          {featuredList.map((featured) => (
+            <CarouselItem key={featured.id} className="pl-0">
+              <HeroSlide featured={featured} />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+
+        {/* Navigation Buttons */}
+        <CarouselPrevious className="left-4 md:left-8 size-10 bg-background/20 backdrop-blur-sm border-white/30 hover:bg-background/40" />
+        <CarouselNext className="right-4 md:right-8 size-10 bg-background/20 backdrop-blur-sm border-white/30 hover:bg-background/40" />
+      </Carousel>
+    </section>
+  );
+}
+
+/**
+ * Individual Hero Slide Component
+ */
+function HeroSlide({ featured }: { featured: FeaturedData }) {
   const t = useTranslations("home");
 
   return (
-    <section className="relative w-full overflow-hidden">
+    <div className="relative">
       {/* Background Image */}
       <AspectRatio ratio={16 / 9} className="md:aspect-[21/9]">
         <div className="relative h-full w-full">
@@ -155,6 +191,6 @@ export function HeroSection({ featured }: HeroSectionProps) {
           </div>
         </Container>
       </div>
-    </section>
+    </div>
   );
 }
