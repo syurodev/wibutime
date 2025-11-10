@@ -123,8 +123,10 @@ export type NavItem =
 export type NavContextType = {
   items: NavItem[]; // Current navigation items
   searchMode: boolean; // Whether search mode is active
+  moreMenuOpen: boolean; // Whether More menu drawer is open
   loadingItems: Set<string>; // Set of item IDs in loading state
   setNavItems: (items: NavItem[]) => void; // Set nav items for current page
   toggleSearch: () => void; // Toggle search mode on/off
+  toggleMoreMenu: () => void; // Toggle More menu drawer on/off
   setItemLoading: (itemId: string, loading: boolean) => void; // Set loading state for an item
 };

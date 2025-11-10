@@ -28,6 +28,9 @@ export function NavProvider({ children }: NavProviderProps) {
   // Whether search mode is active (nav expanded to show search input)
   const [searchMode, setSearchMode] = useState(false);
 
+  // Whether More menu drawer is open
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+
   // Set of item IDs that are currently in loading state (for action items)
   const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());
 
@@ -45,6 +48,13 @@ export function NavProvider({ children }: NavProviderProps) {
    */
   const toggleSearch = useCallback(() => {
     setSearchMode((prev) => !prev);
+  }, []);
+
+  /**
+   * Toggle More menu drawer on/off
+   */
+  const toggleMoreMenu = useCallback(() => {
+    setMoreMenuOpen((prev) => !prev);
   }, []);
 
   /**
@@ -68,12 +78,14 @@ export function NavProvider({ children }: NavProviderProps) {
     () => ({
       items,
       searchMode,
+      moreMenuOpen,
       loadingItems,
       setNavItems,
       toggleSearch,
+      toggleMoreMenu,
       setItemLoading,
     }),
-    [items, searchMode, loadingItems, setNavItems, toggleSearch, setItemLoading]
+    [items, searchMode, moreMenuOpen, loadingItems, setNavItems, toggleSearch, toggleMoreMenu, setItemLoading]
   );
 
   return (

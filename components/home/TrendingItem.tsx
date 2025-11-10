@@ -26,11 +26,11 @@ export function TrendingItem({ series, rank }: TrendingItemProps) {
     title: series.title,
     slug: series.slug,
     description: series.description,
-    coverUrl: series.coverUrl,
+    cover_url: series.coverUrl,
     type: series.type,
-    formattedViews: series.formattedViews,
-    formattedFavorites: series.formattedFavorites,
-    isTrending: series.isTrending,
+    formatted_views: series.formattedViews,
+    formatted_favorites: series.formattedFavorites,
+    is_trending: series.isTrending,
   };
 
   return (

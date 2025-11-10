@@ -1,11 +1,14 @@
 "use client";
 
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
+import { MoreHorizontal } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { NavActionItem } from "./NavActionItem";
 import { NavLinkItem } from "./NavLinkItem";
+import { NavMore } from "./NavMore";
 import { NavSearch } from "./NavSearch";
 import { NavSearchButton } from "./NavSearchButton";
 import { NavTriggerItem } from "./NavTriggerItem";
@@ -25,12 +28,55 @@ const Nav = () => {
   const pathname = usePathname();
 
   // Get nav state from context
-  const { items, searchMode, toggleSearch } = useNav();
+  const {
+    items,
+    searchMode,
+    toggleSearch,
+    moreMenuOpen,
+    toggleMoreMenu,
+    loadingItems,
+    setItemLoading,
+  } = useNav();
+
+  // Get current breakpoint for responsive behavior
+  const { breakpoint, isMobile } = useMediaQuery();
 
   // Separate search item from other nav items
   // Search item is handled specially (can expand to full width)
   const searchItem = items.find((item) => item.type === "search");
   const otherItems = items.filter((item) => item.type !== "search");
+
+  // Calculate max visible items based on breakpoint
+  const getMaxVisibleItems = () => {
+    switch (breakpoint) {
+      case "mobile":
+        return 3; // Show 3 items + More button on mobile
+      case "tablet":
+        return 4; // Show 4 items + More button on tablet
+      default:
+        return Infinity; // Show all items on desktop
+    }
+  };
+
+  const maxVisibleItems = getMaxVisibleItems();
+
+  // Auto-prioritize items: Links first, then Actions/Triggers
+  const prioritizeItems = (items: typeof otherItems) => {
+    const linkItems = items.filter((item) => item.type === "link");
+    const otherItemTypes = items.filter((item) => item.type !== "link");
+    return [...linkItems, ...otherItemTypes];
+  };
+
+  const prioritizedItems = prioritizeItems(otherItems);
+
+  // Split into visible and overflow items
+  const hasOverflow = prioritizedItems.length > maxVisibleItems;
+  const visibleItems = hasOverflow
+    ? prioritizedItems.slice(0, maxVisibleItems)
+    : prioritizedItems;
+  const overflowItems = hasOverflow
+    ? prioritizedItems.slice(maxVisibleItems)
+    : [];
 
   // State to store measured nav width for smooth transitions
   const [navWidth, setNavWidth] = useState<number | null>(null);
@@ -44,10 +90,12 @@ const Nav = () => {
   // Track hover and focus state for scale animation
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
 
   // Timeout refs for delayed scale-down animation
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const focusTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Hidden ref container for measuring natural width without affecting visible layout
   const measureContainerRef = useRef<HTMLDivElement>(null);
@@ -129,10 +177,7 @@ const Nav = () => {
         } else if (totalWidth === navWidth) {
           console.log("[Nav Debug] ℹ️ Width unchanged:", totalWidth);
         } else {
-          console.log(
-            "[Nav Debug] ❌ Width too small, skipping:",
-            totalWidth
-          );
+          console.log("[Nav Debug] ❌ Width too small, skipping:", totalWidth);
         }
       } else {
         console.log("[Nav Debug] ❌ measureContainerRef.current is null");
@@ -144,24 +189,6 @@ const Nav = () => {
       clearTimeout(timeoutId);
     };
   }, [searchMode, items, navWidth]);
-
-  // Debug log for state changes
-  useEffect(() => {
-    let calculatedWidth = "auto";
-    if (containerSearchMode) {
-      calculatedWidth = "400px";
-    } else if (navWidth) {
-      calculatedWidth = `${navWidth}px`;
-    }
-
-    console.log("[Nav Debug] State updated:", {
-      searchMode,
-      containerSearchMode,
-      navWidth,
-      itemsCount: items.length,
-      calculatedWidth,
-    });
-  }, [searchMode, containerSearchMode, navWidth, items.length]);
 
   // Handlers for hover with delay
   const handleMouseEnter = () => {
@@ -197,11 +224,51 @@ const Nav = () => {
     }, 300);
   };
 
+  // Detect scroll to collapse nav
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      // If scrolling (position changed)
+      if (currentScrollY !== lastScrollY) {
+        setIsScrolling(true);
+
+        // Clear hover and focus states when scrolling
+        setIsHovered(false);
+        setIsFocused(false);
+
+        // Clear existing timeout
+        if (scrollTimeoutRef.current) {
+          clearTimeout(scrollTimeoutRef.current);
+        }
+
+        // Reset scrolling state after scroll stops (150ms debounce)
+        scrollTimeoutRef.current = setTimeout(() => {
+          setIsScrolling(false);
+        }, 150);
+      }
+
+      lastScrollY = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // Cleanup timeouts on unmount
   useEffect(() => {
     return () => {
       if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
       if (focusTimeoutRef.current) clearTimeout(focusTimeoutRef.current);
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
     };
   }, []);
 
@@ -231,6 +298,10 @@ const Nav = () => {
   // Calculate container width based on current state
   const getContainerWidth = () => {
     if (containerSearchMode) {
+      // Responsive search width: full width on mobile with margins, 400px on desktop
+      if (breakpoint === "mobile") {
+        return "calc(100vw - 32px)"; // 16px margin on each side
+      }
       return "400px";
     }
     if (isInitialMount) {
@@ -269,7 +340,7 @@ const Nav = () => {
       */}
         <div
           className={cn(
-            "relative shadow-lg rounded-2xl backdrop-blur-sm",
+            "relative shadow-lg rounded-2xl backdrop-blur-md bg-background/70",
             "transition-all duration-300 ease-in-out",
             isInitialMount && "overflow-hidden"
           )}
@@ -330,8 +401,8 @@ const Nav = () => {
                   }}
                 >
                   <AnimatePresence mode="popLayout">
-                    {/* Render each nav item based on its type with index for stagger */}
-                    {otherItems.map((item, index) => {
+                    {/* Render each visible nav item based on its type with index for stagger */}
+                    {visibleItems.map((item, index) => {
                       switch (item.type) {
                         case "link":
                           // Link item: navigate to another page
@@ -369,7 +440,22 @@ const Nav = () => {
                       <NavSearchButton
                         key="search-button"
                         item={searchItem}
-                        index={otherItems.length}
+                        index={visibleItems.length}
+                      />
+                    )}
+                    {/* Render More button when there are overflow items */}
+                    {hasOverflow && (
+                      <NavTriggerItem
+                        key="more-button"
+                        item={{
+                          id: "more",
+                          type: "trigger",
+                          icon: <MoreHorizontal />,
+                          label: "More",
+                          badge: overflowItems.length,
+                          onClick: toggleMoreMenu,
+                        }}
+                        index={visibleItems.length + (searchItem ? 1 : 0)}
                       />
                     )}
                   </AnimatePresence>
@@ -392,7 +478,7 @@ const Nav = () => {
           aria-hidden="true"
         >
           <ul className="flex items-center gap-2">
-            {otherItems.map((item) => {
+            {visibleItems.map((item) => {
               // Render simplified item structure for measurement (no animations/tooltips)
               return (
                 <li key={item.id} className="p-3">
@@ -401,9 +487,23 @@ const Nav = () => {
               );
             })}
             {searchItem && <li className="p-3">{searchItem.icon}</li>}
+            {hasOverflow && (
+              <li className="p-3">
+                <MoreHorizontal />
+              </li>
+            )}
           </ul>
         </div>
       )}
+
+      {/* More Menu Drawer */}
+      <NavMore
+        open={moreMenuOpen}
+        onOpenChange={toggleMoreMenu}
+        items={overflowItems}
+        loadingItems={loadingItems}
+        setItemLoading={setItemLoading}
+      />
     </nav>
   );
 };
