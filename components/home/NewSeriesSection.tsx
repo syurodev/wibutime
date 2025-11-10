@@ -6,10 +6,11 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/Container";
-import { TrendingItem } from "./TrendingItem";
-import type { Series } from "@/lib/api/models/series";
+import type { Series } from "@/lib/api/models/content/series";
 import { getTranslations } from "next-intl/server";
 import { ArrowRight } from "lucide-react";
+import { ContentCard, type SeriesData } from "@/components/content/ContentCard";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 export interface NewSeriesSectionProps {
   /**
@@ -58,12 +59,15 @@ export async function NewSeriesSection({
 
         {/* Grid Layout */}
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:gap-6">
-          {series.map((item, index) => (
-            <TrendingItem
-              key={item.id}
-              series={item}
-              rank={showRanking ? index + 1 : undefined}
-            />
+          {series.map((item) => (
+            <AspectRatio key={item.id} ratio={3 / 5} className="w-full">
+              <ContentCard
+                series={item.toJSON() as SeriesData}
+                showDescription={true}
+                className="h-full"
+                showContentType={true}
+              />
+            </AspectRatio>
           ))}
         </div>
       </Container>

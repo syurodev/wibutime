@@ -1,30 +1,13 @@
 /**
- * Series Model - For anime/manga/novel series
+ * Base Series Model
+ * Shared properties and methods for all content types (anime, manga, novel)
  */
 
-import { BaseModel } from "./base";
+import { BaseModel } from "../base";
+import type { ContentStatus, ContentType, LatestChapterRaw } from "@/lib/constants/default";
 
 /**
- * Content type
- */
-export type ContentType = "anime" | "manga" | "novel";
-
-/**
- * Series status
- */
-export type SeriesStatus = "ongoing" | "completed" | "hiatus";
-
-/**
- * Latest chapter info
- */
-export interface LatestChapterRaw {
-  number: number;
-  title: string;
-  published_at: string;
-}
-
-/**
- * Raw series data from API
+ * Raw series data from API (base structure)
  */
 export interface SeriesRaw {
   id: string;
@@ -33,7 +16,7 @@ export interface SeriesRaw {
   description: string;
   cover_url: string;
   type: ContentType;
-  status: SeriesStatus;
+  status: ContentStatus;
   genres: string[];
   rating: number; // 0-5
   views: number;
@@ -44,7 +27,8 @@ export interface SeriesRaw {
 }
 
 /**
- * Series domain model
+ * Base Series domain model
+ * Contains shared logic for all content types
  */
 export class Series extends BaseModel<SeriesRaw> {
   readonly id: string;
@@ -53,7 +37,7 @@ export class Series extends BaseModel<SeriesRaw> {
   readonly description: string;
   readonly coverUrl: string;
   readonly type: ContentType;
-  readonly status: SeriesStatus;
+  readonly status: ContentStatus;
   readonly genres: string[];
   readonly rating: number;
   readonly views: number;
@@ -154,10 +138,10 @@ export class Series extends BaseModel<SeriesRaw> {
   }
 
   /**
-   * Get status label in Vietnamese
+   * Get status label in localized language
    */
   getStatusLabel(locale: string = "en"): string {
-    const labels: Record<SeriesStatus, Record<string, string>> = {
+    const labels: Record<ContentStatus, Record<string, string>> = {
       ongoing: { en: "Ongoing", vi: "Đang tiến hành" },
       completed: { en: "Completed", vi: "Hoàn thành" },
       hiatus: { en: "Hiatus", vi: "Tạm ngưng" },
@@ -186,7 +170,8 @@ export class Series extends BaseModel<SeriesRaw> {
   }
 
   /**
-   * Convert to plain object (for serialization)
+   * Convert to plain object (for serialization to Client Components)
+   * Returns snake_case keys to match API convention
    */
   toJSON() {
     return {
@@ -194,23 +179,23 @@ export class Series extends BaseModel<SeriesRaw> {
       title: this.title,
       slug: this.slug,
       description: this.description,
-      coverUrl: this.coverUrl,
+      cover_url: this.coverUrl,
       type: this.type,
       status: this.status,
       genres: this.genres,
       rating: this.rating,
-      formattedRating: this.formattedRating,
+      formatted_rating: this.formattedRating,
       views: this.views,
-      formattedViews: this.formattedViews,
+      formatted_views: this.formattedViews,
       favorites: this.favorites,
-      formattedFavorites: this.formattedFavorites,
-      latestChapter: this.latestChapter,
-      latestChapterInfo: this.latestChapterInfo,
-      createdAt: this.createdAt.toISOString(),
-      updatedAt: this.updatedAt.toISOString(),
-      isNew: this.isNew,
-      isTrending: this.isTrending,
-      hasRecentUpdate: this.hasRecentUpdate,
+      formatted_favorites: this.formattedFavorites,
+      latest_chapter: this.latestChapter,
+      latest_chapter_info: this.latestChapterInfo,
+      created_at: this.createdAt.toISOString(),
+      updated_at: this.updatedAt.toISOString(),
+      is_new: this.isNew,
+      is_trending: this.isTrending,
+      has_recent_update: this.hasRecentUpdate,
     };
   }
 }

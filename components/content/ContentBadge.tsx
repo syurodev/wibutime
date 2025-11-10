@@ -5,7 +5,7 @@
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import type { BadgeVariant } from "@/lib/api/models/featured";
+import type { BadgeVariant } from "@/lib/api/models/content/featured";
 
 export interface ContentBadgeProps {
   /**

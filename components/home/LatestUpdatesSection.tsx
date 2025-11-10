@@ -3,29 +3,29 @@
  * Displays recently updated series in a grid layout
  */
 
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/Container";
-import { TrendingItem } from "./TrendingItem";
-import type { Series } from "@/lib/api/models/series";
-import { getTranslations } from "next-intl/server";
+import { Button } from "@/components/ui/button";
+import type { Series } from "@/lib/api/models/content/series";
 import { ArrowRight } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+import Link from "next/link";
+import { ContentCard, type SeriesData } from "@/components/content/ContentCard";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 export interface LatestUpdatesSectionProps {
   /**
    * List of recently updated series
    */
-  series: Series[];
+  readonly series: Series[];
 
   /**
    * Show ranking numbers on items
    */
-  showRanking?: boolean;
+  readonly showRanking?: boolean;
 }
 
 export async function LatestUpdatesSection({
   series,
-  showRanking = false,
 }: LatestUpdatesSectionProps) {
   const t = await getTranslations("home");
 
@@ -42,9 +42,7 @@ export async function LatestUpdatesSection({
             <h2 className="text-3xl font-bold tracking-tight">
               {t("latest.title")}
             </h2>
-            <p className="text-muted-foreground">
-              {t("latest.subtitle")}
-            </p>
+            <p className="text-muted-foreground">{t("latest.subtitle")}</p>
           </div>
 
           {/* See All Link */}
@@ -58,12 +56,15 @@ export async function LatestUpdatesSection({
 
         {/* Grid Layout */}
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:gap-6">
-          {series.map((item, index) => (
-            <TrendingItem
-              key={item.id}
-              series={item}
-              rank={showRanking ? index + 1 : undefined}
-            />
+          {series.map((item) => (
+            <AspectRatio key={item.id} ratio={3 / 5} className="w-full">
+              <ContentCard
+                series={item.toJSON() as SeriesData}
+                showDescription={true}
+                className="h-full"
+                showContentType={true}
+              />
+            </AspectRatio>
           ))}
         </div>
       </Container>

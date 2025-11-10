@@ -3,8 +3,8 @@
  * Currently using mock data with simulated API delays
  */
 
-import { Featured, type FeaturedRaw } from "../models/featured";
-import { Series, type SeriesRaw } from "../models/series";
+import { Featured, type FeaturedRaw } from "../models/content/featured";
+import { Series, type SeriesRaw } from "../models/content/series";
 import { isSuccessResponse, type StandardResponse } from "../types";
 
 /**

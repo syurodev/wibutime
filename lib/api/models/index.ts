@@ -4,5 +4,11 @@
 
 export * from "./base";
 export * from "./user";
-export * from "./series";
-export * from "./featured";
+
+// Content domain exports
+export * from "./content";
+
+// Domain-specific exports
+export * from "./anime";
+export * from "./manga";
+export * from "./novel";

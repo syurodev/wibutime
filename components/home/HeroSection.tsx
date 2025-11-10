@@ -16,7 +16,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import type { BadgeVariant } from "@/lib/api/models/featured";
+import type { BadgeVariant } from "@/lib/api/models/content/featured";
 import Autoplay from "embla-carousel-autoplay";
 import { Eye, Heart, Play, Plus, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -26,27 +26,28 @@ import { useRef } from "react";
 
 /**
  * Plain object type for featured content (for Client Component)
+ * Using snake_case to match toJSON() output
  */
 export interface FeaturedData {
   id: string;
-  seriesId: string;
+  series_id: string;
   series: {
     id: string;
     title: string;
     slug: string;
     genres: string[];
-    formattedRating: string;
-    formattedViews: string;
-    formattedFavorites: string;
-    hasRecentUpdate: boolean;
+    formatted_rating: string;
+    formatted_views: string;
+    formatted_favorites: string;
+    has_recent_update: boolean;
   };
-  bannerUrl: string;
+  banner_url: string;
   title: string;
   description: string;
-  badgeText: string;
-  badgeVariant: BadgeVariant;
-  ctaPrimary: string;
-  ctaSecondary: string;
+  badge_text: string;
+  badge_variant: BadgeVariant;
+  cta_primary: string;
+  cta_secondary: string;
   order: number;
 }
 
@@ -97,7 +98,7 @@ function HeroSlide({ featured }: { featured: FeaturedData }) {
       {/* Background Image */}
       <div className="relative h-full w-full">
         <Image
-          src={featured.bannerUrl}
+          src={featured.banner_url}
           alt={featured.title}
           fill
           priority
@@ -117,11 +118,11 @@ function HeroSlide({ featured }: { featured: FeaturedData }) {
             {/* Badge */}
             <div className="flex items-center gap-2">
               <ContentBadge
-                text={featured.badgeText}
-                variant={featured.badgeVariant}
+                text={featured.badge_text}
+                variant={featured.badge_variant}
                 className="text-xs md:text-sm"
               />
-              {featured.series.hasRecentUpdate && (
+              {featured.series.has_recent_update && (
                 <ContentBadge
                   text={t("hero.new")}
                   variant="new"
@@ -154,17 +155,17 @@ function HeroSlide({ featured }: { featured: FeaturedData }) {
               {/* Stats */}
               <div className="flex items-center gap-1">
                 <Star className="h-4 w-4 fill-current" />
-                <span>{featured.series.formattedRating}</span>
+                <span>{featured.series.formatted_rating}</span>
               </div>
 
               <div className="flex items-center gap-1">
                 <Eye className="h-4 w-4" />
-                <span>{featured.series.formattedViews}</span>
+                <span>{featured.series.formatted_views}</span>
               </div>
 
               <div className="flex items-center gap-1">
                 <Heart className="h-4 w-4" />
-                <span>{featured.series.formattedFavorites}</span>
+                <span>{featured.series.formatted_favorites}</span>
               </div>
             </div>
 
@@ -173,7 +174,7 @@ function HeroSlide({ featured }: { featured: FeaturedData }) {
               <Button size="lg" className="gap-2 font-semibold" asChild>
                 <Link href={`/series/${featured.series.slug}`}>
                   <Play className="h-5 w-5" />
-                  {featured.ctaPrimary}
+                  {featured.cta_primary}
                 </Link>
               </Button>
 
@@ -183,7 +184,7 @@ function HeroSlide({ featured }: { featured: FeaturedData }) {
                 className="gap-2 font-semibold bg-white/10 border-white/30 hover:bg-white/20"
               >
                 <Plus className="h-5 w-5" />
-                {featured.ctaSecondary}
+                {featured.cta_secondary}
               </Button>
             </div>
           </div>

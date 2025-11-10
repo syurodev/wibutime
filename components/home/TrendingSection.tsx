@@ -3,30 +3,23 @@
  * Displays trending series in a grid layout
  */
 
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/Container";
-import { TrendingItem } from "./TrendingItem";
-import type { Series } from "@/lib/api/models/series";
-import { getTranslations } from "next-intl/server";
+import { Button } from "@/components/ui/button";
+import type { Series } from "@/lib/api/models/content/series";
 import { ArrowRight } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+import Link from "next/link";
+import { ContentCard, type SeriesData } from "@/components/content/ContentCard";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 export interface TrendingSectionProps {
   /**
    * List of trending series
    */
-  series: Series[];
-
-  /**
-   * Show ranking numbers on items
-   */
-  showRanking?: boolean;
+  readonly series: Series[];
 }
 
-export async function TrendingSection({
-  series,
-  showRanking = false,
-}: TrendingSectionProps) {
+export async function TrendingSection({ series }: TrendingSectionProps) {
   const t = await getTranslations("home");
 
   if (!series || series.length === 0) {
@@ -56,12 +49,15 @@ export async function TrendingSection({
 
         {/* Grid Layout */}
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:gap-6">
-          {series.map((item, index) => (
-            <TrendingItem
-              key={item.id}
-              series={item}
-              rank={showRanking ? index + 1 : undefined}
-            />
+          {series.map((item) => (
+            <AspectRatio key={item.id} ratio={3 / 5} className="w-full">
+              <ContentCard
+                series={item.toJSON() as SeriesData}
+                showDescription={true}
+                className="h-full"
+                showContentType={true}
+              />
+            </AspectRatio>
           ))}
         </div>
       </Container>

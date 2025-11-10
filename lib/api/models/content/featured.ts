@@ -2,7 +2,7 @@
  * Featured Content Model - For hero/banner sections
  */
 
-import { BaseModel } from "./base";
+import { BaseModel } from "../base";
 import { Series, type SeriesRaw } from "./series";
 
 /**
@@ -95,20 +95,21 @@ export class Featured extends BaseModel<FeaturedRaw> {
   }
 
   /**
-   * Convert to plain object (for serialization)
+   * Convert to plain object (for serialization to Client Components)
+   * Returns snake_case keys to match API convention
    */
   toJSON() {
     return {
       id: this.id,
-      seriesId: this.seriesId,
+      series_id: this.seriesId,
       series: this.series.toJSON(),
-      bannerUrl: this.bannerUrl,
+      banner_url: this.bannerUrl,
       title: this.title,
       description: this.description,
-      badgeText: this.badgeText,
-      badgeVariant: this.badgeVariant,
-      ctaPrimary: this.ctaPrimary,
-      ctaSecondary: this.ctaSecondary,
+      badge_text: this.badgeText,
+      badge_variant: this.badgeVariant,
+      cta_primary: this.ctaPrimary,
+      cta_secondary: this.ctaSecondary,
       order: this.order,
     };
   }

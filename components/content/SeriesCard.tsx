@@ -5,7 +5,7 @@
 
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Card, CardContent } from "@/components/ui/card";
-import type { Series } from "@/lib/api/models/series";
+import type { Series } from "@/lib/api/models/content/series";
 import { cn } from "@/lib/utils";
 import { Eye, Heart, Star } from "lucide-react";
 import Image from "next/image";
