@@ -5,7 +5,6 @@
 
 "use client";
 
-import { ContentBadge } from "@/components/content/ContentBadge";
 import { GenreTag } from "@/components/content/GenreTag";
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
@@ -18,11 +17,11 @@ import {
 } from "@/components/ui/carousel";
 import type { BadgeVariant } from "@/lib/api/models/content/featured";
 import Autoplay from "embla-carousel-autoplay";
-import { Eye, Heart, Play, Plus, Star } from "lucide-react";
+import { Badge, Eye, Heart, Play, Plus, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef } from "react";
+import { useMemo } from "react";
 
 /**
  * Plain object type for featured content (for Client Component)
@@ -59,17 +58,22 @@ export interface HeroSectionProps {
 }
 
 export function HeroSection({ featuredList }: HeroSectionProps) {
-  const plugin = useRef(Autoplay({ delay: 15000, stopOnInteraction: true }));
+  const plugin = useMemo(
+    () => Autoplay({ delay: 15000, stopOnInteraction: true }),
+    []
+  );
 
   return (
     <section className="relative w-full overflow-hidden">
       <Carousel
-        plugins={[plugin.current]}
+        plugins={[plugin]}
         opts={{
           align: "start",
           loop: true,
         }}
         className="w-full"
+        onMouseEnter={plugin.stop}
+        onMouseLeave={plugin.reset}
       >
         <CarouselContent className="-ml-0">
           {featuredList.map((featured) => (
@@ -117,17 +121,9 @@ function HeroSlide({ featured }: { featured: FeaturedData }) {
           <div className="space-y-4 md:space-y-6 lg:space-y-8">
             {/* Badge */}
             <div className="flex items-center gap-2">
-              <ContentBadge
-                text={featured.badge_text}
-                variant={featured.badge_variant}
-                className="text-xs md:text-sm"
-              />
+              <Badge>{featured.badge_text}</Badge>
               {featured.series.has_recent_update && (
-                <ContentBadge
-                  text={t("hero.new")}
-                  variant="new"
-                  className="text-xs md:text-sm"
-                />
+                <Badge>{t("hero.new")}</Badge>
               )}
             </div>
 

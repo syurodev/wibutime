@@ -25,21 +25,17 @@ export const metadata: Metadata = {
  * Homepage Server Component
  */
 export default async function HomePage() {
-  // Fetch featured content list for carousel (with mock delay)
-  const featuredList = await ContentService.getFeaturedList();
+  // Fetch all data in parallel for better performance
+  const [featuredList, trendingSeries, latestSeries, newSeries] =
+    await Promise.all([
+      ContentService.getFeaturedList(),
+      ContentService.getTrending(10),
+      ContentService.getLatest(10),
+      ContentService.getNew(10),
+    ]);
 
   // Convert model instances to plain objects for Client Component
   const featuredData = featuredList.map((item) => item.toJSON());
-
-  // Fetch trending series (Server Component - no need to convert)
-  // 10 items looks good across all screen sizes (2, 5 columns divide evenly)
-  const trendingSeries = await ContentService.getTrending(10);
-
-  // Fetch latest updated series
-  const latestSeries = await ContentService.getLatest(10);
-
-  // Fetch new series
-  const newSeries = await ContentService.getNew(10);
 
   return (
     <>
@@ -47,18 +43,18 @@ export default async function HomePage() {
       <HomeNavigation />
 
       {/* Main Content */}
-      <div className="min-h-screen">
+      <div className="min-h-screen pb-24">
         {/* Hero Section */}
         <HeroSection featuredList={featuredData} />
 
         {/* Trending Section */}
-        <TrendingSection series={trendingSeries} showRanking={false} />
+        <TrendingSection series={trendingSeries} />
 
         {/* Latest Updates Section */}
-        <LatestUpdatesSection series={latestSeries} showRanking={false} />
+        <LatestUpdatesSection series={latestSeries} />
 
         {/* New Series Section */}
-        <NewSeriesSection series={newSeries} showRanking={false} />
+        <NewSeriesSection series={newSeries} />
 
         {/* Container for upcoming sections */}
         <div className="container py-8 mx-auto">

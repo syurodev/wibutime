@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import type { Series } from "@/lib/api/models/content/series";
 import { ArrowRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { ContentCard, type SeriesData } from "@/components/content/ContentCard";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 

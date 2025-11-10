@@ -3,7 +3,7 @@
  * Displays recently added series in a grid layout
  */
 
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/Container";
 import type { Series } from "@/lib/api/models/content/series";

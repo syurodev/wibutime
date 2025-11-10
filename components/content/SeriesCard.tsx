@@ -7,41 +7,19 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Series } from "@/lib/api/models/content/series";
 import { cn } from "@/lib/utils";
+import { getContentBg } from "@/lib/utils/get-content-bg";
 import { Eye, Heart, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { ContentBadge } from "./ContentBadge";
+import { Badge } from "../ui/badge";
 import { GenreTag } from "./GenreTag";
 
 export interface SeriesCardProps {
-  /**
-   * Series model instance
-   */
   readonly series: Series;
-
-  /**
-   * Card variant (default: full card, compact: smaller card)
-   */
   readonly variant?: "default" | "compact";
-
-  /**
-   * Show badge (NEW/HOT/TRENDING)
-   */
   readonly showBadge?: boolean;
-
-  /**
-   * Show stats (views, rating, favorites)
-   */
   readonly showStats?: boolean;
-
-  /**
-   * Show genres
-   */
   readonly showGenres?: boolean;
-
-  /**
-   * Additional CSS classes
-   */
   readonly className?: string;
 }
 
@@ -81,25 +59,24 @@ export function SeriesCard({
             {/* Badges overlay */}
             {showBadge && (
               <div className="absolute left-2 top-2 flex flex-col gap-2">
-                {series.isNew && <ContentBadge text="New" variant="new" />}
+                {series.isNew && (
+                  <Badge className={cn(getContentBg({ type: series.type }))}>
+                    New
+                  </Badge>
+                )}
                 {series.isTrending && (
-                  <ContentBadge text="Trending" variant="trending" />
+                  <Badge className={cn(getContentBg({ type: series.type }))}>
+                    Trending
+                  </Badge>
                 )}
               </div>
             )}
 
             {/* Type badge (bottom left) */}
             <div className="absolute bottom-2 left-2">
-              <ContentBadge
-                text={series.type.toUpperCase()}
-                variant={
-                  series.type === "anime"
-                    ? "hot"
-                    : series.type === "manga"
-                    ? "exclusive"
-                    : "new"
-                }
-              />
+              <Badge className={cn(getContentBg({ type: series.type }))}>
+                {series.type}
+              </Badge>
             </div>
           </div>
         </AspectRatio>

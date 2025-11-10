@@ -9,7 +9,7 @@ export interface ContainerProps {
   /**
    * Container content
    */
-  children: React.ReactNode;
+  readonly children: React.ReactNode;
 
   /**
    * Max width variant
@@ -20,7 +20,7 @@ export interface ContainerProps {
    * - '2xl': 1536px
    * - 'full': no max-width constraint
    */
-  maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl" | "full";
+  readonly maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl" | "full";
 
   /**
    * Apply horizontal padding (default: true)
@@ -28,23 +28,30 @@ export interface ContainerProps {
    * - Tablet: 24px (sm:px-6)
    * - Desktop: 32px (lg:px-8)
    */
-  padding?: boolean;
+  readonly padding?: boolean;
+
+  /**
+   * Add bottom spacing for bottom navigation (default: false)
+   * Adds pb-24 (96px) to prevent content from being hidden by bottom nav
+   */
+  readonly bottomSpacing?: boolean;
 
   /**
    * Additional CSS classes
    */
-  className?: string;
+  readonly className?: string;
 
   /**
    * HTML element to render (default: 'div')
    */
-  as?: "div" | "section" | "main" | "article" | "aside";
+  readonly as?: "div" | "section" | "main" | "article" | "aside";
 }
 
 export function Container({
   children,
   maxWidth = "xl",
   padding = true,
+  bottomSpacing = false,
   className,
   as: Component = "div",
 }: ContainerProps) {
@@ -55,6 +62,8 @@ export function Container({
         "mx-auto w-full",
         // Responsive padding
         padding && "px-4 sm:px-6 lg:px-8",
+        // Bottom spacing for navigation
+        bottomSpacing && "pb-24",
         // Max-width variants
         maxWidth === "sm" && "max-w-screen-sm",
         maxWidth === "md" && "max-w-screen-md",

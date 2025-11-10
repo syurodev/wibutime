@@ -5,20 +5,27 @@
 
 import { Featured, type FeaturedRaw } from "../models/content/featured";
 import { Series, type SeriesRaw } from "../models/content/series";
-import { isSuccessResponse, type StandardResponse } from "../types";
+import {
+  isSuccessResponse,
+  type PaginationMeta,
+  type StandardResponse,
+} from "../types";
+import type { CONTENT_TYPE } from "@/lib/constants/default";
 
 /**
- * Simulate API delay (500-1500ms)
+ * Simulate API delay
+ * Development: 1000-2000ms (to see skeleton clearly)
+ * Production: Remove this when using real API
  */
-async function mockDelay(min = 500, max = 1500): Promise<void> {
+async function mockDelay(min = 1000, max = 2000): Promise<void> {
   const delay = Math.random() * (max - min) + min;
   await new Promise((resolve) => setTimeout(resolve, delay));
 }
 
 /**
- * Mock series data using available images from public/images/
+ * Base mock series data using available images from public/images/
  */
-const MOCK_SERIES: SeriesRaw[] = [
+const BASE_MOCK_SERIES: SeriesRaw[] = [
   {
     id: "1",
     title: "Kimetsu no Yaiba",
@@ -295,13 +302,62 @@ const MOCK_SERIES: SeriesRaw[] = [
 ];
 
 /**
+ * Generate expanded mock data for pagination testing
+ * Creates 100+ items by duplicating base data with variations
+ */
+function generateMockSeries(): SeriesRaw[] {
+  const expanded: SeriesRaw[] = [];
+  const types: ("anime" | "manga" | "novel")[] = ["anime", "manga", "novel"];
+  const multiplier = 8; // Generate 13 * 8 = 104 items
+
+  for (let i = 0; i < multiplier; i++) {
+    BASE_MOCK_SERIES.forEach((series, index) => {
+      const newId = String(i * BASE_MOCK_SERIES.length + index + 1);
+      const imageNum = ((index % 13) + 1).toString();
+
+      expanded.push({
+        ...series,
+        id: newId,
+        title: `${series.title} ${i > 0 ? `(Vol ${i})` : ""}`,
+        slug: `${series.slug}-${newId}`,
+        cover_url: `/images/image-${imageNum}.${
+          imageNum === "3" || imageNum === "10" || imageNum === "13"
+            ? "png"
+            : "jpg"
+        }`,
+        // Vary the type across iterations
+        type: types[i % types.length],
+        // Randomize stats slightly
+        views: series.views + Math.floor(Math.random() * 100000),
+        favorites: series.favorites + Math.floor(Math.random() * 10000),
+        rating: Math.min(5, series.rating + (Math.random() * 0.4 - 0.2)),
+        // Vary dates
+        created_at: new Date(
+          Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000
+        ).toISOString(),
+        updated_at: new Date(
+          Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000
+        ).toISOString(),
+      });
+    });
+  }
+
+  return expanded;
+}
+
+/**
+ * Full mock series data (100+ items for pagination testing)
+ */
+const MOCK_SERIES = generateMockSeries();
+
+/**
  * Mock featured content for hero section
  */
 const MOCK_FEATURED: FeaturedRaw[] = [
   {
     id: "featured-1",
     series_id: "2",
-    series: MOCK_SERIES[1], // Solo Leveling
+    series: BASE_MOCK_SERIES[1], // Solo Leveling
     banner_url: "/images/image-2.jpg",
     title: "Solo Leveling - Season 2",
     description:
@@ -315,7 +371,7 @@ const MOCK_FEATURED: FeaturedRaw[] = [
   {
     id: "featured-2",
     series_id: "5",
-    series: MOCK_SERIES[4], // Re:Zero
+    series: BASE_MOCK_SERIES[4], // Re:Zero
     banner_url: "/images/image-5.jpg",
     title: "Re:Zero - Arc 7 Begins",
     description:
@@ -329,7 +385,7 @@ const MOCK_FEATURED: FeaturedRaw[] = [
   {
     id: "featured-3",
     series_id: "11",
-    series: MOCK_SERIES[10], // One Piece
+    series: BASE_MOCK_SERIES[10], // One Piece
     banner_url: "/images/image-11.jpg",
     title: "One Piece - The Final Saga",
     description:
@@ -343,7 +399,7 @@ const MOCK_FEATURED: FeaturedRaw[] = [
   {
     id: "featured-4",
     series_id: "12",
-    series: MOCK_SERIES[11], // Frieren
+    series: BASE_MOCK_SERIES[11], // Frieren
     banner_url: "/images/image-12.jpg",
     title: "Frieren: Beyond Journey's End",
     description:
@@ -357,7 +413,7 @@ const MOCK_FEATURED: FeaturedRaw[] = [
   {
     id: "featured-5",
     series_id: "9",
-    series: MOCK_SERIES[8], // Chainsaw Man
+    series: BASE_MOCK_SERIES[8], // Chainsaw Man
     banner_url: "/images/image-9.jpg",
     title: "Chainsaw Man - Devil Hunter Arc",
     description:
@@ -581,5 +637,214 @@ export class ContentService {
     }
 
     return response.data;
+  }
+
+  /**
+   * Get trending series with pagination
+   *
+   * @param options - Pagination and filter options
+   * @param options.type - Content type filter (default: 'all')
+   * @param options.page - Page number (default: 1)
+   * @param options.limit - Items per page (default: 20)
+   * @example
+   * ```ts
+   * const result = await ContentService.getTrendingPaginated({ type: 'anime', page: 2, limit: 20 });
+   * console.log(result.items); // Series[]
+   * console.log(result.totalPages); // 5
+   * ```
+   */
+  static async getTrendingPaginated(options?: {
+    type?: CONTENT_TYPE | "all";
+    page?: number;
+    limit?: number;
+  }): Promise<{
+    items: Series[];
+    totalItems: number;
+    totalPages: number;
+    currentPage: number;
+  }> {
+    const { type = "all", page = 1, limit = 20 } = options || {};
+    await mockDelay();
+
+    // Filter by type if specified
+    let filteredSeries = [...MOCK_SERIES].filter((s) => s.views >= 10000);
+    if (type !== "all") {
+      filteredSeries = filteredSeries.filter((s) => s.type === type);
+    }
+
+    // Sort by views (trending = high views)
+    const sortedSeries = filteredSeries.sort((a, b) => b.views - a.views);
+
+    // Calculate pagination
+    const totalItems = sortedSeries.length;
+    const totalPages = Math.ceil(totalItems / limit);
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedItems = sortedSeries.slice(startIndex, endIndex);
+
+    const meta: PaginationMeta = {
+      page,
+      limit,
+      total_items: totalItems,
+      total_pages: totalPages,
+    };
+
+    const response: StandardResponse<SeriesRaw[]> = {
+      success: true,
+      message: "Trending series retrieved successfully",
+      data: paginatedItems,
+      meta,
+    };
+
+    if (!isSuccessResponse(response)) {
+      throw new Error(response.message || "Failed to fetch trending series");
+    }
+
+    return {
+      items: Series.fromApiArray(response.data),
+      totalItems: meta.total_items,
+      totalPages: meta.total_pages,
+      currentPage: meta.page,
+    };
+  }
+
+  /**
+   * Get latest updated series with pagination
+   *
+   * @param options - Pagination and filter options
+   * @param options.type - Content type filter (default: 'all')
+   * @param options.page - Page number (default: 1)
+   * @param options.limit - Items per page (default: 20)
+   * @example
+   * ```ts
+   * const result = await ContentService.getLatestPaginated({ type: 'manga', page: 1 });
+   * ```
+   */
+  static async getLatestPaginated(options?: {
+    type?: CONTENT_TYPE | "all";
+    page?: number;
+    limit?: number;
+  }): Promise<{
+    items: Series[];
+    totalItems: number;
+    totalPages: number;
+    currentPage: number;
+  }> {
+    const { type = "all", page = 1, limit = 20 } = options || {};
+    await mockDelay();
+
+    // Filter by type if specified
+    let filteredSeries = [...MOCK_SERIES];
+    if (type !== "all") {
+      filteredSeries = filteredSeries.filter((s) => s.type === type);
+    }
+
+    // Sort by updated_at (most recent first)
+    const sortedSeries = filteredSeries.sort(
+      (a, b) =>
+        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+    );
+
+    // Calculate pagination
+    const totalItems = sortedSeries.length;
+    const totalPages = Math.ceil(totalItems / limit);
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedItems = sortedSeries.slice(startIndex, endIndex);
+
+    const meta: PaginationMeta = {
+      page,
+      limit,
+      total_items: totalItems,
+      total_pages: totalPages,
+    };
+
+    const response: StandardResponse<SeriesRaw[]> = {
+      success: true,
+      message: "Latest series retrieved successfully",
+      data: paginatedItems,
+      meta,
+    };
+
+    if (!isSuccessResponse(response)) {
+      throw new Error(response.message || "Failed to fetch latest series");
+    }
+
+    return {
+      items: Series.fromApiArray(response.data),
+      totalItems: meta.total_items,
+      totalPages: meta.total_pages,
+      currentPage: meta.page,
+    };
+  }
+
+  /**
+   * Get new series with pagination
+   *
+   * @param options - Pagination and filter options
+   * @param options.type - Content type filter (default: 'all')
+   * @param options.page - Page number (default: 1)
+   * @param options.limit - Items per page (default: 20)
+   * @example
+   * ```ts
+   * const result = await ContentService.getNewPaginated({ type: 'novel', page: 1 });
+   * ```
+   */
+  static async getNewPaginated(options?: {
+    type?: CONTENT_TYPE | "all";
+    page?: number;
+    limit?: number;
+  }): Promise<{
+    items: Series[];
+    totalItems: number;
+    totalPages: number;
+    currentPage: number;
+  }> {
+    const { type = "all", page = 1, limit = 20 } = options || {};
+    await mockDelay();
+
+    // Filter by type if specified
+    let filteredSeries = [...MOCK_SERIES];
+    if (type !== "all") {
+      filteredSeries = filteredSeries.filter((s) => s.type === type);
+    }
+
+    // Sort by created_at (newest first)
+    const sortedSeries = filteredSeries.sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+
+    // Calculate pagination
+    const totalItems = sortedSeries.length;
+    const totalPages = Math.ceil(totalItems / limit);
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedItems = sortedSeries.slice(startIndex, endIndex);
+
+    const meta: PaginationMeta = {
+      page,
+      limit,
+      total_items: totalItems,
+      total_pages: totalPages,
+    };
+
+    const response: StandardResponse<SeriesRaw[]> = {
+      success: true,
+      message: "New series retrieved successfully",
+      data: paginatedItems,
+      meta,
+    };
+
+    if (!isSuccessResponse(response)) {
+      throw new Error(response.message || "Failed to fetch new series");
+    }
+
+    return {
+      items: Series.fromApiArray(response.data),
+      totalItems: meta.total_items,
+      totalPages: meta.total_pages,
+      currentPage: meta.page,
+    };
   }
 }
