@@ -3,46 +3,46 @@
  * Displays series information in card format
  */
 
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Card, CardContent } from "@/components/ui/card";
+import type { Series } from "@/lib/api/models/series";
+import { cn } from "@/lib/utils";
+import { Eye, Heart, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ContentBadge } from "./ContentBadge";
 import { GenreTag } from "./GenreTag";
-import type { Series } from "@/lib/api/models/series";
-import { Eye, Heart, Star } from "lucide-react";
 
 export interface SeriesCardProps {
   /**
    * Series model instance
    */
-  series: Series;
+  readonly series: Series;
 
   /**
    * Card variant (default: full card, compact: smaller card)
    */
-  variant?: "default" | "compact";
+  readonly variant?: "default" | "compact";
 
   /**
    * Show badge (NEW/HOT/TRENDING)
    */
-  showBadge?: boolean;
+  readonly showBadge?: boolean;
 
   /**
    * Show stats (views, rating, favorites)
    */
-  showStats?: boolean;
+  readonly showStats?: boolean;
 
   /**
    * Show genres
    */
-  showGenres?: boolean;
+  readonly showGenres?: boolean;
 
   /**
    * Additional CSS classes
    */
-  className?: string;
+  readonly className?: string;
 }
 
 export function SeriesCard({
@@ -71,15 +71,17 @@ export function SeriesCard({
               alt={series.title}
               fill
               className="object-cover transition-transform group-hover:scale-105"
-              sizes={isCompact ? "(max-width: 768px) 50vw, 25vw" : "(max-width: 768px) 100vw, 50vw"}
+              sizes={
+                isCompact
+                  ? "(max-width: 768px) 50vw, 25vw"
+                  : "(max-width: 768px) 100vw, 50vw"
+              }
             />
 
             {/* Badges overlay */}
             {showBadge && (
               <div className="absolute left-2 top-2 flex flex-col gap-2">
-                {series.isNew && (
-                  <ContentBadge text="New" variant="new" />
-                )}
+                {series.isNew && <ContentBadge text="New" variant="new" />}
                 {series.isTrending && (
                   <ContentBadge text="Trending" variant="trending" />
                 )}

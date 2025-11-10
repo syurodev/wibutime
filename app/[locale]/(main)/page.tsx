@@ -6,6 +6,7 @@
 import { ContentService } from "@/lib/api/services/content.service";
 import { HeroSection } from "@/components/home/HeroSection";
 import { HomeNavigation } from "@/components/home/HomeNavigation";
+import { TrendingSection } from "@/components/home/TrendingSection";
 import type { Metadata } from "next";
 
 /**
@@ -28,6 +29,10 @@ export default async function HomePage() {
   // Convert model instances to plain objects for Client Component
   const featuredData = featuredList.map((item) => item.toJSON());
 
+  // Fetch trending series (Server Component - no need to convert)
+  // 10 items looks good across all screen sizes (2, 5 columns divide evenly)
+  const trendingSeries = await ContentService.getTrending(10);
+
   return (
     <>
       {/* Navigation Setup (Client Component) */}
@@ -38,15 +43,18 @@ export default async function HomePage() {
         {/* Hero Section */}
         <HeroSection featuredList={featuredData} />
 
+        {/* Trending Section */}
+        <TrendingSection series={trendingSeries} showRanking={false} />
+
         {/* Container for upcoming sections */}
         <div className="container py-8">
-          {/* Placeholder for Phase 2 sections */}
+          {/* Placeholder for remaining sections */}
           <div className="rounded-lg border border-dashed border-muted-foreground/30 p-8 text-center">
             <p className="text-sm text-muted-foreground">
-              More sections coming in Phase 2...
+              More sections coming soon...
             </p>
             <p className="mt-2 text-xs text-muted-foreground">
-              (Trending, Latest Updates, Popular, etc.)
+              (Latest Updates, Popular, Recommended, etc.)
             </p>
           </div>
         </div>

@@ -5,11 +5,10 @@
 
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { ContentBadge } from "@/components/content/ContentBadge";
+import { GenreTag } from "@/components/content/GenreTag";
 import { Container } from "@/components/layout/Container";
+import { Button } from "@/components/ui/button";
 import {
   Carousel,
   CarouselContent,
@@ -17,11 +16,13 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { ContentBadge } from "@/components/content/ContentBadge";
-import { GenreTag } from "@/components/content/GenreTag";
 import type { BadgeVariant } from "@/lib/api/models/featured";
-import { Eye, Heart, Star, Play, Plus } from "lucide-react";
+import Autoplay from "embla-carousel-autoplay";
+import { Eye, Heart, Play, Plus, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
+import Link from "next/link";
+import { useRef } from "react";
 
 /**
  * Plain object type for featured content (for Client Component)
@@ -57,9 +58,12 @@ export interface HeroSectionProps {
 }
 
 export function HeroSection({ featuredList }: HeroSectionProps) {
+  const plugin = useRef(Autoplay({ delay: 15000, stopOnInteraction: true }));
+
   return (
     <section className="relative w-full overflow-hidden">
       <Carousel
+        plugins={[plugin.current]}
         opts={{
           align: "start",
           loop: true,
@@ -74,9 +78,9 @@ export function HeroSection({ featuredList }: HeroSectionProps) {
           ))}
         </CarouselContent>
 
-        {/* Navigation Buttons */}
-        <CarouselPrevious className="left-4 md:left-8 size-10 bg-background/20 backdrop-blur-sm border-white/30 hover:bg-background/40" />
-        <CarouselNext className="right-4 md:right-8 size-10 bg-background/20 backdrop-blur-sm border-white/30 hover:bg-background/40" />
+        {/* Navigation Buttons - Hidden on mobile, visible on desktop */}
+        <CarouselPrevious className="hidden md:flex left-4 md:left-8 size-10 bg-background/20 backdrop-blur-sm border-white/30 hover:bg-background/40" />
+        <CarouselNext className="hidden md:flex right-4 md:right-8 size-10 bg-background/20 backdrop-blur-sm border-white/30 hover:bg-background/40" />
       </Carousel>
     </section>
   );
@@ -89,29 +93,27 @@ function HeroSlide({ featured }: { featured: FeaturedData }) {
   const t = useTranslations("home");
 
   return (
-    <div className="relative">
+    <div className="relative h-[90vh] min-h-[600px] w-full">
       {/* Background Image */}
-      <AspectRatio ratio={16 / 9} className="md:aspect-[21/9]">
-        <div className="relative h-full w-full">
-          <Image
-            src={featured.bannerUrl}
-            alt={featured.title}
-            fill
-            priority
-            className="object-cover"
-            sizes="100vw"
-          />
+      <div className="relative h-full w-full">
+        <Image
+          src={featured.bannerUrl}
+          alt={featured.title}
+          fill
+          priority
+          className="object-cover"
+          sizes="100vw"
+        />
 
-          {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent" />
-        </div>
-      </AspectRatio>
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent" />
+      </div>
 
       {/* Content Overlay */}
       <div className="absolute inset-0 flex items-end">
-        <Container maxWidth="xl" className="w-full pb-8 md:pb-16">
-          <div className="space-y-4 md:space-y-6">
+        <Container maxWidth="xl" className="w-full py-12 md:py-20 lg:py-24">
+          <div className="space-y-4 md:space-y-6 lg:space-y-8">
             {/* Badge */}
             <div className="flex items-center gap-2">
               <ContentBadge
@@ -168,11 +170,7 @@ function HeroSlide({ featured }: { featured: FeaturedData }) {
 
             {/* CTAs */}
             <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-              <Button
-                size="lg"
-                className="gap-2 font-semibold"
-                asChild
-              >
+              <Button size="lg" className="gap-2 font-semibold" asChild>
                 <Link href={`/series/${featured.series.slug}`}>
                   <Play className="h-5 w-5" />
                   {featured.ctaPrimary}
