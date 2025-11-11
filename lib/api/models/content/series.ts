@@ -172,6 +172,7 @@ export class Series extends BaseModel<SeriesRaw> {
   /**
    * Convert to plain object (for serialization to Client Components)
    * Returns snake_case keys to match API convention
+   * NOTE: This is legacy - prefer using BaseContentData directly
    */
   toJSON() {
     return {

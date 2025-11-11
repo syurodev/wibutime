@@ -1,16 +1,18 @@
 /**
  * Content Service - API service for anime/manga/novel content
  * Currently using mock data with simulated API delays
+ * Returns plain objects (BaseContentData) - no class instances
  */
 
-import { Featured, type FeaturedRaw } from "../models/content/featured";
-import { Series, type SeriesRaw } from "../models/content/series";
+import type { BaseContentData } from "../../models";
+
+import type { CONTENT_TYPE } from "@/lib/constants/default";
+import { Featured, type FeaturedRaw } from "../../models/content/featured";
 import {
   isSuccessResponse,
   type PaginationMeta,
   type StandardResponse,
-} from "../types";
-import type { CONTENT_TYPE } from "@/lib/constants/default";
+} from "../../types";
 
 /**
  * Simulate API delay
@@ -24,8 +26,9 @@ async function mockDelay(min = 1000, max = 2000): Promise<void> {
 
 /**
  * Base mock series data using available images from public/images/
+ * Now uses BaseContentData directly - no conversion needed
  */
-const BASE_MOCK_SERIES: SeriesRaw[] = [
+const BASE_MOCK_SERIES: BaseContentData[] = [
   {
     id: "1",
     title: "Kimetsu no Yaiba",
@@ -304,9 +307,10 @@ const BASE_MOCK_SERIES: SeriesRaw[] = [
 /**
  * Generate expanded mock data for pagination testing
  * Creates 100+ items by duplicating base data with variations
+ * Returns plain BaseContentData objects
  */
-function generateMockSeries(): SeriesRaw[] {
-  const expanded: SeriesRaw[] = [];
+function generateMockSeries(): BaseContentData[] {
+  const expanded: BaseContentData[] = [];
   const types: ("anime" | "manga" | "novel")[] = ["anime", "manga", "novel"];
   const multiplier = 8; // Generate 13 * 8 = 104 items
 
@@ -487,6 +491,7 @@ export class ContentService {
 
   /**
    * Get trending series
+   * Returns plain BaseContentData objects
    *
    * @param limit - Number of series to return (default: 10)
    * @example
@@ -494,7 +499,7 @@ export class ContentService {
    * const trending = await ContentService.getTrending(5);
    * ```
    */
-  static async getTrending(limit = 10): Promise<Series[]> {
+  static async getTrending(limit = 10): Promise<BaseContentData[]> {
     await mockDelay();
 
     // Filter and sort by views (trending = high views)
@@ -503,7 +508,18 @@ export class ContentService {
       .sort((a, b) => b.views - a.views)
       .slice(0, limit);
 
-    const response: StandardResponse<SeriesRaw[]> = {
+    // Debug: Log returned data
+    console.log("🎯 [ContentService.getTrending] Returning plain objects:", {
+      totalItems: trending.length,
+      firstItem: {
+        title: trending[0]?.title,
+        cover_url: trending[0]?.cover_url,
+        type: trending[0]?.type,
+        has_cover: !!trending[0]?.cover_url,
+      },
+    });
+
+    const response: StandardResponse<BaseContentData[]> = {
       success: true,
       message: "Trending series retrieved successfully",
       data: trending,
@@ -513,11 +529,13 @@ export class ContentService {
       throw new Error(response.message || "Failed to fetch trending series");
     }
 
-    return Series.fromApiArray(response.data);
+    // Return plain objects directly - no class conversion needed
+    return response.data;
   }
 
   /**
    * Get latest updated series
+   * Returns plain BaseContentData objects
    *
    * @param limit - Number of series to return (default: 10)
    * @example
@@ -525,7 +543,7 @@ export class ContentService {
    * const latest = await ContentService.getLatest(8);
    * ```
    */
-  static async getLatest(limit = 10): Promise<Series[]> {
+  static async getLatest(limit = 10): Promise<BaseContentData[]> {
     await mockDelay();
 
     // Sort by updated_at (most recent first)
@@ -536,7 +554,7 @@ export class ContentService {
       )
       .slice(0, limit);
 
-    const response: StandardResponse<SeriesRaw[]> = {
+    const response: StandardResponse<BaseContentData[]> = {
       success: true,
       message: "Latest series retrieved successfully",
       data: latest,
@@ -546,11 +564,12 @@ export class ContentService {
       throw new Error(response.message || "Failed to fetch latest series");
     }
 
-    return Series.fromApiArray(response.data);
+    return response.data;
   }
 
   /**
    * Get popular series (by favorites)
+   * Returns plain BaseContentData objects
    *
    * @param limit - Number of series to return (default: 10)
    * @example
@@ -558,7 +577,7 @@ export class ContentService {
    * const popular = await ContentService.getPopular(10);
    * ```
    */
-  static async getPopular(limit = 10): Promise<Series[]> {
+  static async getPopular(limit = 10): Promise<BaseContentData[]> {
     await mockDelay();
 
     // Sort by favorites
@@ -566,7 +585,7 @@ export class ContentService {
       .sort((a, b) => b.favorites - a.favorites)
       .slice(0, limit);
 
-    const response: StandardResponse<SeriesRaw[]> = {
+    const response: StandardResponse<BaseContentData[]> = {
       success: true,
       message: "Popular series retrieved successfully",
       data: popular,
@@ -576,11 +595,12 @@ export class ContentService {
       throw new Error(response.message || "Failed to fetch popular series");
     }
 
-    return Series.fromApiArray(response.data);
+    return response.data;
   }
 
   /**
    * Get new series (created recently)
+   * Returns plain BaseContentData objects
    *
    * @param limit - Number of series to return (default: 10)
    * @example
@@ -588,7 +608,7 @@ export class ContentService {
    * const newSeries = await ContentService.getNew(6);
    * ```
    */
-  static async getNew(limit = 10): Promise<Series[]> {
+  static async getNew(limit = 10): Promise<BaseContentData[]> {
     await mockDelay();
 
     // Sort by created_at (newest first)
@@ -599,7 +619,7 @@ export class ContentService {
       )
       .slice(0, limit);
 
-    const response: StandardResponse<SeriesRaw[]> = {
+    const response: StandardResponse<BaseContentData[]> = {
       success: true,
       message: "New series retrieved successfully",
       data: newSeries,
@@ -609,7 +629,7 @@ export class ContentService {
       throw new Error(response.message || "Failed to fetch new series");
     }
 
-    return Series.fromApiArray(response.data);
+    return response.data;
   }
 
   /**
@@ -658,7 +678,7 @@ export class ContentService {
     page?: number;
     limit?: number;
   }): Promise<{
-    items: Series[];
+    items: BaseContentData[];
     totalItems: number;
     totalPages: number;
     currentPage: number;
@@ -689,7 +709,7 @@ export class ContentService {
       total_pages: totalPages,
     };
 
-    const response: StandardResponse<SeriesRaw[]> = {
+    const response: StandardResponse<BaseContentData[]> = {
       success: true,
       message: "Trending series retrieved successfully",
       data: paginatedItems,
@@ -701,7 +721,7 @@ export class ContentService {
     }
 
     return {
-      items: Series.fromApiArray(response.data),
+      items: response.data,
       totalItems: meta.total_items,
       totalPages: meta.total_pages,
       currentPage: meta.page,
@@ -725,7 +745,7 @@ export class ContentService {
     page?: number;
     limit?: number;
   }): Promise<{
-    items: Series[];
+    items: BaseContentData[];
     totalItems: number;
     totalPages: number;
     currentPage: number;
@@ -759,7 +779,7 @@ export class ContentService {
       total_pages: totalPages,
     };
 
-    const response: StandardResponse<SeriesRaw[]> = {
+    const response: StandardResponse<BaseContentData[]> = {
       success: true,
       message: "Latest series retrieved successfully",
       data: paginatedItems,
@@ -771,7 +791,7 @@ export class ContentService {
     }
 
     return {
-      items: Series.fromApiArray(response.data),
+      items: response.data,
       totalItems: meta.total_items,
       totalPages: meta.total_pages,
       currentPage: meta.page,
@@ -795,7 +815,7 @@ export class ContentService {
     page?: number;
     limit?: number;
   }): Promise<{
-    items: Series[];
+    items: BaseContentData[];
     totalItems: number;
     totalPages: number;
     currentPage: number;
@@ -829,7 +849,7 @@ export class ContentService {
       total_pages: totalPages,
     };
 
-    const response: StandardResponse<SeriesRaw[]> = {
+    const response: StandardResponse<BaseContentData[]> = {
       success: true,
       message: "New series retrieved successfully",
       data: paginatedItems,
@@ -841,7 +861,7 @@ export class ContentService {
     }
 
     return {
-      items: Series.fromApiArray(response.data),
+      items: response.data,
       totalItems: meta.total_items,
       totalPages: meta.total_pages,
       currentPage: meta.page,

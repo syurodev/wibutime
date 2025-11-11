@@ -3,9 +3,14 @@
     "allow": [
       "Bash(mkdir:*)",
       "Bash(ls:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "mcp__next-devtools__nextjs_docs",
+      "mcp__next-devtools__nextjs_runtime"
     ],
     "deny": [],
     "ask": []
-  }
+  },
+  "enabledMcpjsonServers": [
+    "next-devtools"
+  ]
 }

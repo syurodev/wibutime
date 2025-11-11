@@ -2,6 +2,7 @@
  * Featured Content Model - For hero/banner sections
  */
 
+import type { BaseContentData } from "./base-content";
 import { BaseModel } from "../base";
 import { Series, type SeriesRaw } from "./series";
 
@@ -12,19 +13,20 @@ export type BadgeVariant = "new" | "hot" | "exclusive" | "trending";
 
 /**
  * Raw featured content data from API
+ * Now uses BaseContentData instead of SeriesRaw
  */
 export interface FeaturedRaw {
-  id: string;
-  series_id: string;
-  series: SeriesRaw;
-  banner_url: string;
-  title: string;
-  description: string;
-  badge_text: string;
-  badge_variant: BadgeVariant;
-  cta_primary: string;
-  cta_secondary: string;
-  order: number;
+	id: string;
+	series_id: string;
+	series: BaseContentData;
+	banner_url: string;
+	title: string;
+	description: string;
+	badge_text: string;
+	badge_variant: BadgeVariant;
+	cta_primary: string;
+	cta_secondary: string;
+	order: number;
 }
 
 /**

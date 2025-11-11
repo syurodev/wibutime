@@ -1,0 +1,9 @@
+<svg width="400" height="600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="600" fill="#1a1a1a"/>
+  <text x="50%" y="50%" text-anchor="middle" fill="#666" font-size="24" font-family="Arial, sans-serif">
+    No Cover Image
+  </text>
+  <rect x="100" y="200" width="200" height="200" fill="none" stroke="#444" stroke-width="2" rx="8"/>
+  <circle cx="150" cy="260" r="20" fill="#444"/>
+  <path d="M 150 280 L 200 320 L 250 240 L 280 320" stroke="#444" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
