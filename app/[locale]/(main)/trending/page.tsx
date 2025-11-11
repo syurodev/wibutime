@@ -6,14 +6,13 @@
 import { ContentTypeTabs } from "@/components/content/ContentTypeTabs";
 import { SeriesGrid } from "@/components/content/SeriesGrid";
 import { SeriesGridSkeleton } from "@/components/content/SeriesGridSkeleton";
-import { SeriesPagination } from "@/components/content/SeriesPagination";
 import { Container } from "@/components/layout/Container";
-import { Skeleton } from "@/components/ui/skeleton";
 import { ContentService } from "@/lib/api/services/content.service";
 import type { CONTENT_TYPE } from "@/lib/constants/default";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
+import { TrendingNavigation } from "./TrendingNavigation";
 
 /**
  * Page metadata (SEO)
@@ -43,26 +42,18 @@ async function TrendingContent({
   page: number;
 }) {
   // Fetch paginated trending series
-  const { items, totalPages, currentPage } =
-    await ContentService.getTrendingPaginated({
-      type,
-      page,
-      limit: 20,
-    });
+  const { items } = await ContentService.getTrendingPaginated({
+    type,
+    page,
+    limit: 20,
+  });
 
   return (
-    <>
-      {/* Series Grid */}
-      <SeriesGrid
-        series={items}
-        showContentType={true}
-        showDescription={true}
-        className="mb-8"
-      />
-
-      {/* Pagination */}
-      <SeriesPagination currentPage={currentPage} totalPages={totalPages} />
-    </>
+    <SeriesGrid
+      series={items}
+      showContentType={true}
+      showDescription={true}
+    />
   );
 }
 
@@ -85,6 +76,15 @@ export default async function TrendingPage({
   const validTypes = ["all", "anime", "manga", "novel"];
   const selectedType = validTypes.includes(type) ? type : "all";
 
+  // Fetch pagination metadata for navigation
+  const { totalPages, currentPage } = await ContentService.getTrendingPaginated(
+    {
+      type: selectedType,
+      page,
+      limit: 20,
+    }
+  );
+
   return (
     <div className="min-h-screen py-8">
       <Container maxWidth="xl" bottomSpacing>
@@ -102,21 +102,13 @@ export default async function TrendingPage({
         {/* Content with Suspense - Shows skeleton while loading */}
         <Suspense
           key={`${selectedType}-${page}`}
-          fallback={
-            <>
-              <SeriesGridSkeleton count={20} className="mb-8" />
-              <div className="flex justify-center gap-2">
-                <Skeleton className="h-10 w-24" />
-                <Skeleton className="h-10 w-10" />
-                <Skeleton className="h-10 w-10" />
-                <Skeleton className="h-10 w-10" />
-                <Skeleton className="h-10 w-24" />
-              </div>
-            </>
-          }
+          fallback={<SeriesGridSkeleton count={20} />}
         >
           <TrendingContent type={selectedType} page={page} />
         </Suspense>
+
+        {/* Bottom Navigation with Pagination */}
+        <TrendingNavigation currentPage={currentPage} totalPages={totalPages} />
       </Container>
     </div>
   );

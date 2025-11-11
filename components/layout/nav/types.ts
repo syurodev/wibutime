@@ -105,6 +105,31 @@ export type SearchNavItem = NavItemBase & {
 };
 
 /**
+ * Pagination Nav Item
+ *
+ * Compact inline pagination controls for list pages.
+ * Displays current page and total pages with prev/next arrows.
+ * Automatically hidden when search mode is active.
+ *
+ * Example:
+ * {
+ *   id: "pagination",
+ *   type: "pagination",
+ *   icon: <FileText />,
+ *   label: "Page",
+ *   currentPage: 2,
+ *   totalPages: 10,
+ *   onPageChange: (page) => router.push(`?page=${page}`)
+ * }
+ */
+export type PaginationNavItem = NavItemBase & {
+  type: "pagination";
+  currentPage: number; // Current active page (1-indexed)
+  totalPages: number; // Total number of pages
+  onPageChange: (page: number) => void; // Callback when page changes
+};
+
+/**
  * Union type of all nav item types
  * Allows type-safe rendering based on item.type
  */
@@ -112,7 +137,8 @@ export type NavItem =
   | LinkNavItem
   | ActionNavItem
   | TriggerNavItem
-  | SearchNavItem;
+  | SearchNavItem
+  | PaginationNavItem;
 
 /**
  * Navigation Context Type

@@ -9,10 +9,16 @@ import { useEffect, useRef, useState } from "react";
 import { NavActionItem } from "./NavActionItem";
 import { NavLinkItem } from "./NavLinkItem";
 import { NavMore } from "./NavMore";
+import { NavPaginationButton } from "./NavPaginationButton";
 import { NavSearch } from "./NavSearch";
 import { NavSearchButton } from "./NavSearchButton";
 import { NavTriggerItem } from "./NavTriggerItem";
 import { useNav } from "./useNav";
+import {
+  defaultItemsStart,
+  defaultItemsEnd,
+  DEFAULT_ITEM_IDS,
+} from "./defaultNavItems";
 
 /**
  * Main Navigation Component
@@ -41,10 +47,37 @@ const Nav = () => {
   // Get current breakpoint for responsive behavior
   const { breakpoint, isMobile } = useMediaQuery();
 
-  // Separate search item from other nav items
+  /**
+   * Merge default navigation items with page-specific items
+   * - defaultItemsStart appear FIRST (e.g., Home)
+   * - Page items appear in the MIDDLE
+   * - defaultItemsEnd appear LAST (e.g., Search)
+   *
+   * Filter out:
+   * - Items with IDs that conflict with defaults
+   * - Search items from pages (we use default search)
+   */
+  const pageItems = items.filter(
+    (item) =>
+      !DEFAULT_ITEM_IDS.has(item.id) && // No default ID conflicts
+      item.type !== "search" // No page-specific search (use default)
+  );
+
+  const mergedItems = [...defaultItemsStart, ...pageItems, ...defaultItemsEnd];
+
+  // Separate search and pagination items from other nav items
   // Search item is handled specially (can expand to full width)
-  const searchItem = items.find((item) => item.type === "search");
-  const otherItems = items.filter((item) => item.type !== "search");
+  // Pagination items are hidden when search mode is active
+  const searchItem = mergedItems.find((item) => item.type === "search");
+  const paginationItems = mergedItems.filter(
+    (item) => item.type === "pagination"
+  );
+  const otherItems = mergedItems.filter(
+    (item) => item.type !== "search" && item.type !== "pagination"
+  );
+
+  // Hide pagination items when search mode is active (per user requirement)
+  const visiblePaginationItems = searchMode ? [] : paginationItems;
 
   // Calculate max visible items based on breakpoint
   const getMaxVisibleItems = () => {
@@ -435,6 +468,28 @@ const Nav = () => {
                           return null;
                       }
                     })}
+                    {/* Render pagination items (hidden during search mode) */}
+                    {visiblePaginationItems.map((item, index) => (
+                      <motion.li
+                        key={item.id}
+                        layout
+                        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.8, y: 20 }}
+                        transition={{
+                          duration: 0.2,
+                          delay: (visibleItems.length + index) * 0.05,
+                          ease: [0.4, 0, 0.2, 1],
+                        }}
+                      >
+                        <NavPaginationButton
+                          currentPage={item.currentPage}
+                          totalPages={item.totalPages}
+                          onPageChange={item.onPageChange}
+                          isActive={false}
+                        />
+                      </motion.li>
+                    ))}
                     {/* Render search button when not in search mode */}
                     {searchItem?.type === "search" && (
                       <NavSearchButton
@@ -486,6 +541,21 @@ const Nav = () => {
                 </li>
               );
             })}
+            {/* Include pagination items in measurement */}
+            {paginationItems.map((item) => (
+              <li key={item.id} className="rounded-full px-3 py-2">
+                <div className="flex items-center gap-1">
+                  <div className="h-6 w-6" />
+                  <div className="px-1 text-sm">
+                    <span className="hidden sm:inline">Page</span>
+                    <span>{item.currentPage}</span>
+                    <span>/</span>
+                    <span>{item.totalPages}</span>
+                  </div>
+                  <div className="h-6 w-6" />
+                </div>
+              </li>
+            ))}
             {searchItem && <li className="p-3">{searchItem.icon}</li>}
             {hasOverflow && (
               <li className="p-3">

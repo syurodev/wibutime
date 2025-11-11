@@ -1,37 +1,22 @@
 /**
  * Home Navigation Setup (Client Component)
  * Sets up navigation items for the homepage
+ *
+ * Note: Home and Search are now default items that appear on ALL pages.
+ * This component only needs to set page-specific items.
  */
 
 "use client";
 
 import { useEffect } from "react";
 import { useNav } from "@/components/layout/nav/useNav";
-import { Home, Search, Library, User } from "lucide-react";
+import { Library, User } from "lucide-react";
 
 export function HomeNavigation() {
   const { setNavItems } = useNav();
 
   useEffect(() => {
     setNavItems([
-      {
-        id: "home",
-        type: "link",
-        href: "/",
-        icon: <Home className="w-5 h-5" />,
-        label: "Home",
-      },
-      {
-        id: "search",
-        type: "search",
-        icon: <Search className="w-5 h-5" />,
-        label: "Search",
-        placeholder: "Search anime, manga, novel...",
-        onSearch: (query) => {
-          // TODO: Implement search functionality
-          console.log("Searching:", query);
-        },
-      },
       {
         id: "library",
         type: "link",

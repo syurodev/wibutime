@@ -1,0 +1,49 @@
+/**
+ * Latest Updates Page Navigation
+ * Client component that configures bottom navigation with pagination
+ */
+
+"use client";
+
+import { useNav } from "@/components/layout/nav/useNav";
+import { Clock } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+
+interface LatestNavigationProps {
+  readonly currentPage: number;
+  readonly totalPages: number;
+}
+
+export function LatestNavigation({
+  currentPage,
+  totalPages,
+}: LatestNavigationProps) {
+  const { setNavItems } = useNav();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", String(page));
+    router.push(`?${params.toString()}`);
+  };
+
+  // Configure navigation items
+  useEffect(() => {
+    setNavItems([
+      {
+        id: "latest-pagination",
+        type: "pagination",
+        icon: <Clock className="h-5 w-5" />,
+        label: "Page",
+        currentPage,
+        totalPages,
+        onPageChange: handlePageChange,
+      },
+    ]);
+  }, [currentPage, totalPages, searchParams]);
+
+  return null;
+}

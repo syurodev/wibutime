@@ -2,5 +2,10 @@
   "welcome": "Welcome",
   "description": "Get started by editing",
   "readDocs": "Read our docs",
-  "learnMore": "Learn more"
+  "learnMore": "Learn more",
+  "pagination": {
+    "page": "Page",
+    "goToPage": "Go to page",
+    "clickToEnterPage": "Click to enter page number"
+  }
 }
