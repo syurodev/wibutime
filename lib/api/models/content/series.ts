@@ -42,7 +42,7 @@ export class Series extends BaseModel<SeriesRaw> {
   readonly rating: number;
   readonly views: number;
   readonly favorites: number;
-  readonly latestChapter: LatestChapterRaw | null;
+  readonly latestChapter?: LatestChapterRaw;
   readonly createdAt: Date;
   readonly updatedAt: Date;
 
@@ -61,7 +61,7 @@ export class Series extends BaseModel<SeriesRaw> {
     this.rating = raw.rating;
     this.views = raw.views;
     this.favorites = raw.favorites;
-    this.latestChapter = raw.latest_chapter || null;
+    this.latestChapter = raw.latest_chapter;
 
     // Parse dates
     this.createdAt = new Date(raw.created_at);
@@ -164,8 +164,8 @@ export class Series extends BaseModel<SeriesRaw> {
   /**
    * Get latest chapter info formatted
    */
-  get latestChapterInfo(): string | null {
-    if (!this.latestChapter) return null;
+  get latestChapterInfo(): string | undefined {
+    if (!this.latestChapter) return undefined;
     return `Ch. ${this.latestChapter.number}: ${this.latestChapter.title}`;
   }
 

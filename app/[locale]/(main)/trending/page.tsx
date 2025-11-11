@@ -7,7 +7,7 @@ import { ContentTypeTabs } from "@/components/content/ContentTypeTabs";
 import { SeriesGrid } from "@/components/content/SeriesGrid";
 import { SeriesGridSkeleton } from "@/components/content/SeriesGridSkeleton";
 import { Container } from "@/components/layout/Container";
-import { ContentService } from "@/lib/api/services/content.service";
+import { ContentService } from "@/lib/api/services/base-content/content.service";
 import type { CONTENT_TYPE } from "@/lib/constants/default";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -49,11 +49,7 @@ async function TrendingContent({
   });
 
   return (
-    <SeriesGrid
-      series={items}
-      showContentType={true}
-      showDescription={true}
-    />
+    <SeriesGrid series={items} showContentType={true} showDescription={true} />
   );
 }
 

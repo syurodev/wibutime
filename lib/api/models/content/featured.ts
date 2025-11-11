@@ -2,14 +2,9 @@
  * Featured Content Model - For hero/banner sections
  */
 
-import type { BaseContentData } from "./base-content";
+import type { BadgeVariant, BaseContentData } from "./base-content";
 import { BaseModel } from "../base";
 import { Series, type SeriesRaw } from "./series";
-
-/**
- * Badge variant for featured content
- */
-export type BadgeVariant = "new" | "hot" | "exclusive" | "trending";
 
 /**
  * Raw featured content data from API

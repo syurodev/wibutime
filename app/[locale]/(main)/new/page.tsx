@@ -3,15 +3,15 @@
  * Displays newly added series with content type filters and pagination
  */
 
-import { Container } from "@/components/layout/Container";
 import { ContentTypeTabs } from "@/components/content/ContentTypeTabs";
 import { SeriesGrid } from "@/components/content/SeriesGrid";
-import { ContentService } from "@/lib/api/services/content.service";
-import type { CONTENT_TYPE } from "@/lib/constants/default";
-import { getTranslations } from "next-intl/server";
-import type { Metadata } from "next";
-import { Suspense } from "react";
 import { SeriesGridSkeleton } from "@/components/content/SeriesGridSkeleton";
+import { Container } from "@/components/layout/Container";
+import { ContentService } from "@/lib/api/services/base-content/content.service";
+import type { CONTENT_TYPE } from "@/lib/constants/default";
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 import { NewSeriesNavigation } from "./NewSeriesNavigation";
 
 /**
@@ -49,11 +49,7 @@ async function NewSeriesContent({
   });
 
   return (
-    <SeriesGrid
-      series={items}
-      showContentType={true}
-      showDescription={true}
-    />
+    <SeriesGrid series={items} showContentType={true} showDescription={true} />
   );
 }
 
@@ -106,7 +102,10 @@ export default async function NewSeriesPage({
         </Suspense>
 
         {/* Bottom Navigation with Pagination */}
-        <NewSeriesNavigation currentPage={currentPage} totalPages={totalPages} />
+        <NewSeriesNavigation
+          currentPage={currentPage}
+          totalPages={totalPages}
+        />
       </Container>
     </div>
   );

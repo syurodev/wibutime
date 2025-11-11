@@ -21,7 +21,7 @@ import {
 	CarouselNext,
 	CarouselPrevious,
 } from "@/components/ui/carousel";
-import type { FeaturedData } from "@/lib/api/models/content";
+import { ContentFormatter, type FeaturedData } from "@/lib/api/models/content";
 
 export interface HeroSectionProps {
 	/**
@@ -95,7 +95,7 @@ function HeroSlide({ featured }: { featured: FeaturedData }) {
 						{/* Badge */}
 						<div className="flex items-center gap-2">
 							<Badge>{featured.badge_text}</Badge>
-							{featured.series.has_recent_update && (
+							{ContentFormatter.hasRecentUpdate(featured.series.updated_at) && (
 								<Badge>{t("hero.new")}</Badge>
 							)}
 						</div>
@@ -124,17 +124,17 @@ function HeroSlide({ featured }: { featured: FeaturedData }) {
 							{/* Stats */}
 							<div className="flex items-center gap-1">
 								<Star className="h-4 w-4 fill-current" />
-								<span>{featured.series.formatted_rating}</span>
+								<span>{ContentFormatter.formatRating(featured.series.rating)}</span>
 							</div>
 
 							<div className="flex items-center gap-1">
 								<Eye className="h-4 w-4" />
-								<span>{featured.series.formatted_views}</span>
+								<span>{ContentFormatter.formatViews(featured.series.views)}</span>
 							</div>
 
 							<div className="flex items-center gap-1">
 								<Heart className="h-4 w-4" />
-								<span>{featured.series.formatted_favorites}</span>
+								<span>{ContentFormatter.formatFavorites(featured.series.favorites)}</span>
 							</div>
 						</div>
 

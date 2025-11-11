@@ -3,4 +3,5 @@
  */
 
 export * from "./users";
-export * from "./content.service";
+export { ContentService } from "./base-content/content.service";
+export * from "./base-content/content.cached";

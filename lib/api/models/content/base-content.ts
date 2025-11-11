@@ -7,6 +7,11 @@
 import type { ContentStatus, ContentType } from "@/lib/constants/default";
 
 /**
+ * Badge variant for featured content
+ */
+export type BadgeVariant = "new" | "hot" | "exclusive" | "trending";
+
+/**
  * Latest chapter/episode information
  */
 export interface LatestChapter {
@@ -35,12 +40,30 @@ export interface BaseContentData {
 	views: number;
 	favorites: number;
 
-	// Latest update
-	latest_chapter: LatestChapter | null;
+	// Latest update (optional - may not exist for some content)
+	latest_chapter?: LatestChapter;
 
 	// Timestamps
 	created_at: string;
 	updated_at: string;
+}
+
+/**
+ * Featured Content Data - Plain object for featured/hero sections
+ * Uses BaseContentData for nested series information
+ */
+export interface FeaturedData {
+	id: string;
+	series_id: string;
+	series: BaseContentData;
+	banner_url: string;
+	title: string;
+	description: string;
+	badge_text: string;
+	badge_variant: BadgeVariant;
+	cta_primary: string;
+	cta_secondary: string;
+	order: number;
 }
 
 /**
@@ -114,8 +137,8 @@ export const ContentFormatter = {
 	/**
 	 * Get latest chapter info formatted
 	 */
-	formatLatestChapter(latestChapter: LatestChapter | null): string | null {
-		if (!latestChapter) return null;
+	formatLatestChapter(latestChapter?: LatestChapter): string | undefined {
+		if (!latestChapter) return undefined;
 		return `Ch. ${latestChapter.number}: ${latestChapter.title}`;
 	},
 
