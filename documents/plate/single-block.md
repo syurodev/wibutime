@@ -1,0 +1,73 @@
+Single Block
+
+Source: https://platejs.org/docs/single-block
+
+## Registry URLs
+
+- All components index: https://platejs.org/r/registry.json
+- All docs index: https://platejs.org/r/registry-docs.json
+- Component content: https://platejs.org/r/{name}
+
+Note: Any <ComponentSource name="..." /> or <ComponentPreview name="..." /> in the documentation can be accessed at https://platejs.org/r/{name}
+
+I'm going to ask questions from the following Plate documentation:
+
+---
+
+<ComponentPreview name="single-block-demo" />
+
+<PackageInfo>
+
+## Features
+
+- **SingleLinePlugin**: Restricts editor to a single line of text with all line breaks removed
+- **SingleBlockPlugin**: Restricts editor to a single block with line breaks converted to soft breaks
+- Prevents creation of multiple blocks through normalization
+- Filters out line break characters from pasted content
+- Suitable for titles, labels, comments, or constrained text inputs
+
+</PackageInfo>
+
+## Manual Usage
+
+<Steps>
+
+### Add Plugins
+
+```tsx
+import { SingleLinePlugin, SingleBlockPlugin } from "platejs";
+import { createPlateEditor } from "platejs/react";
+
+const editor = createPlateEditor({
+  plugins: [
+    // ...otherPlugins,
+    SingleLinePlugin, // For single-line text
+    // OR
+    SingleBlockPlugin, // For single-block text with soft breaks
+  ],
+});
+```
+
+</Steps>
+
+## Plugins
+
+### `SingleLinePlugin`
+
+Plugin that restricts editor content to a single line of text by removing all line breaks and merging multiple blocks.
+
+**Key behaviors:**
+
+- Prevents `insertBreak` and `insertSoftBreak` operations
+- Filters out line break characters
+- Merges multiple blocks into the first block without separators
+
+### `SingleBlockPlugin`
+
+Plugin that restricts editor content to a single block while preserving line breaks.
+
+**Key behaviors:**
+
+- Converts `insertBreak` to `insertSoftBreak`
+- Merges multiple blocks into the first block with `\n` separators
+- Preserves existing line break characters in text content

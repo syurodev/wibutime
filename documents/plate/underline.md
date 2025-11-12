@@ -1,0 +1,121 @@
+Underline
+
+Source: https://platejs.org/docs/underline
+
+## Registry URLs
+
+- All components index: https://platejs.org/r/registry.json
+- All docs index: https://platejs.org/r/registry-docs.json
+- Component content: https://platejs.org/r/{name}
+
+Note: Any <ComponentSource name="..." /> or <ComponentPreview name="..." /> in the documentation can be accessed at https://platejs.org/r/{name}
+
+I'm going to ask questions from the following Plate documentation:
+
+---
+
+<ComponentPreview name="basic-marks-demo" />
+
+<PackageInfo>
+
+## Features
+
+- Apply underline formatting to text
+- Keyboard shortcut support for quick formatting (`Cmd + U`)
+- Renders as `<u>` HTML element by default
+
+</PackageInfo>
+
+## Kit Usage
+
+<Steps>
+
+### Installation
+
+The fastest way to add the underline plugin is with the `BasicMarksKit`, which includes pre-configured `UnderlinePlugin` along with other basic marks and their [Plate UI](/docs/installation/plate-ui) components.
+
+<ComponentSource name="basic-marks-kit" />
+
+### Add Kit
+
+Add the kit to your plugins:
+
+```tsx
+import { createPlateEditor } from "platejs/react";
+import { BasicMarksKit } from "@/components/editor/plugins/basic-marks-kit";
+
+const editor = createPlateEditor({
+  plugins: [
+    // ...otherPlugins,
+    ...BasicMarksKit,
+  ],
+});
+```
+
+</Steps>
+
+## Manual Usage
+
+<Steps>
+
+### Installation
+
+```bash
+npm install @platejs/basic-nodes
+```
+
+### Add Plugin
+
+Include `UnderlinePlugin` in your Plate plugins array when creating the editor.
+
+```tsx
+import { UnderlinePlugin } from "@platejs/basic-nodes/react";
+import { createPlateEditor } from "platejs/react";
+
+const editor = createPlateEditor({
+  plugins: [
+    // ...otherPlugins,
+    UnderlinePlugin,
+  ],
+});
+```
+
+### Configure Plugin
+
+You can configure the `UnderlinePlugin` with custom keyboard shortcuts.
+
+```tsx
+import { UnderlinePlugin } from "@platejs/basic-nodes/react";
+import { createPlateEditor } from "platejs/react";
+
+const editor = createPlateEditor({
+  plugins: [
+    // ...otherPlugins,
+    UnderlinePlugin.configure({
+      shortcuts: { toggle: "mod+u" },
+    }),
+  ],
+});
+```
+
+- `shortcuts.toggle`: Defines a keyboard [shortcut](/docs/plugin-shortcuts) to toggle underline formatting.
+
+### Add Toolbar Button
+
+You can add [`MarkToolbarButton`](/docs/components/mark-toolbar-button) to your [Toolbar](/docs/toolbar) to toggle underline formatting.
+
+</Steps>
+
+## Plugins
+
+### `UnderlinePlugin`
+
+Plugin for underline text formatting. Renders as `<u>` HTML element by default.
+
+## Transforms
+
+### `tf.underline.toggle`
+
+Toggles the underline formatting for the selected text.
+
+Default Shortcut: `Cmd + U`

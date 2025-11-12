@@ -1,0 +1,119 @@
+Superscript
+
+Source: https://platejs.org/docs/superscript
+
+## Registry URLs
+
+- All components index: https://platejs.org/r/registry.json
+- All docs index: https://platejs.org/r/registry-docs.json
+- Component content: https://platejs.org/r/{name}
+
+Note: Any <ComponentSource name="..." /> or <ComponentPreview name="..." /> in the documentation can be accessed at https://platejs.org/r/{name}
+
+I'm going to ask questions from the following Plate documentation:
+
+---
+
+<ComponentPreview name="basic-marks-demo" />
+
+<PackageInfo>
+
+## Features
+
+- Format text as superscript for mathematical expressions or footnotes
+- Keyboard shortcut support for quick formatting
+- Renders as `<sup>` HTML element by default
+
+</PackageInfo>
+
+## Kit Usage
+
+<Steps>
+
+### Installation
+
+The fastest way to add the superscript plugin is with the `BasicMarksKit`, which includes pre-configured `SuperscriptPlugin` along with other basic marks and their [Plate UI](/docs/installation/plate-ui) components.
+
+<ComponentSource name="basic-marks-kit" />
+
+### Add Kit
+
+Add the kit to your plugins:
+
+```tsx
+import { createPlateEditor } from "platejs/react";
+import { BasicMarksKit } from "@/components/editor/plugins/basic-marks-kit";
+
+const editor = createPlateEditor({
+  plugins: [
+    // ...otherPlugins,
+    ...BasicMarksKit,
+  ],
+});
+```
+
+</Steps>
+
+## Manual Usage
+
+<Steps>
+
+### Installation
+
+```bash
+npm install @platejs/basic-nodes
+```
+
+### Add Plugin
+
+Include `SuperscriptPlugin` in your Plate plugins array when creating the editor.
+
+```tsx
+import { SuperscriptPlugin } from "@platejs/basic-nodes/react";
+import { createPlateEditor } from "platejs/react";
+
+const editor = createPlateEditor({
+  plugins: [
+    // ...otherPlugins,
+    SuperscriptPlugin,
+  ],
+});
+```
+
+### Configure Plugin
+
+You can configure the `SuperscriptPlugin` with custom keyboard shortcuts.
+
+```tsx
+import { SuperscriptPlugin } from "@platejs/basic-nodes/react";
+import { createPlateEditor } from "platejs/react";
+
+const editor = createPlateEditor({
+  plugins: [
+    // ...otherPlugins,
+    SuperscriptPlugin.configure({
+      shortcuts: { toggle: { keys: "mod+period" } },
+    }),
+  ],
+});
+```
+
+- `shortcuts.toggle`: Defines a keyboard [shortcut](/docs/plugin-shortcuts) to toggle superscript formatting.
+
+### Add Toolbar Button
+
+You can add [`MarkToolbarButton`](/docs/components/mark-toolbar-button) to your [Toolbar](/docs/toolbar) to toggle superscript formatting.
+
+</Steps>
+
+## Plugins
+
+### `SuperscriptPlugin`
+
+Plugin for superscript text formatting. Renders as `<sup>` HTML element by default.
+
+## Transforms
+
+### `tf.superscript.toggle`
+
+Toggles the superscript formatting for the selected text.

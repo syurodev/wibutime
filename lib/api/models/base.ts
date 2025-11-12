@@ -5,9 +5,9 @@
 /**
  * Model constructor type
  */
-export type ModelConstructor<TRaw, TModel extends BaseModel<TRaw>> = {
-  new (raw: TRaw): TModel;
-};
+export type ModelConstructor<TRaw, TModel extends BaseModel<TRaw>> = new (
+  raw: TRaw
+) => TModel;
 
 /**
  * Abstract base model class

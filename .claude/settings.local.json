@@ -5,7 +5,8 @@
       "Bash(ls:*)",
       "Bash(tree:*)",
       "mcp__next-devtools__nextjs_docs",
-      "mcp__next-devtools__nextjs_runtime"
+      "mcp__next-devtools__nextjs_runtime",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []

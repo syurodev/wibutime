@@ -1,0 +1,152 @@
+"use client";
+
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { Plate, usePlateEditor } from "platejs/react";
+import * as React from "react";
+
+// Import all feature kits
+import { AlignKit } from "@/components/editor/plugins/align-kit";
+import { BasicBlocksKit } from "@/components/editor/plugins/basic-blocks-kit";
+import { BasicMarksKit } from "@/components/editor/plugins/basic-marks-kit";
+import { DndKit } from "@/components/editor/plugins/dnd-kit";
+import { IndentKit } from "@/components/editor/plugins/indent-kit";
+import { LinkKit } from "@/components/editor/plugins/link-kit";
+import { MediaKit } from "@/components/editor/plugins/media-kit";
+
+// Import UI components
+import { Editor, EditorContainer } from "@/components/ui/editor";
+import { FixedToolbar } from "@/components/ui/fixed-toolbar";
+import { WordCount } from "@/components/ui/word-count";
+
+// Import hooks
+import { useAutosave } from "@/hooks/use-autosave";
+
+const INITIAL_VALUE = [
+  {
+    id: "1",
+    type: "p",
+    children: [{ text: "Start writing your novel here..." }],
+  },
+];
+
+export default function CreateNovelPage() {
+  const contentId = "novel-draft-temp"; // TODO: Replace with actual novel ID from route params
+
+  const { status, lastSaved, save, loadDraft } = useAutosave({
+    contentId,
+    delay: 2000,
+    enableLocalStorage: true,
+    // TODO: Add apiEndpoint when API is ready
+    // apiEndpoint: `/api/novels/${novelId}/draft`,
+  });
+
+  // Load draft on mount
+  const initialValue = React.useMemo(() => {
+    const draft = loadDraft();
+    return draft || INITIAL_VALUE;
+  }, [loadDraft]);
+
+  const editor = usePlateEditor({
+    plugins: [
+      ...BasicBlocksKit,
+      ...BasicMarksKit,
+      ...LinkKit,
+      ...MediaKit,
+      ...AlignKit,
+      ...IndentKit,
+      ...DndKit,
+    ],
+    value: initialValue,
+  });
+
+  // Auto-save on editor value changes
+  React.useEffect(() => {
+    if (editor && editor.children) {
+      save(editor.children);
+    }
+  }, [editor.children, save]);
+
+  return (
+    <TooltipProvider>
+      <div className="flex min-h-screen flex-col bg-background">
+        {/* Header with save status */}
+        <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="container flex h-14 items-center justify-between px-4">
+            <h1 className="text-lg font-semibold">Create Novel</h1>
+            <SaveIndicator status={status} lastSaved={lastSaved} />
+          </div>
+        </div>
+
+        {/* Editor */}
+        <Plate editor={editor}>
+          <div className="flex flex-1 flex-col">
+            {/* Fixed Toolbar */}
+            <FixedToolbar />
+
+            {/* Editor Content */}
+            <div className="flex-1">
+              <EditorContainer variant="default">
+                <Editor variant="default" placeholder="Start writing..." />
+              </EditorContainer>
+            </div>
+
+            {/* Footer with Word Count */}
+            <div className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+              <div className="container flex h-10 items-center justify-end px-4">
+                <WordCount />
+              </div>
+            </div>
+          </div>
+        </Plate>
+      </div>
+    </TooltipProvider>
+  );
+}
+
+// Save Indicator Component
+function SaveIndicator({
+  status,
+  lastSaved,
+}: {
+  status: "saved" | "saving" | "unsaved" | "error";
+  lastSaved: Date | null;
+}) {
+  const statusConfig = {
+    saved: {
+      text: "Saved",
+      className: "text-green-600 dark:text-green-500",
+    },
+    saving: {
+      text: "Saving...",
+      className: "text-yellow-600 dark:text-yellow-500",
+    },
+    unsaved: {
+      text: "Unsaved changes",
+      className: "text-orange-600 dark:text-orange-500",
+    },
+    error: {
+      text: "Save failed",
+      className: "text-red-600 dark:text-red-500",
+    },
+  };
+
+  const config = statusConfig[status];
+  const timeAgo = React.useMemo(() => {
+    if (!lastSaved) return "";
+    const seconds = Math.floor((Date.now() - lastSaved.getTime()) / 1000);
+    if (seconds < 60) return "just now";
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    return `${hours}h ago`;
+  }, [lastSaved]);
+
+  return (
+    <div className="flex items-center gap-2 text-sm">
+      <span className={config.className}>{config.text}</span>
+      {lastSaved && status === "saved" && (
+        <span className="text-muted-foreground">• {timeAgo}</span>
+      )}
+    </div>
+  );
+}

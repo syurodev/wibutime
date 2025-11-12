@@ -1,0 +1,141 @@
+Horizontal Rule
+
+Source: https://platejs.org/docs/horizontal-rule
+
+## Registry URLs
+
+- All components index: https://platejs.org/r/registry.json
+- All docs index: https://platejs.org/r/registry-docs.json
+- Component content: https://platejs.org/r/{name}
+
+Note: Any <ComponentSource name="..." /> or <ComponentPreview name="..." /> in the documentation can be accessed at https://platejs.org/r/{name}
+
+I'm going to ask questions from the following Plate documentation:
+
+---
+
+<ComponentPreview name="basic-blocks-demo" />
+
+<PackageInfo>
+
+## Features
+
+- Insert horizontal lines to separate content or indicate topic shifts
+- Type three dashes (`---`) at a new line start to transform into a horizontal rule
+- Renders as `<hr>` HTML element by default
+
+</PackageInfo>
+
+## Kit Usage
+
+<Steps>
+
+### Installation
+
+The fastest way to add the horizontal rule plugin is with the `BasicBlocksKit`, which includes pre-configured `HorizontalRulePlugin` along with other basic block elements and their [Plate UI](/docs/installation/plate-ui) components.
+
+<ComponentSource name="basic-blocks-kit" />
+
+- [`HrElement`](/docs/components/hr-node): Renders horizontal rule elements.
+
+### Add Kit
+
+Add the kit to your plugins:
+
+```tsx
+import { createPlateEditor } from "platejs/react";
+import { BasicBlocksKit } from "@/components/editor/plugins/basic-blocks-kit";
+
+const editor = createPlateEditor({
+  plugins: [
+    // ...otherPlugins,
+    ...BasicBlocksKit,
+  ],
+});
+```
+
+</Steps>
+
+## Manual Usage
+
+<Steps>
+
+### Installation
+
+```bash
+npm install @platejs/basic-nodes
+```
+
+### Add Plugin
+
+Include `HorizontalRulePlugin` in your Plate plugins array when creating the editor.
+
+```tsx
+import { HorizontalRulePlugin } from "@platejs/basic-nodes/react";
+import { createPlateEditor } from "platejs/react";
+
+const editor = createPlateEditor({
+  plugins: [
+    // ...otherPlugins,
+    HorizontalRulePlugin,
+  ],
+});
+```
+
+### Configure Plugin
+
+You can configure the `HorizontalRulePlugin` with autoformat rules to automatically convert typed patterns like `---` into horizontal rules.
+
+```tsx
+import { KEYS } from "platejs";
+import { AutoformatPlugin } from "@platejs/autoformat";
+import { HorizontalRulePlugin } from "@platejs/basic-nodes/react";
+import { createPlateEditor } from "platejs/react";
+
+const editor = createPlateEditor({
+  plugins: [
+    // ...otherPlugins,
+    HorizontalRulePlugin,
+    AutoformatPlugin.configure({
+      options: {
+        rules: [
+          {
+            mode: "block",
+            type: KEYS.hr,
+            match: ["---", "—-", "___ "],
+            format: (editor) => {
+              editor.tf.setNodes({ type: KEYS.hr });
+              editor.tf.insertNodes({
+                type: KEYS.p,
+                children: [{ text: "" }],
+              });
+            },
+          },
+        ],
+      },
+    }),
+  ],
+});
+```
+
+- `AutoformatPlugin`: Automatically converts typed patterns (like `---`) into horizontal rules.
+
+### Insert Toolbar Button
+
+You can add this item to the [Insert Toolbar Button](/docs/toolbar#insert-toolbar-button) to insert horizontal rules:
+
+```tsx
+{
+  icon: <MinusIcon />,
+  label: 'Divider',
+  value: KEYS.hr,
+}
+```
+
+</Steps>
+
+## Plugins
+
+### `HorizontalRulePlugin`
+
+Plugin for inserting horizontal rules to separate content. Horizontal rules are void elements that render as `<hr>` tags by default.
