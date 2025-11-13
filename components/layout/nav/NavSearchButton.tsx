@@ -33,6 +33,7 @@ export function NavSearchButton({ item, index = 0 }: NavSearchButtonProps) {
       exit={{ opacity: 0, y: -15 }}
       transition={{
         duration: 0.2,
+        delay: index * 0.03, // Stagger effect: 30ms between items
         ease: [0.4, 0, 0.2, 1],
       }}
     >

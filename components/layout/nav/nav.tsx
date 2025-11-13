@@ -115,6 +115,19 @@ const Nav = () => {
     ? prioritizedItems.slice(maxVisibleItems)
     : [];
 
+  // Calculate total nav items for dynamic container duration
+  // This ensures container resize matches stagger animation timing
+  const totalNavItems =
+    visibleItems.length +
+    visiblePaginationItems.length +
+    (searchItem ? 1 : 0) +
+    (hasOverflow ? 1 : 0);
+
+  // Dynamic container duration: base (200ms) + stagger delay (30ms per item)
+  const baseDuration = 0.2; // 200ms base exit animation
+  const staggerPerItem = 0.03; // 30ms stagger between items
+  const containerDuration = baseDuration + totalNavItems * staggerPerItem;
+
   // State to store measured nav width for smooth transitions
   const [navWidth, setNavWidth] = useState<number | null>(null);
 
@@ -406,12 +419,12 @@ const Nav = () => {
         <div
           className={cn(
             "relative shadow-lg rounded-2xl backdrop-blur-md bg-background/70",
-            "transition-all duration-200 ease-in-out",
             isInitialMount && "overflow-hidden"
           )}
           style={{
             minHeight: "56px",
             width: getContainerWidth(),
+            transition: `all ${containerDuration}s ease-in-out`,
           }}
         >
           {/*
@@ -423,13 +436,14 @@ const Nav = () => {
         */}
           <div
             className={cn(
-              "relative transition-all duration-200 ease-in-out flex items-center",
+              "relative flex items-center",
               !commentMode && "overflow-hidden"
             )}
             style={{
               height: containerExpanded ? "auto" : "56px",
               maxHeight: containerExpanded ? "600px" : "56px",
               padding: "12px 16px",
+              transition: `all ${containerDuration}s ease-in-out`,
             }}
           >
             {/* AnimatePresence for smooth transitions between modes */}
