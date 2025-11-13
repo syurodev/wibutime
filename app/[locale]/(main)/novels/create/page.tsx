@@ -12,6 +12,7 @@ import { DndKit } from "@/components/editor/plugins/dnd-kit";
 import { IndentKit } from "@/components/editor/plugins/indent-kit";
 import { LinkKit } from "@/components/editor/plugins/link-kit";
 import { MediaKit } from "@/components/editor/plugins/media-kit";
+import { SelectionKit } from "@/components/editor/plugins/selection-kit";
 
 // Import UI components
 import { Editor, EditorContainer } from "@/components/ui/editor";
@@ -54,6 +55,7 @@ export default function CreateNovelPage() {
       ...MediaKit,
       ...AlignKit,
       ...IndentKit,
+      ...SelectionKit,
       ...DndKit,
     ],
     value: initialValue,
@@ -64,13 +66,13 @@ export default function CreateNovelPage() {
     if (editor && editor.children) {
       save(editor.children);
     }
-  }, [editor.children, save]);
+  }, [editor, editor.children, save]);
 
   return (
     <TooltipProvider>
       <div className="flex min-h-screen flex-col bg-background">
         {/* Header with save status */}
-        <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
           <div className="container flex h-14 items-center justify-between px-4">
             <h1 className="text-lg font-semibold">Create Novel</h1>
             <SaveIndicator status={status} lastSaved={lastSaved} />
@@ -91,7 +93,7 @@ export default function CreateNovelPage() {
             </div>
 
             {/* Footer with Word Count */}
-            <div className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="border-t bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
               <div className="container flex h-10 items-center justify-end px-4">
                 <WordCount />
               </div>
@@ -131,15 +133,27 @@ function SaveIndicator({
   };
 
   const config = statusConfig[status];
+
+  const [currentTime, setCurrentTime] = React.useState(() => Date.now());
+
+  // Update current time every 30 seconds for time ago calculation
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 30000); // Update every 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   const timeAgo = React.useMemo(() => {
     if (!lastSaved) return "";
-    const seconds = Math.floor((Date.now() - lastSaved.getTime()) / 1000);
+    const seconds = Math.floor((currentTime - lastSaved.getTime()) / 1000);
     if (seconds < 60) return "just now";
     const minutes = Math.floor(seconds / 60);
     if (minutes < 60) return `${minutes}m ago`;
     const hours = Math.floor(minutes / 60);
     return `${hours}h ago`;
-  }, [lastSaved]);
+  }, [lastSaved, currentTime]);
 
   return (
     <div className="flex items-center gap-2 text-sm">

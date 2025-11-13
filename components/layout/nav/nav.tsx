@@ -19,6 +19,8 @@ import {
   defaultItemsEnd,
   DEFAULT_ITEM_IDS,
 } from "./defaultNavItems";
+import { CompactCommentEditor } from "@/components/editor/compact-comment-editor";
+import type { TNode } from "platejs";
 
 /**
  * Main Navigation Component
@@ -37,7 +39,9 @@ const Nav = () => {
   const {
     items,
     searchMode,
+    commentMode,
     toggleSearch,
+    toggleComment,
     moreMenuOpen,
     toggleMoreMenu,
     loadingItems,
@@ -117,8 +121,8 @@ const Nav = () => {
   // Initial mount state for entry animation (square → width)
   const [isInitialMount, setIsInitialMount] = useState(true);
 
-  // Delayed state for container dimensions to coordinate with animations
-  const [containerSearchMode, setContainerSearchMode] = useState(searchMode);
+  // Compute container expansion state directly (no delay needed)
+  const containerExpanded = searchMode || commentMode;
 
   // Track hover and focus state for scale animation
   const [isHovered, setIsHovered] = useState(false);
@@ -148,30 +152,18 @@ const Nav = () => {
     }
   }, [isInitialMount, navWidth]);
 
-  // Coordinate container timing with animations
-  // Container resize is delayed to sync with animation sequence
-  useEffect(() => {
-    const timer = setTimeout(
-      () => {
-        setContainerSearchMode(searchMode);
-      },
-      searchMode ? 75 : 0
-    ); // Delay resize when opening, immediate when closing
-
-    return () => clearTimeout(timer);
-  }, [searchMode]);
-
   // Measure nav content width when items change
   // Measure immediately so width transition happens simultaneously with item animations
   useEffect(() => {
     console.log("[Nav Debug] Effect triggered:", {
       searchMode,
+      commentMode,
       itemsLength: items.length,
       currentNavWidth: navWidth,
     });
 
-    if (searchMode) {
-      console.log("[Nav Debug] ❌ In search mode, skipping measurement");
+    if (searchMode || commentMode) {
+      console.log("[Nav Debug] ❌ In search/comment mode, skipping measurement");
       return;
     }
 
@@ -180,10 +172,8 @@ const Nav = () => {
       items.length
     );
 
-    // Small delay to ensure hidden container has rendered with new items
-    const measureDelay = 10; // Just enough for DOM update
-
-    const timeoutId = setTimeout(() => {
+    // Use requestAnimationFrame for smoother measurement sync with render cycle
+    const rafId = requestAnimationFrame(() => {
       console.log("[Nav Debug] ⏱️ Measuring hidden container...");
 
       if (measureContainerRef.current) {
@@ -215,13 +205,14 @@ const Nav = () => {
       } else {
         console.log("[Nav Debug] ❌ measureContainerRef.current is null");
       }
-    }, measureDelay);
+    });
 
     return () => {
-      console.log("[Nav Debug] 🧹 Cleanup: clearing timeout");
-      clearTimeout(timeoutId);
+      console.log("[Nav Debug] 🧹 Cleanup: canceling animation frame");
+      cancelAnimationFrame(rafId);
     };
-  }, [searchMode, items, navWidth]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchMode, commentMode, items]);
 
   // Handlers for hover with delay
   const handleMouseEnter = () => {
@@ -325,13 +316,54 @@ const Nav = () => {
     };
   }, [searchMode, toggleSearch]);
 
+  // Handle click outside to close comment mode
+  useEffect(() => {
+    if (!commentMode) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      // Check if click is outside nav container
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        toggleComment();
+      }
+    };
+
+    // Add event listener
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Clean up
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [commentMode, toggleComment]);
+
+  // Handle ESC key to close search or comment mode
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        if (searchMode) {
+          toggleSearch();
+        } else if (commentMode) {
+          toggleComment();
+        }
+      }
+    };
+
+    // Add event listener
+    document.addEventListener("keydown", handleEscKey);
+
+    // Clean up
+    return () => {
+      document.removeEventListener("keydown", handleEscKey);
+    };
+  }, [searchMode, commentMode, toggleSearch, toggleComment]);
+
   // Determine if nav should be expanded (full size)
-  const isExpanded = isHovered || isFocused || searchMode;
+  const isExpanded = isHovered || isFocused || searchMode || commentMode;
 
   // Calculate container width based on current state
   const getContainerWidth = () => {
-    if (containerSearchMode) {
-      // Responsive search width: full width on mobile with margins, 400px on desktop
+    if (containerExpanded) {
+      // Responsive width: full width on mobile with margins, 400px on desktop
       if (breakpoint === "mobile") {
         return "calc(100vw - 32px)"; // 16px margin on each side
       }
@@ -374,7 +406,7 @@ const Nav = () => {
         <div
           className={cn(
             "relative shadow-lg rounded-2xl backdrop-blur-md bg-background/70",
-            "transition-all duration-300 ease-in-out",
+            "transition-all duration-200 ease-in-out",
             isInitialMount && "overflow-hidden"
           )}
           style={{
@@ -386,18 +418,22 @@ const Nav = () => {
           Content wrapper with dynamic height
           Nav mode: Fixed at 56px total (32px content + 24px padding)
           Search mode: Expands smoothly up to 600px max
+          Comment mode: No overflow-hidden to allow floating toolbar to render outside
           Using max-height for smooth CSS transition (height: auto doesn't transition)
         */}
           <div
-            className="relative overflow-hidden transition-all duration-300 ease-in-out flex items-center"
+            className={cn(
+              "relative transition-all duration-200 ease-in-out flex items-center",
+              !commentMode && "overflow-hidden"
+            )}
             style={{
-              height: containerSearchMode ? "auto" : "56px",
-              maxHeight: containerSearchMode ? "600px" : "56px",
+              height: containerExpanded ? "auto" : "56px",
+              maxHeight: containerExpanded ? "600px" : "56px",
               padding: "12px 16px",
             }}
           >
             {/* AnimatePresence for smooth transitions between modes */}
-            {/* mode="wait" ensures exit completes before enter starts - prevents overlap */}
+            {/* mode="wait" ensures exit completes before enter starts */}
             <AnimatePresence initial={false} mode="wait">
               {searchMode ? (
                 // Search mode: show search input with results (dynamic height)
@@ -407,7 +443,7 @@ const Nav = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -15 }}
                   transition={{
-                    duration: 0.15,
+                    duration: 0.2,
                     ease: [0.4, 0, 0.2, 1],
                   }}
                   className="w-full"
@@ -420,8 +456,36 @@ const Nav = () => {
                     />
                   )}
                 </motion.div>
+              ) : commentMode ? (
+                // Comment mode: show compact comment editor (dynamic height)
+                <motion.div
+                  key="comment-content"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{
+                    duration: 0.2,
+                    ease: [0.4, 0, 0.2, 1],
+                  }}
+                  className="w-full"
+                >
+                  <CompactCommentEditor
+                    onSubmit={(content: TNode[]) => {
+                      // Handle comment submission
+                      console.log("Comment submitted:", content);
+                      // TODO: Add your comment submission logic here
+                      toggleComment(); // Close after submit
+                    }}
+                    onCancel={() => {
+                      toggleComment(); // Close on cancel
+                    }}
+                    placeholder="Write a comment..."
+                    autoFocus={true}
+                  />
+                </motion.div>
               ) : (
-                // Nav mode: show navigation items with staggered animation
+                // Nav mode: show navigation items
+                // Exit duration matches nav items (200ms) for uniform animation
                 <motion.ul
                   key={`nav-content-${pathname}`}
                   className="flex items-center gap-2"
@@ -429,7 +493,7 @@ const Nav = () => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{
-                    duration: 0.15,
+                    duration: 0.2,
                     ease: [0.4, 0, 0.2, 1],
                   }}
                 >
@@ -522,7 +586,7 @@ const Nav = () => {
       </motion.div>
 
       {/* Hidden measurement container - always renders with width: auto for accurate measurement */}
-      {!searchMode && (
+      {!searchMode && !commentMode && (
         <div
           ref={measureContainerRef}
           className="fixed pointer-events-none opacity-0 left-0 top-0"

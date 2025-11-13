@@ -13,7 +13,7 @@
  */
 
 import { cacheLife, cacheTag } from "next/cache";
-import type { BaseContentData } from "../../models";
+import { MediaSeries } from "../../models/content/base-content";
 import { ContentService } from "./content.service";
 
 /**
@@ -29,7 +29,7 @@ export async function getCachedFeaturedList() {
   const data = await ContentService.getFeaturedList();
   // Featured still uses class instances - convert to plain objects
   // Use structuredClone instead of JSON.parse(JSON.stringify()) for better performance
-  return structuredClone(data.map((item) => item.toJSON()));
+  return structuredClone(data.map((item) => item));
 }
 
 /**
@@ -37,9 +37,7 @@ export async function getCachedFeaturedList() {
  * Trending data changes based on views, needs moderate freshness
  * Returns plain BaseContentData objects - already serializable
  */
-export async function getCachedTrending(
-  limit = 10
-): Promise<BaseContentData[]> {
+export async function getCachedTrending(limit = 10): Promise<MediaSeries[]> {
   "use cache";
   cacheTag("trending");
   cacheLife("trending");
@@ -55,7 +53,7 @@ export async function getCachedTrending(
  * Latest updates should be relatively fresh for best UX
  * Returns plain BaseContentData objects - already serializable
  */
-export async function getCachedLatest(limit = 10): Promise<BaseContentData[]> {
+export async function getCachedLatest(limit = 10): Promise<MediaSeries[]> {
   "use cache";
   cacheTag("latest");
   cacheLife("latest");
@@ -69,7 +67,7 @@ export async function getCachedLatest(limit = 10): Promise<BaseContentData[]> {
  * New series don't change as frequently, can use longer cache
  * Returns plain BaseContentData objects - already serializable
  */
-export async function getCachedNew(limit = 10): Promise<BaseContentData[]> {
+export async function getCachedNew(limit = 10): Promise<MediaSeries[]> {
   "use cache";
   cacheTag("new");
   cacheLife("newSeries");

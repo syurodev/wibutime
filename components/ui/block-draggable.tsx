@@ -73,7 +73,7 @@ export const BlockDraggable: RenderNodeWrapper = (props) => {
 
 function Draggable(props: PlateElementProps) {
   const { children, editor, element, path } = props;
-  const blockSelectionApi = editor.getApi(BlockSelectionPlugin).blockSelection;
+  const blockSelectionApi = editor.getApi(BlockSelectionPlugin)?.blockSelection;
 
   const { isAboutToDrag, isDragging, nodeRef, previewRef, handleRef } =
     useDraggable({
@@ -281,16 +281,16 @@ const DragHandle = React.memo(function DragHandle({
             previewRef.current?.classList.add("opacity-0");
             editor.setOption(DndPlugin, "multiplePreviewRef", previewRef);
 
-            editor
-              .getApi(BlockSelectionPlugin)
-              .blockSelection.set(blocks.map((block) => block.id as string));
+            const blockSelectionApi = editor.getApi(BlockSelectionPlugin)?.blockSelection;
+            if (blockSelectionApi) {
+              blockSelectionApi.set(blocks.map((block) => block.id as string));
+            }
           }}
           onMouseEnter={() => {
             if (isDragging) return;
 
-            const blockSelection = editor
-              .getApi(BlockSelectionPlugin)
-              .blockSelection.getNodes({ sort: true });
+            const blockSelectionApi = editor.getApi(BlockSelectionPlugin)?.blockSelection;
+            const blockSelection = blockSelectionApi?.getNodes({ sort: true }) || [];
 
             let selectedBlocks =
               blockSelection.length > 0

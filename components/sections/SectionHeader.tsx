@@ -3,35 +3,16 @@
  * Displays section title, subtitle, and optional action
  */
 
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 export interface SectionHeaderProps {
-  /**
-   * Main title of the section
-   */
-  title: string;
-
-  /**
-   * Optional subtitle or description
-   */
-  subtitle?: string;
-
-  /**
-   * Link to "See All" page
-   */
-  href?: string;
-
-  /**
-   * Text for the action link (default: "See All")
-   */
-  linkText?: string;
-
-  /**
-   * Custom action element (replaces default link)
-   */
-  action?: React.ReactNode;
+  readonly title: string;
+  readonly subtitle?: string;
+  readonly href?: string;
+  readonly linkText?: string;
+  readonly action?: React.ReactNode;
 }
 
 export function SectionHeader({
@@ -56,7 +37,7 @@ export function SectionHeader({
       </div>
 
       {/* Action */}
-      <div className="flex-shrink-0">
+      <div className="shrink-0">
         {action ? (
           action
         ) : href ? (

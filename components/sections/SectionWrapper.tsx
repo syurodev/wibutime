@@ -7,25 +7,10 @@ import { cn } from "@/lib/utils";
 import { SectionHeader, type SectionHeaderProps } from "./SectionHeader";
 
 export interface SectionWrapperProps extends SectionHeaderProps {
-  /**
-   * Section content
-   */
-  children: React.ReactNode;
-
-  /**
-   * Additional CSS classes
-   */
-  className?: string;
-
-  /**
-   * Content area CSS classes
-   */
-  contentClassName?: string;
-
-  /**
-   * ID for the section (useful for navigation)
-   */
-  id?: string;
+  readonly children: React.ReactNode;
+  readonly className?: string;
+  readonly contentClassName?: string;
+  readonly id?: string;
 }
 
 export function SectionWrapper({
@@ -36,10 +21,7 @@ export function SectionWrapper({
   ...headerProps
 }: SectionWrapperProps) {
   return (
-    <section
-      id={id}
-      className={cn("space-y-6 py-8 md:py-12", className)}
-    >
+    <section id={id} className={cn("space-y-6 py-8 md:py-12", className)}>
       {/* Header */}
       <SectionHeader {...headerProps} />
 

@@ -8,12 +8,18 @@ type IGetContentBg = {
 export const getContentBg = ({ type, blur = false }: IGetContentBg) => {
   switch (type) {
     case CONTENT_TYPE.ANIME:
-      return blur ? "bg-pink-500/50 backdrop-blur-md" : "bg-pink-500";
+      return blur
+        ? "bg-cyan-500/70 backdrop-blur-md hover:bg-cyan-600/70"
+        : "bg-cyan-500 hover:bg-cyan-600";
     case CONTENT_TYPE.MANGA:
-      return blur ? "bg-amber-400/50 backdrop-blur-md" : "bg-amber-400";
+      return blur
+        ? "bg-purple-500/70 backdrop-blur-md hover:bg-purple-600/70"
+        : "bg-purple-500 hover:bg-purple-600";
     case CONTENT_TYPE.NOVEL:
-      return blur ? "bg-teal-500/50 backdrop-blur-md" : "bg-teal-500";
+      return blur
+        ? "bg-teal-500/70 backdrop-blur-md hover:bg-teal-600/70"
+        : "bg-teal-500 hover:bg-teal-600";
     default:
-      return blur ? "bg-background/50 backdrop-blur-md" : "bg-background";
+      return blur ? "bg-background/70 backdrop-blur-md" : "bg-background";
   }
 };

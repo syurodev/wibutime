@@ -28,6 +28,9 @@ export function NavProvider({ children }: NavProviderProps) {
   // Whether search mode is active (nav expanded to show search input)
   const [searchMode, setSearchMode] = useState(false);
 
+  // Whether comment mode is active (nav expanded to show comment editor)
+  const [commentMode, setCommentMode] = useState(false);
+
   // Whether More menu drawer is open
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
 
@@ -48,7 +51,19 @@ export function NavProvider({ children }: NavProviderProps) {
    */
   const toggleSearch = useCallback(() => {
     setSearchMode((prev) => !prev);
-  }, []);
+    // Close comment mode when opening search
+    if (!searchMode) setCommentMode(false);
+  }, [searchMode]);
+
+  /**
+   * Toggle comment mode on/off
+   * When on, nav expands to show comment editor
+   */
+  const toggleComment = useCallback(() => {
+    setCommentMode((prev) => !prev);
+    // Close search mode when opening comment
+    if (!commentMode) setSearchMode(false);
+  }, [commentMode]);
 
   /**
    * Toggle More menu drawer on/off
@@ -78,14 +93,16 @@ export function NavProvider({ children }: NavProviderProps) {
     () => ({
       items,
       searchMode,
+      commentMode,
       moreMenuOpen,
       loadingItems,
       setNavItems,
       toggleSearch,
+      toggleComment,
       toggleMoreMenu,
       setItemLoading,
     }),
-    [items, searchMode, moreMenuOpen, loadingItems, setNavItems, toggleSearch, toggleMoreMenu, setItemLoading]
+    [items, searchMode, commentMode, moreMenuOpen, loadingItems, setNavItems, toggleSearch, toggleComment, toggleMoreMenu, setItemLoading]
   );
 
   return (

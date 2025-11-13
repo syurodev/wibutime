@@ -1,10 +1,12 @@
 /**
- * Base Content Data Model
- * Single unified data structure for all content (anime, manga, novel)
- * Plain object with no class methods - simple and serializable
+ * Base Content Models - Zod Schemas
+ * Single unified data structure cho tất cả content (anime, manga, novel)
+ * Safe type generation + runtime validation với flexible defaults
  */
 
-import type { ContentStatus, ContentType } from "@/lib/constants/default";
+import { CONTENT_TYPE } from "@/lib/constants/default";
+import { z } from "zod";
+import { BaseUserSchema } from "../user/base-user";
 
 /**
  * Badge variant for featured content
@@ -12,157 +14,215 @@ import type { ContentStatus, ContentType } from "@/lib/constants/default";
 export type BadgeVariant = "new" | "hot" | "exclusive" | "trending";
 
 /**
- * Latest chapter/episode information
+ * Genre Schema
  */
-export interface LatestChapter {
-	number: number;
-	title: string;
-	published_at: string;
-}
+export const GenreSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+});
+
+export type Genre = z.infer<typeof GenreSchema>;
 
 /**
- * Base Content Data - The single source of truth for content structure
- * This replaces both Series class and SeriesData interface
+ * Media Unit Schema (Chapter/Episode)
+ * Flexible với default values
  */
-export interface BaseContentData {
-	// Basic info
-	id: string;
-	title: string;
-	slug: string;
-	description: string;
-	cover_url: string;
-	type: ContentType;
-	status: ContentStatus;
-	genres: string[];
+export const MediaUnitSchema = z.object({
+  id: z.string(),
+  title: z.string().default("Untitled"),
+  published_at: z.string().default(() => new Date().toISOString()),
+});
 
-	// Stats
-	rating: number;
-	views: number;
-	favorites: number;
-
-	// Latest update (optional - may not exist for some content)
-	latest_chapter?: LatestChapter;
-
-	// Timestamps
-	created_at: string;
-	updated_at: string;
-}
+export type MediaUnit = z.infer<typeof MediaUnitSchema>;
 
 /**
- * Featured Content Data - Plain object for featured/hero sections
- * Uses BaseContentData for nested series information
+ * Media Volume Schema
+ * Optional media_unit (có thể không có chapter/episode)
  */
-export interface FeaturedData {
-	id: string;
-	series_id: string;
-	series: BaseContentData;
-	banner_url: string;
-	title: string;
-	description: string;
-	badge_text: string;
-	badge_variant: BadgeVariant;
-	cta_primary: string;
-	cta_secondary: string;
-	order: number;
-}
+export const MediaVolumeSchema = z.object({
+  id: z.string(),
+  title: z.string().default("Untitled Volume"),
+  published_at: z.string().default(() => new Date().toISOString()),
+  media_unit: MediaUnitSchema.optional(),
+});
+
+export type MediaVolume = z.infer<typeof MediaVolumeSchema>;
 
 /**
- * Helper functions for formatting content data
+ * Media Series Schema - The main content model
+ * Flexible với smart defaults cho missing data
  */
-export const ContentFormatter = {
-	/**
-	 * Format rating (e.g., "4.5" or "N/A")
-	 */
-	formatRating(rating: number): string {
-		return rating > 0 ? rating.toFixed(1) : "N/A";
-	},
+export const MediaSeriesSchema = z.object({
+  // Required fields - MUST có từ BE
+  id: z.string(),
+  title: z.string().min(1, "Title is required"),
+  slug: z.string(),
 
-	/**
-	 * Format view count (e.g., "1.2K", "3.4M")
-	 */
-	formatViews(views: number): string {
-		if (views >= 1000000) {
-			return `${(views / 1000000).toFixed(1)}M`;
-		}
-		if (views >= 1000) {
-			return `${(views / 1000).toFixed(1)}K`;
-		}
-		return views.toString();
-	},
+  // Content fields với defaults
+  description: z.array(z.any()).default([]), // TNode[] from platejs
+  cover_url: z.string().default("/images/placeholder.png"),
 
-	/**
-	 * Format favorites count
-	 */
-	formatFavorites(favorites: number): string {
-		if (favorites >= 1000000) {
-			return `${(favorites / 1000000).toFixed(1)}M`;
-		}
-		if (favorites >= 1000) {
-			return `${(favorites / 1000).toFixed(1)}K`;
-		}
-		return favorites.toString();
-	},
+  // Type và status với defaults
+  type: z
+    .enum([CONTENT_TYPE.ANIME, CONTENT_TYPE.MANGA, CONTENT_TYPE.NOVEL])
+    .default(CONTENT_TYPE.NOVEL),
+  status: z
+    .enum(["ongoing", "completed", "hiatus", "cancelled"])
+    .default("ongoing"),
 
-	/**
-	 * Check if content is new (created within last 7 days)
-	 */
-	isNew(created_at: string): boolean {
-		const now = new Date();
-		const createdDate = new Date(created_at);
-		const daysDiff = Math.floor(
-			(now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24),
-		);
-		return daysDiff <= 7;
-	},
+  // Relations với defaults
+  genres: z.array(GenreSchema).default([]),
+  user: BaseUserSchema,
 
-	/**
-	 * Check if content is trending (high view count)
-	 */
-	isTrending(views: number): boolean {
-		return views >= 10000;
-	},
+  // Stats với defaults
+  rating: z.number().min(0).max(10).default(0),
+  views: z.number().int().min(0).default(0),
+  favorites: z.number().int().min(0).default(0),
 
-	/**
-	 * Check if content has recent updates (within last 3 days)
-	 */
-	hasRecentUpdate(updated_at: string): boolean {
-		const now = new Date();
-		const updatedDate = new Date(updated_at);
-		const daysDiff = Math.floor(
-			(now.getTime() - updatedDate.getTime()) / (1000 * 60 * 60 * 24),
-		);
-		return daysDiff <= 3;
-	},
+  // Optional fields
+  latest_chapter: MediaUnitSchema.optional(),
 
-	/**
-	 * Get latest chapter info formatted
-	 */
-	formatLatestChapter(latestChapter?: LatestChapter): string | undefined {
-		if (!latestChapter) return undefined;
-		return `Ch. ${latestChapter.number}: ${latestChapter.title}`;
-	},
+  // Timestamps với defaults
+  created_at: z.string().default(() => new Date().toISOString()),
+  updated_at: z.string().default(() => new Date().toISOString()),
+});
 
-	/**
-	 * Get status label in localized language
-	 */
-	getStatusLabel(status: ContentStatus, locale: string = "en"): string {
-		const labels: Record<ContentStatus, Record<string, string>> = {
-			ongoing: { en: "Ongoing", vi: "Đang tiến hành" },
-			completed: { en: "Completed", vi: "Hoàn thành" },
-			hiatus: { en: "Hiatus", vi: "Tạm ngưng" },
-		};
-		return labels[status][locale] || labels[status].en;
-	},
+export type MediaSeries = z.infer<typeof MediaSeriesSchema>;
 
-	/**
-	 * Get type label
-	 */
-	getTypeLabel(type: ContentType, locale: string = "en"): string {
-		const labels: Record<ContentType, Record<string, string>> = {
-			anime: { en: "Anime", vi: "Anime" },
-			manga: { en: "Manga", vi: "Manga" },
-			novel: { en: "Novel", vi: "Tiểu thuyết" },
-		};
-		return labels[type][locale] || labels[type].en;
-	},
+/**
+ * Array schemas for bulk operations
+ */
+export const GenreArraySchema = z.array(GenreSchema);
+export const MediaUnitArraySchema = z.array(MediaUnitSchema);
+export const MediaSeriesArraySchema = z.array(MediaSeriesSchema);
+
+/**
+ * Partial schema cho draft/incomplete content
+ */
+export const PartialMediaSeriesSchema = MediaSeriesSchema.partial({
+  cover_url: true,
+  genres: true,
+  latest_chapter: true,
+  description: true,
+});
+
+export type PartialMediaSeries = z.infer<typeof PartialMediaSeriesSchema>;
+
+/**
+ * Preview schema cho lists/cards (minimal data)
+ */
+export const MediaSeriesPreviewSchema = MediaSeriesSchema.pick({
+  id: true,
+  title: true,
+  slug: true,
+  cover_url: true,
+  type: true,
+  rating: true,
+  views: true,
+});
+
+export type MediaSeriesPreview = z.infer<typeof MediaSeriesPreviewSchema>;
+
+/**
+ * Utilities for Media Series
+ */
+export const MediaSeriesUtils = {
+  /**
+   * Format views count
+   */
+  formatViews(views: number): string {
+    if (views >= 1_000_000) return `${(views / 1_000_000).toFixed(1)}M`;
+    if (views >= 1_000) return `${(views / 1_000).toFixed(1)}K`;
+    return views.toString();
+  },
+
+  /**
+   * Format rating
+   */
+  formatRating(rating: number): string {
+    return rating.toFixed(1);
+  },
+
+  /**
+   * Get genre names as array
+   */
+  getGenreNames(series: MediaSeries): string[] {
+    return series.genres.map((g) => g.name);
+  },
+
+  /**
+   * Get genre names as string
+   */
+  getGenreString(series: MediaSeries): string {
+    return this.getGenreNames(series).join(", ");
+  },
+
+  /**
+   * Check if series is new (created within X days)
+   */
+  isNew(series: MediaSeries, daysThreshold = 30): boolean {
+    const createdDate = new Date(series.created_at);
+    const now = new Date();
+    const diffDays = Math.floor(
+      (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    return diffDays <= daysThreshold;
+  },
+
+  /**
+   * Check if series is trending (high recent views)
+   */
+  isTrending(series: MediaSeries, viewsThreshold = 10000): boolean {
+    return series.views >= viewsThreshold;
+  },
+
+  /**
+   * Get badge variant based on series data
+   */
+  getBadgeVariant(series: MediaSeries): BadgeVariant | null {
+    if (this.isNew(series, 7)) return "new";
+    if (this.isTrending(series, 50000)) return "hot";
+    if (series.rating >= 9) return "exclusive";
+    if (this.isTrending(series, 20000)) return "trending";
+    return null;
+  },
+
+  /**
+   * Create default series (for testing)
+   */
+  createDefault(overrides?: Partial<MediaSeries>): MediaSeries {
+    return MediaSeriesSchema.parse({
+      id: crypto.randomUUID(),
+      title: "Untitled Series",
+      slug: "untitled-series",
+      user: {
+        id: crypto.randomUUID(),
+        display_name: "Unknown Author",
+        username: "unknown",
+      },
+      ...overrides,
+    });
+  },
+};
+
+/**
+ * Genre Utilities
+ */
+export const GenreUtils = {
+  /**
+   * Create genre from name
+   */
+  create(name: string): Genre {
+    return GenreSchema.parse({
+      id: crypto.randomUUID(),
+      name,
+    });
+  },
+
+  /**
+   * Create multiple genres from names
+   */
+  createMany(names: string[]): Genre[] {
+    return names.map((name) => this.create(name));
+  },
 };
