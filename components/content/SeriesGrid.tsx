@@ -14,12 +14,7 @@ export interface SeriesGridProps {
   readonly className?: string;
 }
 
-export function SeriesGrid({
-  series,
-  showContentType = true,
-  showDescription = true,
-  className,
-}: SeriesGridProps) {
+export function SeriesGrid({ series, className }: SeriesGridProps) {
   if (!series || series.length === 0) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
@@ -36,12 +31,7 @@ export function SeriesGrid({
     >
       {series.map((item) => (
         <AspectRatio key={item.id} ratio={3 / 5} className="w-full">
-          <ContentCard
-            series={item}
-            showDescription={showDescription}
-            className="h-full"
-            showContentType={showContentType}
-          />
+          <ContentCard series={item} className="h-full" />
         </AspectRatio>
       ))}
     </div>

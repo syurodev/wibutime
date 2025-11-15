@@ -1,5 +1,6 @@
 import type { TNode } from "platejs";
 import type React from "react";
+import { useMemo } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -26,6 +27,9 @@ export interface StaticEditorViewProps {
  *
  * Simple wrapper để hiển thị content ở dạng HTML tĩnh.
  * Sử dụng dangerouslySetInnerHTML để render content đã được serialize.
+ *
+ * PERFORMANCE: Uses useMemo to cache rendered nodes and avoid
+ * expensive recursive rendering on every render
  *
  * @note Để tránh phức tạp với PlateStatic setup, component này
  * render content dưới dạng HTML đơn giản với styling CSS.
@@ -57,42 +61,48 @@ export function StaticEditorView({
     }
   };
 
-  // Render nodes recursively
-  const renderNode = (node: TNode, index: number): React.ReactNode => {
-    if ("text" in node) {
-      let text: React.ReactNode = node.text as React.ReactNode;
+  // Memoize rendered nodes to avoid expensive recursive rendering on every render
+  // Only re-render if content actually changes
+  const renderedNodes = useMemo(() => {
+    // Render nodes recursively
+    const renderNode = (node: TNode, index: number): React.ReactNode => {
+      if ("text" in node) {
+        let text: React.ReactNode = node.text as React.ReactNode;
 
-      if (node.bold) text = <strong key={index}>{text}</strong>;
-      if (node.italic) text = <em key={index}>{text}</em>;
-      if (node.underline) text = <u key={index}>{text}</u>;
-      if (node.code) text = <code key={index}>{text}</code>;
+        if (node.bold) text = <strong key={index}>{text}</strong>;
+        if (node.italic) text = <em key={index}>{text}</em>;
+        if (node.underline) text = <u key={index}>{text}</u>;
+        if (node.code) text = <code key={index}>{text}</code>;
 
-      return text;
-    }
-
-    if ("children" in node) {
-      const children = (node.children as TNode[]).map((child, i) =>
-        renderNode(child, i)
-      );
-
-      switch (node.type) {
-        case "h1":
-          return <h1 key={index}>{children}</h1>;
-        case "h2":
-          return <h2 key={index}>{children}</h2>;
-        case "h3":
-          return <h3 key={index}>{children}</h3>;
-        case "h4":
-          return <h4 key={index}>{children}</h4>;
-        case "p":
-          return <p key={index}>{children}</p>;
-        default:
-          return <div key={index}>{children}</div>;
+        return text;
       }
-    }
 
-    return null;
-  };
+      if ("children" in node) {
+        const children = (node.children as TNode[]).map((child, i) =>
+          renderNode(child, i)
+        );
+
+        switch (node.type) {
+          case "h1":
+            return <h1 key={index}>{children}</h1>;
+          case "h2":
+            return <h2 key={index}>{children}</h2>;
+          case "h3":
+            return <h3 key={index}>{children}</h3>;
+          case "h4":
+            return <h4 key={index}>{children}</h4>;
+          case "p":
+            return <p key={index}>{children}</p>;
+          default:
+            return <div key={index}>{children}</div>;
+        }
+      }
+
+      return null;
+    };
+
+    return content.map((node, index) => renderNode(node, index));
+  }, [content]);
 
   return (
     <div
@@ -115,7 +125,7 @@ export function StaticEditorView({
         className
       )}
     >
-      {content.map((node, index) => renderNode(node, index))}
+      {renderedNodes}
     </div>
   );
 }

@@ -1,147 +1,149 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { Plate, usePlateEditor } from 'platejs/react';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import { Separator } from '@/components/ui/separator';
-import { MessageSquarePlus, FileEdit } from 'lucide-react';
+import { Separator } from "@/components/ui/separator";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { FileEdit, MessageSquarePlus } from "lucide-react";
+import { Plate, usePlateEditor } from "platejs/react";
+import * as React from "react";
 
 // Import all feature kits
-import { BasicBlocksKit } from '@/components/editor/plugins/basic-blocks-kit';
-import { BasicMarksKit } from '@/components/editor/plugins/basic-marks-kit';
-import { LinkKit } from '@/components/editor/plugins/link-kit';
-import { MediaKit } from '@/components/editor/plugins/media-kit';
-import { AlignKit } from '@/components/editor/plugins/align-kit';
-import { IndentKit } from '@/components/editor/plugins/indent-kit';
-import { SelectionKit } from '@/components/editor/plugins/selection-kit';
-import { DndKit } from '@/components/editor/plugins/dnd-kit';
+import { AlignKit } from "@/components/editor/plugins/align-kit";
+import { BasicBlocksKit } from "@/components/editor/plugins/basic-blocks-kit";
+import { BasicMarksKit } from "@/components/editor/plugins/basic-marks-kit";
+import { DndKit } from "@/components/editor/plugins/dnd-kit";
+import { IndentKit } from "@/components/editor/plugins/indent-kit";
+import { LinkKit } from "@/components/editor/plugins/link-kit";
+import { MediaKit } from "@/components/editor/plugins/media-kit";
+import { SelectionKit } from "@/components/editor/plugins/selection-kit";
 
 // Import UI components
-import { Editor, EditorContainer } from '@/components/ui/editor';
-import { FixedToolbar } from '@/components/ui/fixed-toolbar';
-import { WordCount } from '@/components/ui/word-count';
-import { NavCommentTrigger } from '@/components/layout/nav/NavCommentTrigger';
+import { NavCommentTrigger } from "@/components/layout/nav/NavCommentTrigger";
+import { Editor, EditorContainer } from "@/components/ui/editor";
+import { FixedToolbar } from "@/components/ui/fixed-toolbar";
+import { WordCount } from "@/components/ui/word-count";
 
 // Import hooks
-import { useAutosave } from '@/hooks/use-autosave';
-import { EditorDemoNavigation } from './EditorDemoNavigation';
-import { ContentCard } from '@/components/content/ContentCard';
-import { getMockMediaSeries } from '@/lib/api/mock/mock-base-content';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { HeroSection } from '@/components/home/HeroSection';
+import { ContentCard } from "@/components/content/ContentCard";
+import { HeroSection } from "@/components/home/HeroSection";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { useAutosave } from "@/hooks/use-autosave";
+import { getMockMediaSeries } from "@/lib/api/mock/mock-base-content";
+import { EditorDemoNavigation } from "./EditorDemoNavigation";
 
 const INITIAL_VALUE = [
   {
-    id: '1',
-    type: 'h1',
-    children: [{ text: 'Welcome to Editor Demo' }],
+    id: "1",
+    type: "h1",
+    children: [{ text: "Welcome to Editor Demo" }],
   },
   {
-    id: '2',
-    type: 'p',
+    id: "2",
+    type: "p",
     children: [
-      { text: 'This page demonstrates both editors in the WibuTime system:' },
+      { text: "This page demonstrates both editors in the WibuTime system:" },
     ],
   },
   {
-    id: '3',
-    type: 'p',
+    id: "3",
+    type: "p",
     children: [
-      { text: '1. ', bold: true },
-      { text: 'Full Novel Editor', bold: true, italic: true },
-      { text: ' - Complete rich text editor with all formatting options (shown below)' },
+      { text: "1. ", bold: true },
+      { text: "Full Novel Editor", bold: true, italic: true },
+      {
+        text: " - Complete rich text editor with all formatting options (shown below)",
+      },
     ],
   },
   {
-    id: '4',
-    type: 'p',
+    id: "4",
+    type: "p",
     children: [
-      { text: '2. ', bold: true },
-      { text: 'Compact Comment Editor', bold: true, italic: true },
-      { text: ' - Minimal editor integrated into navigation (click the button at bottom-right)' },
+      { text: "2. ", bold: true },
+      { text: "Compact Comment Editor", bold: true, italic: true },
+      {
+        text: " - Minimal editor integrated into navigation (click the button at bottom-right)",
+      },
     ],
   },
   {
-    id: '5',
-    type: 'h2',
-    children: [{ text: 'Try the editors below!' }],
+    id: "5",
+    type: "h2",
+    children: [{ text: "Try the editors below!" }],
   },
   {
-    id: '6',
-    type: 'p',
+    id: "6",
+    type: "p",
+    children: [{ text: "Full Novel Editor features:" }],
+  },
+  {
+    id: "7",
+    type: "p",
     children: [
-      { text: 'Full Novel Editor features:' },
+      { text: "• Text formatting: " },
+      { text: "Bold", bold: true },
+      { text: ", " },
+      { text: "Italic", italic: true },
+      { text: ", " },
+      { text: "Underline", underline: true },
+      { text: ", " },
+      { text: "Strikethrough", strikethrough: true },
+      { text: ", " },
+      { text: "Code", code: true },
+      { text: ", " },
+      { text: "Highlight", highlight: true },
     ],
   },
   {
-    id: '7',
-    type: 'p',
+    id: "8",
+    type: "p",
+    children: [{ text: "• Headings (H1-H4) with keyboard shortcuts (⌘⌥1-4)" }],
+  },
+  {
+    id: "9",
+    type: "p",
+    children: [{ text: "• Text alignment (left, center, right, justify)" }],
+  },
+  {
+    id: "10",
+    type: "p",
+    children: [{ text: "• Links, Images, Videos with resize and captions" }],
+  },
+  {
+    id: "11",
+    type: "p",
+    children: [{ text: "• Blockquotes and horizontal rules" }],
+  },
+  {
+    id: "12",
+    type: "p",
+    children: [{ text: "• Drag & drop blocks and files" }],
+  },
+  {
+    id: "13",
+    type: "p",
+    children: [{ text: "• Undo/Redo (⌘Z / ⌘⇧Z)" }],
+  },
+  {
+    id: "14",
+    type: "p",
+    children: [{ text: "• Real-time word count" }],
+  },
+  {
+    id: "15",
+    type: "p",
+    children: [{ text: "• Auto-save with localStorage backup" }],
+  },
+  {
+    id: "16",
+    type: "blockquote",
     children: [
-      { text: '• Text formatting: ' },
-      { text: 'Bold', bold: true },
-      { text: ', ' },
-      { text: 'Italic', italic: true },
-      { text: ', ' },
-      { text: 'Underline', underline: true },
-      { text: ', ' },
-      { text: 'Strikethrough', strikethrough: true },
-      { text: ', ' },
-      { text: 'Code', code: true },
-      { text: ', ' },
-      { text: 'Highlight', highlight: true },
-    ],
-  },
-  {
-    id: '8',
-    type: 'p',
-    children: [{ text: '• Headings (H1-H4) with keyboard shortcuts (⌘⌥1-4)' }],
-  },
-  {
-    id: '9',
-    type: 'p',
-    children: [{ text: '• Text alignment (left, center, right, justify)' }],
-  },
-  {
-    id: '10',
-    type: 'p',
-    children: [{ text: '• Links, Images, Videos with resize and captions' }],
-  },
-  {
-    id: '11',
-    type: 'p',
-    children: [{ text: '• Blockquotes and horizontal rules' }],
-  },
-  {
-    id: '12',
-    type: 'p',
-    children: [{ text: '• Drag & drop blocks and files' }],
-  },
-  {
-    id: '13',
-    type: 'p',
-    children: [{ text: '• Undo/Redo (⌘Z / ⌘⇧Z)' }],
-  },
-  {
-    id: '14',
-    type: 'p',
-    children: [{ text: '• Real-time word count' }],
-  },
-  {
-    id: '15',
-    type: 'p',
-    children: [{ text: '• Auto-save with localStorage backup' }],
-  },
-  {
-    id: '16',
-    type: 'blockquote',
-    children: [
-      { text: 'Start writing your novel here... All changes are auto-saved!' },
+      { text: "Start writing your novel here... All changes are auto-saved!" },
     ],
   },
 ];
 
 export default function EditorDemoPage() {
-  const contentId = 'editor-demo-full';
+  const contentId = "editor-demo-full";
 
   // Generate mock series for testing
   const mockSeries = React.useMemo(() => getMockMediaSeries(10), []);
@@ -207,16 +209,13 @@ export default function EditorDemoPage() {
         {/* Test: ContentCards Grid */}
         <div className="container px-4 pt-6">
           <div className="mb-6">
-            <h2 className="mb-4 text-xl font-semibold">Test: Mock Content Cards</h2>
+            <h2 className="mb-4 text-xl font-semibold">
+              Test: Mock Content Cards
+            </h2>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
               {mockSeries.map((item) => (
                 <AspectRatio key={item.id} ratio={3 / 5} className="w-full">
-                  <ContentCard
-                    series={item}
-                    showDescription={true}
-                    className="h-full"
-                    showContentType={true}
-                  />
+                  <ContentCard series={item} className="h-full" />
                 </AspectRatio>
               ))}
             </div>
@@ -237,8 +236,9 @@ export default function EditorDemoPage() {
                 <div className="flex-1 space-y-2">
                   <h3 className="font-semibold">Full Novel Editor (below)</h3>
                   <p className="text-sm text-muted-foreground">
-                    Complete rich text editor with toolbar, word count, and auto-save.
-                    Perfect for writing novels, articles, or long-form content.
+                    Complete rich text editor with toolbar, word count, and
+                    auto-save. Perfect for writing novels, articles, or
+                    long-form content.
                   </p>
                   <ul className="space-y-1 text-sm text-muted-foreground">
                     <li>• Use the toolbar above the editor for formatting</li>
@@ -256,13 +256,19 @@ export default function EditorDemoPage() {
                   <MessageSquarePlus className="size-5 text-green-600 dark:text-green-500" />
                 </div>
                 <div className="flex-1 space-y-2">
-                  <h3 className="font-semibold">Compact Comment Editor (in Navigation)</h3>
+                  <h3 className="font-semibold">
+                    Compact Comment Editor (in Navigation)
+                  </h3>
                   <p className="text-sm text-muted-foreground">
-                    Minimal editor that appears in the navigation bar. Perfect for quick comments,
-                    notes, or feedback.
+                    Minimal editor that appears in the navigation bar. Perfect
+                    for quick comments, notes, or feedback.
                   </p>
                   <ul className="space-y-1 text-sm text-muted-foreground">
-                    <li>• Click the <MessageSquarePlus className="mx-1 inline size-3.5" /> button at bottom-right</li>
+                    <li>
+                      • Click the{" "}
+                      <MessageSquarePlus className="mx-1 inline size-3.5" />{" "}
+                      button at bottom-right
+                    </li>
                     <li>• Navigation expands to show comment editor</li>
                     <li>• Only Bold, Italic, Underline formatting available</li>
                     <li>• Press ⌘Enter to submit, Escape to cancel</li>
@@ -315,25 +321,25 @@ function SaveIndicator({
   status,
   lastSaved,
 }: {
-  status: 'saved' | 'saving' | 'unsaved' | 'error';
+  status: "saved" | "saving" | "unsaved" | "error";
   lastSaved: Date | null;
 }) {
   const statusConfig = {
     saved: {
-      text: 'Saved',
-      className: 'text-green-600 dark:text-green-500',
+      text: "Saved",
+      className: "text-green-600 dark:text-green-500",
     },
     saving: {
-      text: 'Saving...',
-      className: 'text-yellow-600 dark:text-yellow-500',
+      text: "Saving...",
+      className: "text-yellow-600 dark:text-yellow-500",
     },
     unsaved: {
-      text: 'Unsaved changes',
-      className: 'text-orange-600 dark:text-orange-500',
+      text: "Unsaved changes",
+      className: "text-orange-600 dark:text-orange-500",
     },
     error: {
-      text: 'Save failed',
-      className: 'text-red-600 dark:text-red-500',
+      text: "Save failed",
+      className: "text-red-600 dark:text-red-500",
     },
   };
 
@@ -351,9 +357,9 @@ function SaveIndicator({
   }, []);
 
   const timeAgo = React.useMemo(() => {
-    if (!lastSaved) return '';
+    if (!lastSaved) return "";
     const seconds = Math.floor((currentTime - lastSaved.getTime()) / 1000);
-    if (seconds < 60) return 'just now';
+    if (seconds < 60) return "just now";
     const minutes = Math.floor(seconds / 60);
     if (minutes < 60) return `${minutes}m ago`;
     const hours = Math.floor(minutes / 60);
@@ -363,7 +369,7 @@ function SaveIndicator({
   return (
     <div className="flex items-center gap-2 text-sm">
       <span className={config.className}>{config.text}</span>
-      {lastSaved && status === 'saved' && (
+      {lastSaved && status === "saved" && (
         <span className="text-muted-foreground">• {timeAgo}</span>
       )}
     </div>

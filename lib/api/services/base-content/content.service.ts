@@ -19,10 +19,13 @@ import { ApiParser } from "../../utils/parsers";
 
 /**
  * Simulate API delay
- * Development: 1000-2000ms (to see skeleton clearly)
+ * Development: 200-500ms (fast enough for good UX, slow enough to test loading states)
  * Production: Remove this when using real API
+ *
+ * PERFORMANCE: Reduced from 1-2s to 200-500ms for better dev experience
+ * Combined with caching, this provides instant subsequent loads
  */
-async function mockDelay(min = 1000, max = 2000): Promise<void> {
+async function mockDelay(min = 200, max = 500): Promise<void> {
   const delay = Math.random() * (max - min) + min;
   await new Promise((resolve) => setTimeout(resolve, delay));
 }
