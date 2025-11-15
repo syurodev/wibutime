@@ -3,6 +3,7 @@
  * Main landing page with featured content and sections
  */
 
+import { ContinueSection } from "@/components/home/ContinueSection";
 import { HeroSection } from "@/components/home/HeroSection";
 import { HomeNavigation } from "@/components/home/HomeNavigation";
 import { LatestUpdatesSection } from "@/components/home/LatestUpdatesSection";
@@ -14,6 +15,7 @@ import {
   getCachedNew,
   getCachedTrending,
 } from "@/lib/api/services/base-content/content.cached";
+import { getCachedHistory } from "@/lib/api/services/history/history.cached";
 import type { Metadata } from "next";
 
 /**
@@ -35,6 +37,7 @@ export default async function HomePage() {
   const trendingSeries = await getCachedTrending(10);
   const latestSeries = await getCachedLatest(10);
   const newSeries = await getCachedNew(10);
+  const historyItems = await getCachedHistory(12);
 
   return (
     <>
@@ -44,6 +47,7 @@ export default async function HomePage() {
       {/* Main Content */}
       <div className="min-h-screen pb-24">
         <HeroSection featuredList={featuredList} />
+        <ContinueSection history={historyItems} />
         <TrendingSection series={trendingSeries} />
         <LatestUpdatesSection series={latestSeries} />
         <NewSeriesSection series={newSeries} />

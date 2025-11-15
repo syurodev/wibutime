@@ -38,6 +38,12 @@
     "subtitle": "Tác phẩm mới nhất",
     "empty": "Chưa có series mới"
   },
+  "continue": {
+    "title": "Tiếp tục xem/đọc",
+    "subtitle": "Quay lại những nội dung bạn đang dang dở",
+    "empty": "Bạn chưa có nội dung nào cần tiếp tục",
+    "viewAll": "Xem toàn bộ lịch sử"
+  },
   "genres": {
     "title": "Khám Phá Theo Thể Loại",
     "subtitle": "Tìm nội dung theo danh mục",

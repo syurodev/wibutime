@@ -155,7 +155,7 @@ export function getMockMediaSeries(count: number = 50): MediaSeries[] {
           title: `Chapter ${Math.floor(Math.random() * 100) + 1}`,
           published_at: updatedAt,
         }),
-        user: generateMockUser(i),
+        author: generateMockUser(i),
         created_at: createdAt,
         updated_at: updatedAt,
       };

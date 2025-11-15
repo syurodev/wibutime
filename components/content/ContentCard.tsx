@@ -113,18 +113,18 @@ export const ContentCard = memo(function ContentCard({
                 <Avatar className="size-6 shrink-0 ring-1 ring-white/30">
                   <AvatarImage
                     src={getImageUrlWithDefault(
-                      series.user.avatar_url,
+                      series.author.avatar_url,
                       "user-avatar"
                     )}
-                    alt={series.user.username}
+                    alt={series.author.username}
                     loading="lazy"
                   />
                   <AvatarFallback className="text-[9px] text-foreground">
-                    {getInitials(series.user.display_name)}
+                    {getInitials(series.author.display_name)}
                   </AvatarFallback>
                 </Avatar>
                 <span className="text-[11px] font-medium truncate text-white/90 text-shadow-sm">
-                  {series.user.display_name}
+                  {series.author.display_name}
                 </span>
               </div>
 

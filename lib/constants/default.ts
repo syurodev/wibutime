@@ -27,3 +27,6 @@ export interface LatestChapterRaw {
   title: string;
   published_at: string;
 }
+
+export const DEFAULT_LIMIT = 20;
+export const DEFAULT_PAGE = 1;

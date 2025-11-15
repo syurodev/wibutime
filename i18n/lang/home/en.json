@@ -38,6 +38,12 @@
     "subtitle": "Latest additions to our library",
     "empty": "No new series available"
   },
+  "continue": {
+    "title": "Continue Watching & Reading",
+    "subtitle": "Pick up right where you left off",
+    "empty": "Nothing to continue right now",
+    "viewAll": "View history"
+  },
   "genres": {
     "title": "Browse by Genre",
     "subtitle": "Discover content by category",

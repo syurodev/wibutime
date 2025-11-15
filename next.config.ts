@@ -37,6 +37,11 @@ const nextConfig: NextConfig = {
       revalidate: 60 * 30, // 30 minutes
       expire: 60 * 60 * 2, // 2 hours
     },
+    history: {
+      stale: 60 * 10, // 10 minutes
+      revalidate: 60 * 30, // 30 minutes
+      expire: 60 * 60 * 2, // 2 hours
+    },
   },
 };
 

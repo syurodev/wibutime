@@ -1,11 +1,18 @@
 "use client";
 
+import { CompactCommentEditor } from "@/components/editor/compact-comment-editor";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { MoreHorizontal } from "lucide-react";
 import { usePathname } from "next/navigation";
+import type { TNode } from "platejs";
 import { useEffect, useRef, useState } from "react";
+import {
+  DEFAULT_ITEM_IDS,
+  defaultItemsEnd,
+  defaultItemsStart,
+} from "./defaultNavItems";
 import { NavActionItem } from "./NavActionItem";
 import { NavLinkItem } from "./NavLinkItem";
 import { NavMore } from "./NavMore";
@@ -14,13 +21,6 @@ import { NavSearch } from "./NavSearch";
 import { NavSearchButton } from "./NavSearchButton";
 import { NavTriggerItem } from "./NavTriggerItem";
 import { useNav } from "./useNav";
-import {
-  defaultItemsStart,
-  defaultItemsEnd,
-  DEFAULT_ITEM_IDS,
-} from "./defaultNavItems";
-import { CompactCommentEditor } from "@/components/editor/compact-comment-editor";
-import type { TNode } from "platejs";
 
 /**
  * Main Navigation Component
@@ -49,7 +49,7 @@ const Nav = () => {
   } = useNav();
 
   // Get current breakpoint for responsive behavior
-  const { breakpoint, isMobile } = useMediaQuery();
+  const { breakpoint } = useMediaQuery();
 
   /**
    * Merge default navigation items with page-specific items
@@ -140,7 +140,6 @@ const Nav = () => {
   // Track hover and focus state for scale animation
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const [isScrolling, setIsScrolling] = useState(false);
 
   // Timeout refs for delayed scale-down animation
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -168,60 +167,26 @@ const Nav = () => {
   // Measure nav content width when items change
   // Measure immediately so width transition happens simultaneously with item animations
   useEffect(() => {
-    console.log("[Nav Debug] Effect triggered:", {
-      searchMode,
-      commentMode,
-      itemsLength: items.length,
-      currentNavWidth: navWidth,
-    });
-
     if (searchMode || commentMode) {
-      console.log("[Nav Debug] ❌ In search/comment mode, skipping measurement");
       return;
     }
 
-    console.log(
-      "[Nav Debug] ✓ Measuring immediately. Item count:",
-      items.length
-    );
-
     // Use requestAnimationFrame for smoother measurement sync with render cycle
     const rafId = requestAnimationFrame(() => {
-      console.log("[Nav Debug] ⏱️ Measuring hidden container...");
-
       if (measureContainerRef.current) {
         // Measure the hidden container width (already includes padding from inline style)
         // getBoundingClientRect() returns total width including padding
         const totalWidth =
           measureContainerRef.current.getBoundingClientRect().width;
-        console.log(
-          "[Nav Debug] 📏 Measured total width (with padding):",
-          totalWidth,
-          "px"
-        );
 
         // Only set width if it's reasonable (> 100px)
         if (totalWidth > 100 && totalWidth !== navWidth) {
-          console.log(
-            "[Nav Debug] ✅ Setting navWidth to:",
-            totalWidth,
-            "(will transition from",
-            navWidth,
-            ")"
-          );
           setNavWidth(totalWidth);
-        } else if (totalWidth === navWidth) {
-          console.log("[Nav Debug] ℹ️ Width unchanged:", totalWidth);
-        } else {
-          console.log("[Nav Debug] ❌ Width too small, skipping:", totalWidth);
         }
-      } else {
-        console.log("[Nav Debug] ❌ measureContainerRef.current is null");
       }
     });
 
     return () => {
-      console.log("[Nav Debug] 🧹 Cleanup: canceling animation frame");
       cancelAnimationFrame(rafId);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -270,8 +235,6 @@ const Nav = () => {
 
       // If scrolling (position changed)
       if (currentScrollY !== lastScrollY) {
-        setIsScrolling(true);
-
         // Clear hover and focus states when scrolling
         setIsHovered(false);
         setIsFocused(false);
@@ -280,11 +243,6 @@ const Nav = () => {
         if (scrollTimeoutRef.current) {
           clearTimeout(scrollTimeoutRef.current);
         }
-
-        // Reset scrolling state after scroll stops (150ms debounce)
-        scrollTimeoutRef.current = setTimeout(() => {
-          setIsScrolling(false);
-        }, 150);
       }
 
       lastScrollY = currentScrollY;
@@ -391,6 +349,159 @@ const Nav = () => {
     return "auto";
   };
 
+  const commentModeNav = () => {
+    return (
+      <motion.div
+        key="comment-content"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -15 }}
+        transition={{
+          duration: 0.2,
+          ease: [0.4, 0, 0.2, 1],
+        }}
+        className="w-full"
+      >
+        <CompactCommentEditor
+          onSubmit={(content: TNode[]) => {
+            // Handle comment submission
+            // TODO: Add your comment submission logic here
+            toggleComment(); // Close after submit
+          }}
+          onCancel={() => {
+            toggleComment(); // Close on cancel
+          }}
+          placeholder="Write a comment..."
+          autoFocus={true}
+        />
+      </motion.div>
+    );
+  };
+
+  const navDefault = () => {
+    return (
+      <motion.ul
+        key={`nav-content-${pathname}`}
+        className="flex items-center gap-2"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{
+          duration: 0.2,
+          ease: [0.4, 0, 0.2, 1],
+        }}
+      >
+        <AnimatePresence mode="popLayout">
+          {/* Render each visible nav item based on its type with index for stagger */}
+          {visibleItems.map((item, index) => {
+            switch (item.type) {
+              case "link":
+                // Link item: navigate to another page
+                return <NavLinkItem key={item.id} item={item} index={index} />;
+              case "action":
+                // Action item: async operation (API calls)
+                return (
+                  <NavActionItem key={item.id} item={item} index={index} />
+                );
+              case "trigger":
+                // Trigger item: sync UI action (open modal)
+                return (
+                  <NavTriggerItem key={item.id} item={item} index={index} />
+                );
+              default:
+                return null;
+            }
+          })}
+          {/* Render pagination items (hidden during search mode) */}
+          {visiblePaginationItems.map((item, index) => (
+            <motion.li
+              key={item.id}
+              layout
+              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: 20 }}
+              transition={{
+                duration: 0.2,
+                delay: (visibleItems.length + index) * 0.05,
+                ease: [0.4, 0, 0.2, 1],
+              }}
+            >
+              <NavPaginationButton
+                currentPage={item.currentPage}
+                totalPages={item.totalPages}
+                onPageChange={item.onPageChange}
+                isActive={false}
+              />
+            </motion.li>
+          ))}
+          {/* Render search button when not in search mode */}
+          {searchItem?.type === "search" && (
+            <NavSearchButton
+              key="search-button"
+              item={searchItem}
+              index={visibleItems.length}
+            />
+          )}
+          {/* Render More button when there are overflow items */}
+          {hasOverflow && (
+            <NavTriggerItem
+              key="more-button"
+              item={{
+                id: "more",
+                type: "trigger",
+                icon: <MoreHorizontal />,
+                label: "More",
+                badge: overflowItems.length,
+                onClick: toggleMoreMenu,
+              }}
+              index={visibleItems.length + (searchItem ? 1 : 0)}
+            />
+          )}
+        </AnimatePresence>
+      </motion.ul>
+    );
+  };
+
+  const navSearchMode = () => {
+    return (
+      <motion.div
+        key="search-content"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -15 }}
+        transition={{
+          duration: 0.2,
+          ease: [0.4, 0, 0.2, 1],
+        }}
+        className="w-full"
+      >
+        {searchItem?.type === "search" && (
+          <NavSearch
+            item={searchItem}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+          />
+        )}
+      </motion.div>
+    );
+  };
+
+  const renderNavContent = () => {
+    if (searchMode) {
+      // Search mode: show search input with results (dynamic height)
+      return navSearchMode();
+    }
+
+    if (commentMode) {
+      // Comment mode: show compact comment editor (dynamic height)
+      return commentModeNav();
+    }
+
+    // Nav mode: show navigation items
+    // Exit duration matches nav items (200ms) for uniform animation
+    return navDefault();
+  };
+
   return (
     // Fixed position at bottom center of screen
     <nav
@@ -404,7 +515,7 @@ const Nav = () => {
         ref={navRef}
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{
-          scale: isExpanded ? 1 : 0.65,
+          scale: isExpanded ? 1 : 0.6,
           opacity: 1,
         }}
         transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
@@ -418,8 +529,11 @@ const Nav = () => {
       */}
         <div
           className={cn(
-            "relative shadow-lg rounded-2xl backdrop-blur-md bg-background/70",
-            isInitialMount && "overflow-hidden"
+            "relative shadow-lg rounded-2xl",
+            isInitialMount && "overflow-hidden",
+            isExpanded
+              ? "backdrop-blur-xl bg-background/80"
+              : "backdrop-blur-md bg-background/40"
           )}
           style={{
             minHeight: "56px",
@@ -449,151 +563,7 @@ const Nav = () => {
             {/* AnimatePresence for smooth transitions between modes */}
             {/* mode="wait" ensures exit completes before enter starts */}
             <AnimatePresence initial={false} mode="wait">
-              {searchMode ? (
-                // Search mode: show search input with results (dynamic height)
-                <motion.div
-                  key="search-content"
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -15 }}
-                  transition={{
-                    duration: 0.2,
-                    ease: [0.4, 0, 0.2, 1],
-                  }}
-                  className="w-full"
-                >
-                  {searchItem?.type === "search" && (
-                    <NavSearch
-                      item={searchItem}
-                      onFocus={handleFocus}
-                      onBlur={handleBlur}
-                    />
-                  )}
-                </motion.div>
-              ) : commentMode ? (
-                // Comment mode: show compact comment editor (dynamic height)
-                <motion.div
-                  key="comment-content"
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -15 }}
-                  transition={{
-                    duration: 0.2,
-                    ease: [0.4, 0, 0.2, 1],
-                  }}
-                  className="w-full"
-                >
-                  <CompactCommentEditor
-                    onSubmit={(content: TNode[]) => {
-                      // Handle comment submission
-                      console.log("Comment submitted:", content);
-                      // TODO: Add your comment submission logic here
-                      toggleComment(); // Close after submit
-                    }}
-                    onCancel={() => {
-                      toggleComment(); // Close on cancel
-                    }}
-                    placeholder="Write a comment..."
-                    autoFocus={true}
-                  />
-                </motion.div>
-              ) : (
-                // Nav mode: show navigation items
-                // Exit duration matches nav items (200ms) for uniform animation
-                <motion.ul
-                  key={`nav-content-${pathname}`}
-                  className="flex items-center gap-2"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{
-                    duration: 0.2,
-                    ease: [0.4, 0, 0.2, 1],
-                  }}
-                >
-                  <AnimatePresence mode="popLayout">
-                    {/* Render each visible nav item based on its type with index for stagger */}
-                    {visibleItems.map((item, index) => {
-                      switch (item.type) {
-                        case "link":
-                          // Link item: navigate to another page
-                          return (
-                            <NavLinkItem
-                              key={item.id}
-                              item={item}
-                              index={index}
-                            />
-                          );
-                        case "action":
-                          // Action item: async operation (API calls)
-                          return (
-                            <NavActionItem
-                              key={item.id}
-                              item={item}
-                              index={index}
-                            />
-                          );
-                        case "trigger":
-                          // Trigger item: sync UI action (open modal)
-                          return (
-                            <NavTriggerItem
-                              key={item.id}
-                              item={item}
-                              index={index}
-                            />
-                          );
-                        default:
-                          return null;
-                      }
-                    })}
-                    {/* Render pagination items (hidden during search mode) */}
-                    {visiblePaginationItems.map((item, index) => (
-                      <motion.li
-                        key={item.id}
-                        layout
-                        initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.8, y: 20 }}
-                        transition={{
-                          duration: 0.2,
-                          delay: (visibleItems.length + index) * 0.05,
-                          ease: [0.4, 0, 0.2, 1],
-                        }}
-                      >
-                        <NavPaginationButton
-                          currentPage={item.currentPage}
-                          totalPages={item.totalPages}
-                          onPageChange={item.onPageChange}
-                          isActive={false}
-                        />
-                      </motion.li>
-                    ))}
-                    {/* Render search button when not in search mode */}
-                    {searchItem?.type === "search" && (
-                      <NavSearchButton
-                        key="search-button"
-                        item={searchItem}
-                        index={visibleItems.length}
-                      />
-                    )}
-                    {/* Render More button when there are overflow items */}
-                    {hasOverflow && (
-                      <NavTriggerItem
-                        key="more-button"
-                        item={{
-                          id: "more",
-                          type: "trigger",
-                          icon: <MoreHorizontal />,
-                          label: "More",
-                          badge: overflowItems.length,
-                          onClick: toggleMoreMenu,
-                        }}
-                        index={visibleItems.length + (searchItem ? 1 : 0)}
-                      />
-                    )}
-                  </AnimatePresence>
-                </motion.ul>
-              )}
+              {renderNavContent()}
             </AnimatePresence>
           </div>
         </div>

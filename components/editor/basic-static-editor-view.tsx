@@ -42,13 +42,17 @@ export function BasicStaticEditorView({
     <div
       className={cn("relative overflow-hidden", className)}
       style={{
-        maxHeight: `${maxLines * 1.5}em`,
+        maxHeight: `${maxLines * 1.6}em`,
         WebkitLineClamp: maxLines,
         WebkitBoxOrient: "vertical",
         display: "-webkit-box",
       }}
     >
-      <StaticEditorView content={optimizedContent} variant="compact" className="p-0" />
+      <StaticEditorView
+        content={optimizedContent}
+        variant="compact"
+        className="p-0"
+      />
     </div>
   );
 }

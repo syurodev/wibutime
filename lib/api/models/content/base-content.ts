@@ -72,7 +72,7 @@ export const MediaSeriesSchema = z.object({
 
   // Relations với defaults
   genres: z.array(GenreSchema).default([]),
-  user: BaseUserSchema,
+  author: BaseUserSchema,
 
   // Stats với defaults
   rating: z.number().min(0).max(10).default(0),

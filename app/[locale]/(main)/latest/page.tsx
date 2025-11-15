@@ -8,7 +8,7 @@ import { SeriesGrid } from "@/components/content/SeriesGrid";
 import { SeriesGridSkeleton } from "@/components/content/SeriesGridSkeleton";
 import { Container } from "@/components/layout/Container";
 import { ContentService } from "@/lib/api/services/base-content/content.service";
-import type { CONTENT_TYPE } from "@/lib/constants/default";
+import { DEFAULT_LIMIT, type CONTENT_TYPE } from "@/lib/constants/default";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
@@ -53,7 +53,7 @@ async function LatestContent({
   const { items } = await ContentService.getLatestPaginated({
     type,
     page,
-    limit: 20,
+    limit: DEFAULT_LIMIT,
   });
 
   return <SeriesGrid series={items} />;
@@ -80,7 +80,7 @@ export default async function LatestPage({ searchParams }: LatestPageProps) {
   const { totalPages, currentPage } = await ContentService.getLatestPaginated({
     type: selectedType,
     page,
-    limit: 20,
+    limit: DEFAULT_LIMIT,
   });
 
   return (
