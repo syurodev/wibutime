@@ -4,6 +4,9 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 const nextConfig: NextConfig = {
+  images: {
+    qualities: [60, 75],
+  },
   cacheComponents: true,
   experimental: {
     viewTransition: true,

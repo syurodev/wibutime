@@ -9,8 +9,6 @@ import { ContentCard } from "./ContentCard";
 
 export interface SeriesGridProps {
   readonly series: MediaSeries[];
-  readonly showContentType?: boolean;
-  readonly showDescription?: boolean;
   readonly className?: string;
 }
 

@@ -48,9 +48,7 @@ async function NewSeriesContent({
     limit: 20,
   });
 
-  return (
-    <SeriesGrid series={items} showContentType={true} showDescription={true} />
-  );
+  return <SeriesGrid series={items} />;
 }
 
 /**

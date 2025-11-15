@@ -56,9 +56,7 @@ async function LatestContent({
     limit: 20,
   });
 
-  return (
-    <SeriesGrid series={items} showContentType={true} showDescription={true} />
-  );
+  return <SeriesGrid series={items} />;
 }
 
 /**

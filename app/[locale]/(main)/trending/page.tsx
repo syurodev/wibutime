@@ -48,9 +48,7 @@ async function TrendingContent({
     limit: 15,
   });
 
-  return (
-    <SeriesGrid series={items} showContentType={true} showDescription={true} />
-  );
+  return <SeriesGrid series={items} />;
 }
 
 /**
