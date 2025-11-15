@@ -4,46 +4,46 @@
  */
 
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import type { BaseContentData } from "@/lib/api/models/content";
+import { MediaSeries } from "@/lib/api/models/content/base-content";
 import { ContentCard } from "./ContentCard";
 
 export interface SeriesGridProps {
-	readonly series: BaseContentData[];
-	readonly showContentType?: boolean;
-	readonly showDescription?: boolean;
-	readonly className?: string;
+  readonly series: MediaSeries[];
+  readonly showContentType?: boolean;
+  readonly showDescription?: boolean;
+  readonly className?: string;
 }
 
 export function SeriesGrid({
-	series,
-	showContentType = true,
-	showDescription = true,
-	className,
+  series,
+  showContentType = true,
+  showDescription = true,
+  className,
 }: SeriesGridProps) {
-	if (!series || series.length === 0) {
-		return (
-			<div className="flex min-h-[400px] items-center justify-center">
-				<p className="text-muted-foreground">No series found</p>
-			</div>
-		);
-	}
+  if (!series || series.length === 0) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <p className="text-muted-foreground">No series found</p>
+      </div>
+    );
+  }
 
-	return (
-		<div
-			className={`grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:gap-6 ${
-				className || ""
-			}`}
-		>
-			{series.map((item) => (
-				<AspectRatio key={item.id} ratio={3 / 5} className="w-full">
-					<ContentCard
-						series={item}
-						showDescription={showDescription}
-						className="h-full"
-						showContentType={showContentType}
-					/>
-				</AspectRatio>
-			))}
-		</div>
-	);
+  return (
+    <div
+      className={`grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:gap-6 ${
+        className || ""
+      }`}
+    >
+      {series.map((item) => (
+        <AspectRatio key={item.id} ratio={3 / 5} className="w-full">
+          <ContentCard
+            series={item}
+            showDescription={showDescription}
+            className="h-full"
+            showContentType={showContentType}
+          />
+        </AspectRatio>
+      ))}
+    </div>
+  );
 }

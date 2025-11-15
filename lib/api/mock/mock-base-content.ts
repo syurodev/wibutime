@@ -59,6 +59,8 @@ const mockCoverImages = [
   "/images/image-16.jpeg",
   "/images/image-17.jpeg",
   "/images/image-18.jpg",
+  "/images/image-19.jpg",
+  "/images/image-20.jpg",
 ];
 
 const mockAvatarImages = [
@@ -107,48 +109,64 @@ function generateMockUser(index: number): BaseUser {
 }
 
 /**
- * Generate mock media series array
+ * Module-level cache for generated mock data
+ * Prevents expensive regeneration (10 paragraphs × 20 words per series)
+ * on every function call, which was causing navigation animation jank
+ */
+let mockSeriesCache: MediaSeries[] | null = null;
+
+/**
+ * Generate mock media series array (with module-level caching)
  * All data is validated through Zod schemas
  *
- * @param count - Number of series to generate
- * @returns Array of type-safe MediaSeries
+ * PERFORMANCE: Cached at module level to prevent regenerating expensive
+ * mock paragraphs on every call. This fixes navigation animation jank.
+ *
+ * @param count - Number of series to return from cache
+ * @returns Array of type-safe MediaSeries (sliced from cache)
  *
  * @example
  * const series = getMockMediaSeries(10);
  * console.log(series[0].title); // Type-safe!
  */
 export function getMockMediaSeries(count: number = 50): MediaSeries[] {
-  return Array.from({ length: count }, (_, i) => {
-    const title = `Mock Series Title ${i + 1}`;
-    const createdAt = getRandomDate(new Date(2022, 0, 1), new Date());
-    const updatedAt = getRandomDate(new Date(createdAt), new Date());
+  // Generate and cache on first call
+  if (!mockSeriesCache) {
+    mockSeriesCache = Array.from({ length: 100 }, (_, i) => {
+      const title = `Mock Series Title ${i + 1}`;
+      const createdAt = getRandomDate(new Date(2022, 0, 1), new Date());
+      const updatedAt = getRandomDate(new Date(createdAt), new Date());
 
-    // Create plain object - Zod will validate and add defaults
-    const seriesData = {
-      id: crypto.randomUUID(),
-      title,
-      slug: title.toLowerCase().replace(/\s+/g, "-"),
-      description: generateMockParagraphs(),
-      cover_url: getRandom(mockCoverImages),
-      type: getRandom(contentTypes),
-      status: getRandom(statuses),
-      genres: getRandomItems(mockGenres, Math.floor(Math.random() * 3) + 1),
-      rating: Math.random() * (10 - 6) + 6, // 6.0 - 10.0
-      views: Math.floor(Math.random() * 100000),
-      favorites: Math.floor(Math.random() * 5000),
-      latest_chapter: MediaUnitSchema.parse({
+      // Create plain object - Zod will validate and add defaults
+      const seriesData = {
         id: crypto.randomUUID(),
-        title: `Chapter ${Math.floor(Math.random() * 100) + 1}`,
-        published_at: updatedAt,
-      }),
-      user: generateMockUser(i),
-      created_at: createdAt,
-      updated_at: updatedAt,
-    };
+        title,
+        slug: title.toLowerCase().replace(/\s+/g, "-"),
+        description: generateMockParagraphs(),
+        cover_url: getRandom(mockCoverImages),
+        type: getRandom(contentTypes),
+        status: getRandom(statuses),
+        genres: getRandomItems(mockGenres, Math.floor(Math.random() * 3) + 1),
+        rating: Math.random() * (10 - 6) + 6, // 6.0 - 10.0
+        views: Math.floor(Math.random() * 100000),
+        favorites: Math.floor(Math.random() * 5000),
+        latest_chapter: MediaUnitSchema.parse({
+          id: crypto.randomUUID(),
+          title: `Chapter ${Math.floor(Math.random() * 100) + 1}`,
+          published_at: updatedAt,
+        }),
+        user: generateMockUser(i),
+        created_at: createdAt,
+        updated_at: updatedAt,
+      };
 
-    // Validate through Zod schema
-    return MediaSeriesSchema.parse(seriesData);
-  });
+      // Validate through Zod schema
+      return MediaSeriesSchema.parse(seriesData);
+    });
+  }
+
+  // Return slice from cache (no regeneration)
+  return mockSeriesCache.slice(0, Math.min(count, mockSeriesCache.length));
 }
 
 /**

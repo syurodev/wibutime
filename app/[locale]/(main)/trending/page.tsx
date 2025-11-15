@@ -45,7 +45,7 @@ async function TrendingContent({
   const { items } = await ContentService.getTrendingPaginated({
     type,
     page,
-    limit: 20,
+    limit: 15,
   });
 
   return (
@@ -77,7 +77,7 @@ export default async function TrendingPage({
     {
       type: selectedType,
       page,
-      limit: 20,
+      limit: 10,
     }
   );
 

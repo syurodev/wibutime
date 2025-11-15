@@ -5,9 +5,9 @@ import { getContentBg } from "@/lib/utils/get-content-bg";
 import { Eye, Heart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { BasicStaticEditorView } from "../editor/basic-static-editor-view";
 import { AspectRatio } from "../ui/aspect-ratio";
 import { Badge } from "../ui/badge";
+import { LazyBasicStaticEditorView } from "../editor/lazy-basic-static-editor-view";
 
 export interface ContentCardProps {
   readonly series: MediaSeries;
@@ -52,7 +52,7 @@ export function ContentCard({
         <div className="p-2 flex flex-col justify-between h-full">
           <p className="text-sm font-semibold line-clamp-1">{series.title}</p>
           {showDescription && (
-            <BasicStaticEditorView content={series.description} maxLines={2} />
+            <LazyBasicStaticEditorView content={series.description} maxLines={2} />
           )}
           <div className="mt-1 flex items-center justify-between">
             <div className="flex text-xs items-center justify-center w-fit gap-1">

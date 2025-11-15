@@ -40,8 +40,6 @@ export function HeroSection({ featuredList }: HeroSectionProps) {
     []
   );
 
-  console.log(featuredList);
-
   return (
     <section className="relative w-full overflow-hidden">
       <Carousel
@@ -55,9 +53,9 @@ export function HeroSection({ featuredList }: HeroSectionProps) {
         onMouseLeave={plugin.reset}
       >
         <CarouselContent className="ml-0">
-          {featuredList.map((featured) => (
+          {featuredList.map((featured, index) => (
             <CarouselItem key={featured.id} className="pl-0">
-              <HeroSlide featured={featured} />
+              <HeroSlide featured={featured} isFirst={index === 0} />
             </CarouselItem>
           ))}
         </CarouselContent>
@@ -72,8 +70,17 @@ export function HeroSection({ featuredList }: HeroSectionProps) {
 
 /**
  * Individual Hero Slide Component
+ *
+ * PERFORMANCE: Only first slide gets priority loading
+ * Other slides lazy load to avoid blocking initial page render
  */
-function HeroSlide({ featured }: { readonly featured: MediaSeries }) {
+function HeroSlide({
+  featured,
+  isFirst,
+}: {
+  readonly featured: MediaSeries;
+  readonly isFirst: boolean;
+}) {
   const t = useTranslations("home");
 
   return (
@@ -84,7 +91,7 @@ function HeroSlide({ featured }: { readonly featured: MediaSeries }) {
           src={featured.cover_url}
           alt={featured.title}
           fill
-          priority
+          priority={isFirst}
           className="object-cover"
           sizes="100vw"
         />

@@ -24,6 +24,11 @@ import { NavCommentTrigger } from '@/components/layout/nav/NavCommentTrigger';
 
 // Import hooks
 import { useAutosave } from '@/hooks/use-autosave';
+import { EditorDemoNavigation } from './EditorDemoNavigation';
+import { ContentCard } from '@/components/content/ContentCard';
+import { getMockMediaSeries } from '@/lib/api/mock/mock-base-content';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { HeroSection } from '@/components/home/HeroSection';
 
 const INITIAL_VALUE = [
   {
@@ -138,6 +143,10 @@ const INITIAL_VALUE = [
 export default function EditorDemoPage() {
   const contentId = 'editor-demo-full';
 
+  // Generate mock series for testing
+  const mockSeries = React.useMemo(() => getMockMediaSeries(10), []);
+  const featuredSeries = React.useMemo(() => getMockMediaSeries(5), []);
+
   const { status, lastSaved, save, loadDraft } = useAutosave({
     contentId,
     delay: 2000,
@@ -173,6 +182,11 @@ export default function EditorDemoPage() {
 
   return (
     <TooltipProvider>
+      <EditorDemoNavigation />
+
+      {/* Test: HeroSection */}
+      <HeroSection featuredList={featuredSeries} />
+
       <div className="flex min-h-screen flex-col bg-background">
         {/* Header */}
         <div className="border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
@@ -187,6 +201,25 @@ export default function EditorDemoPage() {
               </div>
             </div>
             <SaveIndicator status={status} lastSaved={lastSaved} />
+          </div>
+        </div>
+
+        {/* Test: ContentCards Grid */}
+        <div className="container px-4 pt-6">
+          <div className="mb-6">
+            <h2 className="mb-4 text-xl font-semibold">Test: Mock Content Cards</h2>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              {mockSeries.map((item) => (
+                <AspectRatio key={item.id} ratio={3 / 5} className="w-full">
+                  <ContentCard
+                    series={item}
+                    showDescription={true}
+                    className="h-full"
+                    showContentType={true}
+                  />
+                </AspectRatio>
+              ))}
+            </div>
           </div>
         </div>
 
