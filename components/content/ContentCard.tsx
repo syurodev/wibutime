@@ -1,3 +1,4 @@
+import { Link } from "@/i18n/routing";
 import { MediaSeries } from "@/lib/api/models/content/base-content";
 import { formatNumberAbbreviated } from "@/lib/api/utils/number";
 import { cn } from "@/lib/utils";
@@ -6,7 +7,6 @@ import { getImageUrlWithDefault } from "@/lib/utils/get-image-url-with-default";
 import { getInitials } from "@/lib/utils/get-initials";
 import { Eye, Heart } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { memo } from "react";
 import { AspectRatio } from "../ui/aspect-ratio";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -22,11 +22,16 @@ export const ContentCard = memo(function ContentCard({
   className,
 }: ContentCardProps) {
   return (
-    <Link href={`/series/${series.slug}`} className={cn(className, "block")}>
+    <Link
+      href={`/novels/${series.slug}`}
+      // Thêm transform-gpu để ép GPU xử lý layout
+      className={cn(className, "block transform-gpu")}
+    >
       <AspectRatio
         ratio={4 / 6}
-        className="rounded-[20px] relative bg-secondary shadow-sm isolate group transform-gpu overflow-hidden"
+        className="rounded-[20px] relative bg-secondary shadow-sm isolate overflow-hidden group"
       >
+        {/* Badge */}
         <Badge
           className={cn(
             "absolute z-40 top-3 right-3 capitalize shadow-md pointer-events-none px-2.5 py-0.5 text-[10px]",
@@ -36,42 +41,63 @@ export const ContentCard = memo(function ContentCard({
           {series.type}
         </Badge>
 
+        {/* Viền Border */}
         <div className="absolute inset-0 z-50 rounded-[20px] border-4 border-secondary pointer-events-none" />
 
+        {/* Content Wrapper */}
         <div className="absolute inset-px z-0 rounded-[19px] overflow-hidden bg-secondary">
+          {/* 1. IMAGE LAYER */}
           <Image
             src={series.cover_url || "/placeholder-cover.svg"}
             alt={series.title}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            // Mobile: Tắt hover scale để scroll mượt hơn
+            // Desktop (md:): Bật hover scale
+            className="object-cover transition-transform duration-500 md:group-hover:scale-105"
             loading="lazy"
+            decoding="async"
           />
 
-          {/* === GIẢI PHÁP: GRADIENT PROTECTION === */}
-          {/* 1. Lớp Blur giữ nguyên hiệu ứng mờ ảo */}
-          <div
-            className="absolute bottom-0 left-0 w-full z-10 pointer-events-none 
-              h-[65%] backdrop-blur-3xl translate-z-0"
-            style={{
-              maskImage: "linear-gradient(to top, black 30%, transparent 100%)",
-              WebkitMaskImage:
-                "linear-gradient(to top, black 30%, transparent 100%)",
-            }}
-          />
+          {/* --- OPTIMIZATION LOGIC START --- */}
 
-          {/* 2. Lớp Gradient Đen Mỏng nằm đè lên Blur nhưng dưới Chữ 
-             - from-black/80: Đáy đen 80% (đủ để chữ trắng nổi bần bật)
-             - via-black/40: Giữa đen 40%
-             - to-transparent: Trên cùng trong suốt
-             => Kết quả: Chữ luôn đọc được kể cả khi ảnh bìa là màu trắng.
+          {/* 2. MOBILE OVERLAY (HIỆU NĂNG CAO) 
+              - Chỉ hiện trên màn hình nhỏ (< md)
+              - Dùng gradient đơn giản, không blur, không mask.
+              - from-black/95: Đủ đậm để text trắng dễ đọc.
           */}
           <div
-            className="absolute bottom-0 left-0 w-full h-[50%] z-15 pointer-events-none
-            bg-gradient-to-t from-black/80 via-black/20 to-transparent"
+            className="absolute inset-0 z-10 pointer-events-none md:hidden
+            bg-gradient-to-t from-black/95 via-black/40 to-transparent"
           />
 
-          {/* TEXT CONTENT */}
+          {/* 3. DESKTOP OVERLAY (VISUAL CAO CẤP - GIỮ NGUYÊN NHƯ CŨ) 
+              - Chỉ hiện trên màn hình lớn (hidden md:block)
+              - Giữ nguyên Blur, Mask Image, Gradient Protection
+          */}
+          <>
+            {/* Desktop Blur Layer */}
+            <div
+              className="hidden md:block absolute bottom-0 left-0 w-full z-10 pointer-events-none 
+                h-[65%] backdrop-blur-3xl translate-z-0"
+              style={{
+                maskImage:
+                  "linear-gradient(to top, black 30%, transparent 100%)",
+                WebkitMaskImage:
+                  "linear-gradient(to top, black 30%, transparent 100%)",
+              }}
+            />
+
+            {/* Desktop Gradient Protection Layer */}
+            <div
+              className="hidden md:block absolute bottom-0 left-0 w-full h-[50%] z-15 pointer-events-none
+              bg-gradient-to-t from-black/80 via-black/20 to-transparent"
+            />
+          </>
+
+          {/* --- OPTIMIZATION LOGIC END --- */}
+
+          {/* TEXT CONTENT LAYER */}
           <div className="px-3.5 pb-3.5 flex flex-col justify-end z-20 h-full absolute w-full bottom-0">
             <div className="mb-1.5">
               <h3 className="text-sm font-bold line-clamp-1 leading-tight text-white text-shadow-sm">
@@ -91,6 +117,7 @@ export const ContentCard = memo(function ContentCard({
                       "user-avatar"
                     )}
                     alt={series.user.username}
+                    loading="lazy"
                   />
                   <AvatarFallback className="text-[9px] text-foreground">
                     {getInitials(series.user.display_name)}
