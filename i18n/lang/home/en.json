@@ -49,6 +49,34 @@
     "subtitle": "Discover content by category",
     "viewAll": "View All Genres"
   },
+  "topCreators": {
+    "title": "Top Creators",
+    "subtitle": "Popular authors and content creators",
+    "empty": "No creators available",
+    "followers": "Followers",
+    "works": "Works",
+    "totalViews": "Total Views",
+    "verified": "Verified"
+  },
+  "genreHub": {
+    "title": "Popular Genres",
+    "subtitle": "Explore content by category",
+    "empty": "No genres available",
+    "series": "Series",
+    "readers": "Readers",
+    "trending": "Trending"
+  },
+  "milestones": {
+    "title": "Community Milestones",
+    "subtitle": "Our achievements together",
+    "empty": "No milestones yet",
+    "types": {
+      "platform": "Platform",
+      "series": "Series",
+      "creator": "Creator",
+      "community": "Community"
+    }
+  },
   "cta": {
     "creators": {
       "title": "Share Your Story",

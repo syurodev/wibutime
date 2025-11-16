@@ -3,11 +3,14 @@
  * Main landing page with featured content and sections
  */
 
+import { CommunityMilestonesSection } from "@/components/home/CommunityMilestonesSection";
 import { ContinueSection } from "@/components/home/ContinueSection";
+import { GenreHubSection } from "@/components/home/GenreHubSection";
 import { HeroSection } from "@/components/home/HeroSection";
 import { HomeNavigation } from "@/components/home/HomeNavigation";
 import { LatestUpdatesSection } from "@/components/home/LatestUpdatesSection";
 import { NewSeriesSection } from "@/components/home/NewSeriesSection";
+import { TopCreatorsSection } from "@/components/home/TopCreatorsSection";
 import { TrendingSection } from "@/components/home/TrendingSection";
 import {
   getCachedFeaturedList,
@@ -15,6 +18,11 @@ import {
   getCachedNew,
   getCachedTrending,
 } from "@/lib/api/services/base-content/content.cached";
+import {
+  getCachedGenreStats,
+  getCachedMilestones,
+  getCachedTopCreators,
+} from "@/lib/api/services/community/community.cached";
 import { getCachedHistory } from "@/lib/api/services/history/history.cached";
 import type { Metadata } from "next";
 
@@ -32,12 +40,26 @@ export const metadata: Metadata = {
  * Homepage Server Component
  */
 export default async function HomePage() {
-  // Fetch all data
-  const featuredList = await getCachedFeaturedList();
-  const trendingSeries = await getCachedTrending(10);
-  const latestSeries = await getCachedLatest(10);
-  const newSeries = await getCachedNew(10);
-  const historyItems = await getCachedHistory(12);
+  // Fetch all data in parallel
+  const [
+    featuredList,
+    trendingSeries,
+    latestSeries,
+    newSeries,
+    historyItems,
+    topCreators,
+    genreStats,
+    milestones,
+  ] = await Promise.all([
+    getCachedFeaturedList(),
+    getCachedTrending(10),
+    getCachedLatest(10),
+    getCachedNew(10),
+    getCachedHistory(12),
+    getCachedTopCreators(8),
+    getCachedGenreStats(12),
+    getCachedMilestones(6),
+  ]);
 
   return (
     <>
@@ -46,24 +68,27 @@ export default async function HomePage() {
 
       {/* Main Content */}
       <div className="min-h-screen pb-24">
+        {/* Hero Section */}
         <HeroSection featuredList={featuredList} />
+
+        {/* Personal Section */}
         <ContinueSection history={historyItems} />
+
+        {/* Trending Content */}
         <TrendingSection series={trendingSeries} />
+
+        {/* Community Engagement - Top Creators & Genre Hub Split Layout */}
+        <TopCreatorsSection creators={topCreators} />
+        <GenreHubSection genres={genreStats} />
+
+        {/* Latest Updates */}
         <LatestUpdatesSection series={latestSeries} />
+
+        {/* New Series */}
         <NewSeriesSection series={newSeries} />
 
-        {/* Container for upcoming sections */}
-        <div className="container py-8 mx-auto">
-          {/* Placeholder for remaining sections */}
-          <div className="rounded-lg border border-dashed border-muted-foreground/30 p-8 text-center">
-            <p className="text-sm text-muted-foreground">
-              More sections coming soon...
-            </p>
-            <p className="mt-2 text-xs text-muted-foreground">
-              (Popular, Recommended, etc.)
-            </p>
-          </div>
-        </div>
+        {/* Community Milestones */}
+        <CommunityMilestonesSection milestones={milestones} />
       </div>
     </>
   );

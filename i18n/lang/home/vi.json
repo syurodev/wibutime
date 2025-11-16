@@ -49,6 +49,34 @@
     "subtitle": "Tìm nội dung theo danh mục",
     "viewAll": "Xem Tất Cả Thể Loại"
   },
+  "topCreators": {
+    "title": "Tác Giả Nổi Bật",
+    "subtitle": "Những tác giả và nhà sáng tạo phổ biến",
+    "empty": "Chưa có tác giả nào",
+    "followers": "Người Theo Dõi",
+    "works": "Tác Phẩm",
+    "totalViews": "Tổng Lượt Xem",
+    "verified": "Đã Xác Minh"
+  },
+  "genreHub": {
+    "title": "Thể Loại Phổ Biến",
+    "subtitle": "Khám phá nội dung theo danh mục",
+    "empty": "Chưa có thể loại nào",
+    "series": "Series",
+    "readers": "Độc Giả",
+    "trending": "Xu Hướng"
+  },
+  "milestones": {
+    "title": "Thành Tựu Cộng Đồng",
+    "subtitle": "Những cột mốc chúng ta đạt được",
+    "empty": "Chưa có thành tựu nào",
+    "types": {
+      "platform": "Nền Tảng",
+      "series": "Series",
+      "creator": "Tác Giả",
+      "community": "Cộng Đồng"
+    }
+  },
   "cta": {
     "creators": {
       "title": "Chia Sẻ Câu Chuyện",

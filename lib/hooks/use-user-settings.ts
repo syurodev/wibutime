@@ -117,6 +117,14 @@ export function useSyncStatus() {
 }
 
 /**
+ * Check if store has been hydrated from localStorage
+ * Use this to prevent flash of wrong values during SSR
+ */
+export function useIsHydrated() {
+  return useUserSettingsStore((state) => state.isHydrated);
+}
+
+/**
  * Get all settings (use sparingly - subscribes to everything)
  * Only use this when you truly need all settings
  */

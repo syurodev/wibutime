@@ -42,6 +42,18 @@ const nextConfig: NextConfig = {
       revalidate: 60 * 30, // 30 minutes
       expire: 60 * 60 * 2, // 2 hours
     },
+    // Moderate caching for community features (creators, milestones)
+    moderate: {
+      stale: 60 * 10, // 10 minutes
+      revalidate: 60 * 30, // 30 minutes
+      expire: 60 * 60 * 2, // 2 hours
+    },
+    // Long caching for slowly changing data (genres, stats)
+    long: {
+      stale: 60 * 15, // 15 minutes
+      revalidate: 60 * 60, // 1 hour
+      expire: 60 * 60 * 4, // 4 hours
+    },
   },
 };
 

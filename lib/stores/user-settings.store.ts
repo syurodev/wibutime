@@ -15,6 +15,7 @@ interface UserSettingsState extends UserSettings {
   // Loading & Error States
   isLoading: boolean;
   isInitialized: boolean;
+  isHydrated: boolean; // NEW: Track if localStorage has been loaded
   error: string | null;
   lastSyncedAt: string | null;
 
@@ -79,6 +80,7 @@ export const useUserSettingsStore = create<UserSettingsState>()(
         // Meta State
         isLoading: false,
         isInitialized: false,
+        isHydrated: false, // Will be set to true after hydration
         error: null,
         lastSyncedAt: null,
         isSyncing: false,
@@ -278,6 +280,7 @@ export const useUserSettingsStore = create<UserSettingsState>()(
             ...UserSettingsUtils.createDefault(),
             isLoading: false,
             isInitialized: false,
+            isHydrated: true, // Keep hydrated flag as true since we're intentionally resetting
             error: null,
             lastSyncedAt: null,
             isSyncing: false,
@@ -305,6 +308,18 @@ export const useUserSettingsStore = create<UserSettingsState>()(
           created_at: state.created_at,
           updated_at: state.updated_at,
         }),
+        // Handle hydration completion
+        onRehydrateStorage: () => {
+          return (state, error) => {
+            if (error) {
+              console.error("Failed to hydrate user settings:", error);
+            } else if (state) {
+              // Mark as hydrated
+              state.isHydrated = true;
+              console.log("User settings hydrated from localStorage");
+            }
+          };
+        },
       }
     ),
     {
@@ -353,9 +368,30 @@ export async function initializeUserSettings() {
   // Skip if already initialized
   if (store.isInitialized) return;
 
+  // Wait for hydration to complete (max 100ms)
+  // This ensures localStorage data is loaded before we proceed
+  if (!store.isHydrated) {
+    await new Promise<void>((resolve) => {
+      const checkHydration = () => {
+        if (useUserSettingsStore.getState().isHydrated) {
+          resolve();
+        } else {
+          setTimeout(checkHydration, 10);
+        }
+      };
+      checkHydration();
+      // Timeout after 100ms to prevent infinite wait
+      setTimeout(() => resolve(), 100);
+    });
+  }
+
+  // Get fresh state after hydration
+  const hydratedStore = useUserSettingsStore.getState();
+
   // Check if we have persisted data by looking for lastSyncedAt or user_id
   // These indicate data from a previous session
-  const hasPersistedData = store.lastSyncedAt !== null || store.user_id !== null;
+  const hasPersistedData =
+    hydratedStore.lastSyncedAt !== null || hydratedStore.user_id !== null;
 
   if (hasPersistedData) {
     // We have localStorage data from previous session
@@ -364,7 +400,7 @@ export async function initializeUserSettings() {
 
     // Optional: Sync in background to get latest server data
     // This won't block the UI
-    store.loadFromApi().catch((error) => {
+    hydratedStore.loadFromApi().catch((error) => {
       console.warn("Background sync failed during initialization:", error);
     });
 
@@ -373,5 +409,5 @@ export async function initializeUserSettings() {
 
   // No persisted data - first time user or cleared storage
   // Load from API (this will set defaults if API fails)
-  await store.loadFromApi();
+  await hydratedStore.loadFromApi();
 }

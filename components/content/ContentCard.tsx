@@ -28,30 +28,27 @@ export const ContentCard = memo(function ContentCard({
   const reduceBlur = preferences.reduce_blur;
 
   return (
-    <Link
-      href={`/novels/${series.slug}`}
-      // Thêm transform-gpu để ép GPU xử lý layout
-      className={cn(className, "block transform-gpu")}
-    >
-      <AspectRatio
-        ratio={4 / 6}
-        className="rounded-[20px] relative bg-secondary shadow-sm isolate overflow-hidden group"
+    <div className="rounded-[20px] border-4 border-secondary bg-secondary shadow-sm group transition-all duration-300 hover:shadow-lg hover:border-primary/30 transform-gpu">
+      <Link
+        href={`/novels/${series.slug}`}
+        className={cn(className, "block")}
       >
-        {/* Badge */}
-        <Badge
-          className={cn(
-            "absolute z-40 top-3 right-3 capitalize shadow-md pointer-events-none px-2.5 py-0.5 text-[10px]",
-            getContentBg({ type: series.type, blur: true })
-          )}
+        <AspectRatio
+          ratio={4 / 6}
+          className="relative isolate overflow-hidden rounded-2xl"
         >
-          {series.type}
-        </Badge>
+          {/* Badge */}
+          <Badge
+            className={cn(
+              "absolute z-40 top-3 right-3 capitalize shadow-md pointer-events-none px-2.5 py-0.5 text-[10px]",
+              getContentBg({ type: series.type, blur: true })
+            )}
+          >
+            {series.type}
+          </Badge>
 
-        {/* Viền Border */}
-        <div className="absolute inset-0 z-50 rounded-[20px] border-4 border-secondary pointer-events-none" />
-
-        {/* Content Wrapper */}
-        <div className="absolute inset-px z-0 rounded-[19px] overflow-hidden bg-secondary">
+          {/* Content Wrapper */}
+          <div className="absolute inset-0 z-0 overflow-hidden">
           {/* 1. IMAGE LAYER */}
           <Image
             src={series.cover_url || "/placeholder-cover.svg"}
@@ -153,5 +150,6 @@ export const ContentCard = memo(function ContentCard({
         </div>
       </AspectRatio>
     </Link>
+    </div>
   );
 });

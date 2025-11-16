@@ -88,7 +88,7 @@ export const HistoryCard = ({
         // - Rounded 20px
         // - Border 4px (Thật, không dùng overlay giả)
         // - bg-card
-        "group/history-card relative flex w-full rounded-[20px] border-4 border-secondary bg-card transition-all duration-300",
+        "group/history-card relative flex w-full rounded-[20px] border-4 border-secondary bg-card transition-all duration-300 hover:shadow-lg hover:border-primary/30",
         className
       )}
     >
