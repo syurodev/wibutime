@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Suspense } from "react";
 import { type Locale, locales } from "@/i18n/routing";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import "../globals.css";
 
 const geistSans = Geist({
@@ -53,13 +54,20 @@ export default async function LocaleLayout({
 	}
 
 	return (
-		<html lang={locale} className="scroll-smooth" data-scroll-behavior="smooth">
+		<html
+			lang={locale}
+			className="scroll-smooth"
+			data-scroll-behavior="smooth"
+			suppressHydrationWarning
+		>
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground min-h-screen`}
 			>
-				<Suspense fallback={null}>
-					<I18nProvider>{children}</I18nProvider>
-				</Suspense>
+				<ThemeProvider>
+					<Suspense fallback={null}>
+						<I18nProvider>{children}</I18nProvider>
+					</Suspense>
+				</ThemeProvider>
 			</body>
 		</html>
 	);

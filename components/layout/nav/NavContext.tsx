@@ -31,8 +31,8 @@ export function NavProvider({ children }: NavProviderProps) {
   // Whether comment mode is active (nav expanded to show comment editor)
   const [commentMode, setCommentMode] = useState(false);
 
-  // Whether More menu drawer is open
-  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  // Whether Account menu dropdown is open
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
 
   // Set of item IDs that are currently in loading state (for action items)
   const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());
@@ -66,10 +66,10 @@ export function NavProvider({ children }: NavProviderProps) {
   }, [commentMode]);
 
   /**
-   * Toggle More menu drawer on/off
+   * Toggle Account menu dropdown on/off
    */
-  const toggleMoreMenu = useCallback(() => {
-    setMoreMenuOpen((prev) => !prev);
+  const toggleAccountMenu = useCallback(() => {
+    setAccountMenuOpen((prev) => !prev);
   }, []);
 
   /**
@@ -94,15 +94,15 @@ export function NavProvider({ children }: NavProviderProps) {
       items,
       searchMode,
       commentMode,
-      moreMenuOpen,
+      accountMenuOpen,
       loadingItems,
       setNavItems,
       toggleSearch,
       toggleComment,
-      toggleMoreMenu,
+      toggleAccountMenu,
       setItemLoading,
     }),
-    [items, searchMode, commentMode, moreMenuOpen, loadingItems, setNavItems, toggleSearch, toggleComment, toggleMoreMenu, setItemLoading]
+    [items, searchMode, commentMode, accountMenuOpen, loadingItems, setNavItems, toggleSearch, toggleComment, toggleAccountMenu, setItemLoading]
   );
 
   return (

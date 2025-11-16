@@ -52,4 +52,5 @@ export const defaultItemsEnd: SearchNavItem[] = [
 export const DEFAULT_ITEM_IDS = new Set([
   ...defaultItemsStart.map((item) => item.id),
   ...defaultItemsEnd.map((item) => item.id),
+  "default-account", // Account/Menu button (rendered separately due to dynamic nature)
 ]);

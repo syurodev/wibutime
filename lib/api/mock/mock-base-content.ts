@@ -61,6 +61,10 @@ const mockCoverImages = [
   "/images/image-18.jpg",
   "/images/image-19.jpg",
   "/images/image-20.jpg",
+  "/images/image-21.jpeg",
+  "/images/image-22.jpeg",
+  "/images/image-23.jpeg",
+  "/images/image-24.jpeg",
 ];
 
 const mockAvatarImages = [

@@ -4,7 +4,6 @@ import { CompactCommentEditor } from "@/components/editor/compact-comment-editor
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { MoreHorizontal } from "lucide-react";
 import { usePathname } from "next/navigation";
 import type { TNode } from "platejs";
 import { useEffect, useRef, useState } from "react";
@@ -13,12 +12,13 @@ import {
   defaultItemsEnd,
   defaultItemsStart,
 } from "./defaultNavItems";
+import { NavAccountMenuContent } from "./NavAccountMenu";
 import { NavActionItem } from "./NavActionItem";
 import { NavLinkItem } from "./NavLinkItem";
-import { NavMore } from "./NavMore";
 import { NavPaginationButton } from "./NavPaginationButton";
 import { NavSearch } from "./NavSearch";
 import { NavSearchButton } from "./NavSearchButton";
+import { NavAccountButton } from "./NavAccountButton";
 import { NavTriggerItem } from "./NavTriggerItem";
 import { useNav } from "./useNav";
 
@@ -42,8 +42,8 @@ const Nav = () => {
     commentMode,
     toggleSearch,
     toggleComment,
-    moreMenuOpen,
-    toggleMoreMenu,
+    accountMenuOpen,
+    toggleAccountMenu,
     loadingItems,
     setItemLoading,
   } = useNav();
@@ -123,8 +123,8 @@ const Nav = () => {
     (searchItem ? 1 : 0) +
     (hasOverflow ? 1 : 0);
 
-  // Dynamic container duration: base (200ms) + stagger delay (30ms per item)
-  const baseDuration = 0.2; // 200ms base exit animation
+  // Dynamic container duration: base (400ms) + stagger delay (30ms per item)
+  const baseDuration = 0.3; // 300ms base exit animation (smoother height transitions)
   const staggerPerItem = 0.03; // 30ms stagger between items
   const containerDuration = baseDuration + totalNavItems * staggerPerItem;
 
@@ -135,7 +135,7 @@ const Nav = () => {
   const [isInitialMount, setIsInitialMount] = useState(true);
 
   // Compute container expansion state directly (no delay needed)
-  const containerExpanded = searchMode || commentMode;
+  const containerExpanded = searchMode || commentMode || accountMenuOpen;
 
   // Track hover and focus state for scale animation
   const [isHovered, setIsHovered] = useState(false);
@@ -167,7 +167,7 @@ const Nav = () => {
   // Measure nav content width when items change
   // Measure immediately so width transition happens simultaneously with item animations
   useEffect(() => {
-    if (searchMode || commentMode) {
+    if (searchMode || commentMode || accountMenuOpen) {
       return;
     }
 
@@ -190,7 +190,7 @@ const Nav = () => {
       cancelAnimationFrame(rafId);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchMode, commentMode, items]);
+  }, [searchMode, commentMode, accountMenuOpen, items]);
 
   // Handlers for hover with delay
   const handleMouseEnter = () => {
@@ -307,7 +307,27 @@ const Nav = () => {
     };
   }, [commentMode, toggleComment]);
 
-  // Handle ESC key to close search or comment mode
+  // Handle click outside to close account menu
+  useEffect(() => {
+    if (!accountMenuOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      // Check if click is outside nav container
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        toggleAccountMenu();
+      }
+    };
+
+    // Add event listener
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Clean up
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [accountMenuOpen, toggleAccountMenu]);
+
+  // Handle ESC key to close search, comment, or account menu
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -315,6 +335,8 @@ const Nav = () => {
           toggleSearch();
         } else if (commentMode) {
           toggleComment();
+        } else if (accountMenuOpen) {
+          toggleAccountMenu();
         }
       }
     };
@@ -326,10 +348,18 @@ const Nav = () => {
     return () => {
       document.removeEventListener("keydown", handleEscKey);
     };
-  }, [searchMode, commentMode, toggleSearch, toggleComment]);
+  }, [
+    searchMode,
+    commentMode,
+    accountMenuOpen,
+    toggleSearch,
+    toggleComment,
+    toggleAccountMenu,
+  ]);
 
   // Determine if nav should be expanded (full size)
-  const isExpanded = isHovered || isFocused || searchMode || commentMode;
+  const isExpanded =
+    isHovered || isFocused || searchMode || commentMode || accountMenuOpen;
 
   // Calculate container width based on current state
   const getContainerWidth = () => {
@@ -442,21 +472,11 @@ const Nav = () => {
               index={visibleItems.length}
             />
           )}
-          {/* Render More button when there are overflow items */}
-          {hasOverflow && (
-            <NavTriggerItem
-              key="more-button"
-              item={{
-                id: "more",
-                type: "trigger",
-                icon: <MoreHorizontal />,
-                label: "More",
-                badge: overflowItems.length,
-                onClick: toggleMoreMenu,
-              }}
-              index={visibleItems.length + (searchItem ? 1 : 0)}
-            />
-          )}
+          {/* Render Account button (always visible, part of default items) */}
+          <NavAccountButton
+            index={visibleItems.length + (searchItem ? 1 : 0)}
+            overflowCount={overflowItems.length}
+          />
         </AnimatePresence>
       </motion.ul>
     );
@@ -486,6 +506,29 @@ const Nav = () => {
     );
   };
 
+  const navAccountMenuMode = () => {
+    return (
+      <motion.div
+        key="account-menu-content"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -15 }}
+        transition={{
+          duration: 0.2,
+          ease: [0.4, 0, 0.2, 1],
+        }}
+        className="w-full"
+      >
+        <NavAccountMenuContent
+          onClose={toggleAccountMenu}
+          items={overflowItems}
+          loadingItems={loadingItems}
+          setItemLoading={setItemLoading}
+        />
+      </motion.div>
+    );
+  };
+
   const renderNavContent = () => {
     if (searchMode) {
       // Search mode: show search input with results (dynamic height)
@@ -495,6 +538,11 @@ const Nav = () => {
     if (commentMode) {
       // Comment mode: show compact comment editor (dynamic height)
       return commentModeNav();
+    }
+
+    if (accountMenuOpen) {
+      // Account menu mode: show user info, overflow items, settings (dynamic height)
+      return navAccountMenuMode();
     }
 
     // Nav mode: show navigation items
@@ -570,7 +618,7 @@ const Nav = () => {
       </motion.div>
 
       {/* Hidden measurement container - always renders with width: auto for accurate measurement */}
-      {!searchMode && !commentMode && (
+      {!searchMode && !commentMode && !accountMenuOpen && (
         <div
           ref={measureContainerRef}
           className="fixed pointer-events-none opacity-0 left-0 top-0"
@@ -605,23 +653,15 @@ const Nav = () => {
               </li>
             ))}
             {searchItem && <li className="p-3">{searchItem.icon}</li>}
-            {hasOverflow && (
-              <li className="p-3">
-                <MoreHorizontal />
-              </li>
-            )}
+            {/* Account button always visible */}
+            <li className="p-3">
+              <div className="h-6 w-6" />
+            </li>
           </ul>
         </div>
       )}
 
-      {/* More Menu Drawer */}
-      <NavMore
-        open={moreMenuOpen}
-        onOpenChange={toggleMoreMenu}
-        items={overflowItems}
-        loadingItems={loadingItems}
-        setItemLoading={setItemLoading}
-      />
+      {/* Account Menu is now integrated inline as dropdown */}
     </nav>
   );
 };

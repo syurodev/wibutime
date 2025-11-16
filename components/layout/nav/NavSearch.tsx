@@ -158,7 +158,7 @@ export function NavSearch({ item, onFocus, onBlur }: NavSearchProps) {
           onFocus={onFocus}
           onBlur={onBlur}
           placeholder={item.placeholder || "Search..."}
-          className="flex-1 h-9 border-0 shadow-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 px-0"
+          className="flex-1 h-9 border-0 shadow-none bg-transparent! focus-visible:ring-0 focus-visible:ring-offset-0 px-0"
           autoFocus // Auto-focus input when search mode opens
         />
         {/* Close button to exit search mode */}
