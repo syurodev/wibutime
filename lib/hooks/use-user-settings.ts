@@ -70,10 +70,20 @@ export function useUiPreferences() {
   const setPreference = useUserSettingsStore((state) => state.setUiPreference);
   const updatePreferences = useUserSettingsStore((state) => state.updateUiPreferences);
 
+  // Convenience methods for common preferences
+  const setReduceBlur = (value: boolean) => setPreference("reduce_blur", value);
+  const setAutoPlayVideo = (value: boolean) => setPreference("auto_play_video", value);
+  const setShowMatureContent = (value: boolean) => setPreference("show_mature_content", value);
+  const setCompactView = (value: boolean) => setPreference("compact_view", value);
+
   return {
     preferences,
     setPreference,
     updatePreferences,
+    setReduceBlur,
+    setAutoPlayVideo,
+    setShowMatureContent,
+    setCompactView,
   } as const;
 }
 

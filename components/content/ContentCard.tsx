@@ -1,6 +1,9 @@
+"use client";
+
 import { Link } from "@/i18n/routing";
 import { MediaSeries } from "@/lib/api/models/content/base-content";
 import { formatNumberAbbreviated } from "@/lib/api/utils/number";
+import { useUiPreferences } from "@/lib/hooks/use-user-settings";
 import { cn } from "@/lib/utils";
 import { getContentBg } from "@/lib/utils/get-content-bg";
 import { getImageUrlWithDefault } from "@/lib/utils/get-image-url-with-default";
@@ -21,6 +24,9 @@ export const ContentCard = memo(function ContentCard({
   series,
   className,
 }: ContentCardProps) {
+  const { preferences } = useUiPreferences();
+  const reduceBlur = preferences.reduce_blur;
+
   return (
     <Link
       href={`/novels/${series.slug}`}
@@ -61,39 +67,43 @@ export const ContentCard = memo(function ContentCard({
 
           {/* --- OPTIMIZATION LOGIC START --- */}
 
-          {/* 2. MOBILE OVERLAY (HIỆU NĂNG CAO) 
-              - Chỉ hiện trên màn hình nhỏ (< md)
+          {/* REDUCED OVERLAY (HIỆU NĂNG CAO)
+              - Hiện khi reduce_blur = true
               - Dùng gradient đơn giản, không blur, không mask.
               - from-black/95: Đủ đậm để text trắng dễ đọc.
           */}
-          <div
-            className="absolute inset-0 z-10 pointer-events-none md:hidden
-            bg-gradient-to-t from-black/95 via-black/40 to-transparent"
-          />
+          {reduceBlur && (
+            <div
+              className="absolute inset-0 z-10 pointer-events-none
+              bg-linear-to-t from-black/95 via-black/40 to-transparent"
+            />
+          )}
 
-          {/* 3. DESKTOP OVERLAY (VISUAL CAO CẤP - GIỮ NGUYÊN NHƯ CŨ) 
-              - Chỉ hiện trên màn hình lớn (hidden md:block)
+          {/* FULL QUALITY OVERLAY (VISUAL CAO CẤP)
+              - Hiện khi reduce_blur = false
               - Giữ nguyên Blur, Mask Image, Gradient Protection
           */}
-          <>
-            {/* Desktop Blur Layer */}
-            <div
-              className="hidden md:block absolute bottom-0 left-0 w-full z-10 pointer-events-none 
-                h-[65%] backdrop-blur-3xl translate-z-0"
-              style={{
-                maskImage:
-                  "linear-gradient(to top, black 30%, transparent 100%)",
-                WebkitMaskImage:
-                  "linear-gradient(to top, black 30%, transparent 100%)",
-              }}
-            />
+          {!reduceBlur && (
+            <>
+              {/* Blur Layer */}
+              <div
+                className="absolute bottom-0 left-0 w-full z-10 pointer-events-none
+                  h-[65%] backdrop-blur-3xl translate-z-0"
+                style={{
+                  maskImage:
+                    "linear-gradient(to top, black 30%, transparent 100%)",
+                  WebkitMaskImage:
+                    "linear-gradient(to top, black 30%, transparent 100%)",
+                }}
+              />
 
-            {/* Desktop Gradient Protection Layer */}
-            <div
-              className="hidden md:block absolute bottom-0 left-0 w-full h-[50%] z-15 pointer-events-none
-              bg-gradient-to-t from-black/80 via-black/20 to-transparent"
-            />
-          </>
+              {/* Gradient Protection Layer */}
+              <div
+                className="absolute bottom-0 left-0 w-full h-[50%] z-15 pointer-events-none
+                bg-linear-to-t from-black/80 via-black/20 to-transparent"
+              />
+            </>
+          )}
 
           {/* --- OPTIMIZATION LOGIC END --- */}
 
