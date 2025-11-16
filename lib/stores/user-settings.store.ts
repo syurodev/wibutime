@@ -43,6 +43,10 @@ interface UserSettingsState extends UserSettings {
   syncToApi: () => Promise<void>;
   reset: () => void;
 
+  // Actions - Cleanup & Lifecycle
+  cleanup: () => void;
+  logout: () => void;
+
   // Internal Actions
   _setError: (error: string | null) => void;
   _incrementRetry: () => void;
@@ -179,7 +183,9 @@ export const useUserSettingsStore = create<UserSettingsState>()(
           // Skip if already syncing or no changes
           if (get().isSyncing || !get().hasPendingChanges) return;
 
-          set({ isSyncing: true, error: null });
+          // Mark as syncing and clear pending flag
+          // We'll track if new changes come in during the sync
+          set({ isSyncing: true, hasPendingChanges: false, error: null });
 
           try {
             const currentState = get();
@@ -195,20 +201,32 @@ export const useUserSettingsStore = create<UserSettingsState>()(
               settingsToSync
             );
 
+            // Check if new changes came in during sync
+            // (hasPendingChanges would be set to true by setters during the sync)
+            const hasNewChanges = get().hasPendingChanges;
+
             set({
               ...updated,
               isSyncing: false,
-              hasPendingChanges: false,
               lastSyncedAt: new Date().toISOString(),
               error: null,
+              // Keep hasPendingChanges if new changes came in
+              hasPendingChanges: hasNewChanges,
             });
             get()._resetRetry();
+
+            // If changes came in during sync, schedule another sync
+            if (hasNewChanges) {
+              debouncedSync(get);
+            }
           } catch (error) {
             const errorMessage =
               error instanceof Error ? error.message : "Failed to sync settings";
             set({
               isSyncing: false,
               error: errorMessage,
+              // Keep pending changes flag on error so we can retry
+              hasPendingChanges: true,
             });
             console.error("Failed to sync settings:", error);
 
@@ -228,6 +246,44 @@ export const useUserSettingsStore = create<UserSettingsState>()(
             hasPendingChanges: true,
           });
           debouncedSync(get);
+        },
+
+        // Cleanup - cancel all pending operations
+        cleanup: () => {
+          // Clear all timeouts to prevent memory leaks
+          if (syncTimeout) {
+            clearTimeout(syncTimeout);
+            syncTimeout = null;
+          }
+          if (retryTimeout) {
+            clearTimeout(retryTimeout);
+            retryTimeout = null;
+          }
+
+          // Reset sync states
+          set({
+            isSyncing: false,
+            hasPendingChanges: false,
+            retryCount: 0,
+          });
+        },
+
+        // Logout - cleanup and reset to defaults
+        logout: () => {
+          // First cleanup all pending operations
+          get().cleanup();
+
+          // Reset to default state
+          set({
+            ...UserSettingsUtils.createDefault(),
+            isLoading: false,
+            isInitialized: false,
+            error: null,
+            lastSyncedAt: null,
+            isSyncing: false,
+            hasPendingChanges: false,
+            retryCount: 0,
+          });
         },
 
         // Internal Actions
@@ -297,13 +353,25 @@ export async function initializeUserSettings() {
   // Skip if already initialized
   if (store.isInitialized) return;
 
-  // If we have localStorage data, we're good (persist middleware already loaded it)
-  // Just mark as initialized
-  if (store.theme || store.language) {
+  // Check if we have persisted data by looking for lastSyncedAt or user_id
+  // These indicate data from a previous session
+  const hasPersistedData = store.lastSyncedAt !== null || store.user_id !== null;
+
+  if (hasPersistedData) {
+    // We have localStorage data from previous session
+    // Mark as initialized but optionally sync in background to get latest
     useUserSettingsStore.setState({ isInitialized: true });
+
+    // Optional: Sync in background to get latest server data
+    // This won't block the UI
+    store.loadFromApi().catch((error) => {
+      console.warn("Background sync failed during initialization:", error);
+    });
+
     return;
   }
 
-  // Otherwise, load from API
+  // No persisted data - first time user or cleared storage
+  // Load from API (this will set defaults if API fails)
   await store.loadFromApi();
 }

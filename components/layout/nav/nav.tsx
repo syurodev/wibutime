@@ -2,6 +2,7 @@
 
 import { CompactCommentEditor } from "@/components/editor/compact-comment-editor";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useUiPreferences } from "@/lib/hooks/use-user-settings";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
@@ -50,6 +51,10 @@ const Nav = () => {
 
   // Get current breakpoint for responsive behavior
   const { breakpoint } = useMediaQuery();
+
+  // Get UI preferences for blur effect
+  const { preferences } = useUiPreferences();
+  const reduceBlur = preferences.reduce_blur;
 
   /**
    * Merge default navigation items with page-specific items
@@ -579,9 +584,13 @@ const Nav = () => {
           className={cn(
             "relative shadow-lg rounded-2xl",
             isInitialMount && "overflow-hidden",
-            isExpanded
-              ? "backdrop-blur-xl bg-background/80"
-              : "backdrop-blur-md bg-background/40"
+            // Reduce blur mode: solid background, no blur
+            reduceBlur && "bg-background",
+            // Full quality mode: glass morphism with backdrop blur
+            !reduceBlur &&
+              (isExpanded
+                ? "backdrop-blur-xl bg-background/80"
+                : "backdrop-blur-md bg-background/40")
           )}
           style={{
             minHeight: "56px",
