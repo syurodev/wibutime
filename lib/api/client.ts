@@ -2,7 +2,7 @@
  * API Client - Centralized fetch wrapper with authentication and error handling
  */
 
-import { API_CONFIG, getAuthToken } from "./config";
+import { API_CONFIG } from "./config";
 import {
   ApiError,
   AuthenticationError,
@@ -43,7 +43,7 @@ interface NextFetchRequestConfig {
  * Main API client class
  */
 class ApiClient {
-  private baseURL: string;
+  private readonly baseURL: string;
 
   constructor(baseURL: string = API_CONFIG.baseURL) {
     this.baseURL = baseURL;
@@ -60,28 +60,24 @@ class ApiClient {
   }
 
   /**
-   * Build request headers with authentication
+   * Build request headers
+   * Note: For authentication, pass the Authorization header in options.headers
+   * Client-side: Get token from useAuth() hook
+   * Server-side: Get token from getSession() in lib/auth/session.ts
    */
   private async buildHeaders(
     options: ApiRequestOptions = {}
   ): Promise<HeadersInit> {
     const headers = new Headers(options.headers || API_CONFIG.headers);
-
-    // Add authentication token if not skipped
-    if (!options.skipAuth) {
-      const token = await getAuthToken();
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-    }
-
     return headers;
   }
 
   /**
    * Handle API response and errors
    */
-  private async handleResponse<T>(response: Response): Promise<StandardResponse<T>> {
+  private async handleResponse<T>(
+    response: Response
+  ): Promise<StandardResponse<T>> {
     // Handle network errors
     if (!response.ok && response.status === 0) {
       throw new NetworkError();
@@ -169,7 +165,10 @@ class ApiClient {
   /**
    * GET request
    */
-  async get<T>(endpoint: string, options?: ApiRequestOptions): Promise<StandardResponse<T>> {
+  async get<T>(
+    endpoint: string,
+    options?: ApiRequestOptions
+  ): Promise<StandardResponse<T>> {
     return this.request<T>(endpoint, {
       ...options,
       method: "GET",
@@ -224,7 +223,10 @@ class ApiClient {
   /**
    * DELETE request
    */
-  async delete<T>(endpoint: string, options?: ApiRequestOptions): Promise<StandardResponse<T>> {
+  async delete<T>(
+    endpoint: string,
+    options?: ApiRequestOptions
+  ): Promise<StandardResponse<T>> {
     return this.request<T>(endpoint, {
       ...options,
       method: "DELETE",

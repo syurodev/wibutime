@@ -23,14 +23,8 @@ export function UserSection({ onActionClick }: UserSectionProps) {
   const router = useRouter();
 
   const handleLogin = () => {
-    // Mock login - replace with real auth flow
-    login({
-      id: "mock-user-1",
-      display_name: "John Doe",
-      username: "johndoe",
-      email: "john@example.com",
-      avatar_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=John",
-    });
+    // Redirect to OAuth login
+    login("/");
     onActionClick?.();
   };
 
@@ -83,13 +77,13 @@ export function UserSection({ onActionClick }: UserSectionProps) {
       <div className="px-3 py-2">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={user.avatar_url} alt={user.display_name} />
+            <AvatarImage src={user.image} alt={user.name} />
             <AvatarFallback>
-              {user.display_name.charAt(0).toUpperCase()}
+              {user.name?.charAt(0).toUpperCase() || "U"}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="font-medium text-sm truncate">{user.display_name}</p>
+            <p className="font-medium text-sm truncate">{user.name}</p>
             {user.email && (
               <p className="text-xs text-muted-foreground truncate">
                 {user.email}

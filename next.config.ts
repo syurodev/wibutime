@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   experimental: {
     viewTransition: true,
+    taint: true,
   },
   // Custom cache profiles for different content types
   cacheLife: {

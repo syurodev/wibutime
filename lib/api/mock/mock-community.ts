@@ -30,7 +30,7 @@ const mockAvatarImages = [
   "/images/avatar-6.png",
   "/images/avatar-7.png",
   "/images/avatar-8.png",
-  "/images/avatar-9.jpge",
+  "/images/avatar-9.jpeg",
   "/images/avatar-10.png",
   "/images/avatar-11.png",
   "/images/avatar-12.png",

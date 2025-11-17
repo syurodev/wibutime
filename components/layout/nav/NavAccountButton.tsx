@@ -36,15 +36,15 @@ export function NavAccountButton({ index, overflowCount }: NavAccountButtonProps
         icon:
           isLoggedIn && user ? (
             <Avatar className="h-6 w-6">
-              <AvatarImage src={user.avatar_url} alt={user.display_name} />
+              <AvatarImage src={user.image} alt={user.name} />
               <AvatarFallback className="text-xs">
-                {user.display_name.charAt(0).toUpperCase()}
+                {user.name?.charAt(0).toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
           ) : (
             <MoreHorizontal className="h-5 w-5" />
           ),
-        label: isLoggedIn ? user?.display_name || "Account" : "Menu",
+        label: isLoggedIn ? user?.name || "Account" : "Menu",
         badge: !isLoggedIn
           ? "!"
           : overflowCount > 0

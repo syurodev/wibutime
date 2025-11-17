@@ -6,7 +6,11 @@
       "Bash(tree:*)",
       "mcp__next-devtools__nextjs_docs",
       "mcp__next-devtools__nextjs_runtime",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "WebSearch",
+      "WebFetch(domain:www.better-auth.com)",
+      "Bash(docker exec:*)",
+      "Bash(docker inspect:*)"
     ],
     "deny": [],
     "ask": []

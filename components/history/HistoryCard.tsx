@@ -116,7 +116,7 @@ export const HistoryCard = ({
           {/* Badge Type */}
           <Badge
             className={cn(
-              "absolute bottom-2 left-1/2 -translate-x-1/2 scale-90 px-2.5 py-0.5 text-[10px] shadow-sm border-0 whitespace-nowrap z-10",
+              "absolute bottom-2 left-1/2 -translate-x-1/2 scale-90 px-2.5 py-0.5 text-[10px] shadow-sm border-0 whitespace-nowrap z-10 capitalize",
               getContentBg({ type: item.type, blur: false })
             )}
           >

@@ -1,115 +1,104 @@
 /**
  * Auth Hook - User authentication state management
  *
- * This is a MOCK implementation for UI development.
- * Replace with real authentication API when backend is ready.
+ * Custom OAuth implementation with Jose session management
  */
 
 "use client";
 
-import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { useEffect, useState } from "react";
 
 /**
  * User type matching BaseUser schema
  */
 export type AuthUser = {
   id: string;
-  display_name: string;
-  username: string;
-  avatar_url?: string;
-  email?: string;
+  name: string;
+  email: string;
+  image?: string;
+};
+
+type SessionResponse = {
+  user: AuthUser | null;
+  accessToken?: string;
+  isExpired?: boolean;
 };
 
 /**
- * Auth Store State
- */
-interface AuthStore {
-  user: AuthUser | null;
-  isLoggedIn: boolean;
-
-  // Actions
-  login: (user: AuthUser) => void;
-  logout: () => void;
-  updateUser: (updates: Partial<AuthUser>) => void;
-}
-
-/**
- * Auth Store with localStorage persistence
- */
-export const useAuthStore = create<AuthStore>()(
-  persist(
-    (set) => ({
-      // Initial state
-      user: null,
-      isLoggedIn: false,
-
-      // Login action
-      login: (user) => {
-        set({
-          user,
-          isLoggedIn: true,
-        });
-      },
-
-      // Logout action
-      logout: () => {
-        set({
-          user: null,
-          isLoggedIn: false,
-        });
-      },
-
-      // Update user info
-      updateUser: (updates) => {
-        set((state) => ({
-          user: state.user ? { ...state.user, ...updates } : null,
-        }));
-      },
-    }),
-    {
-      name: "auth", // localStorage key
-      storage: createJSONStorage(() => localStorage),
-    }
-  )
-);
-
-/**
- * Auth Hook - Selective subscriptions
+ * Auth Hook - Fetch-based session management
  */
 export function useAuth() {
-  const user = useAuthStore((state) => state.user);
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
-  const login = useAuthStore((state) => state.login);
-  const logout = useAuthStore((state) => state.logout);
-  const updateUser = useAuthStore((state) => state.updateUser);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch session on mount
+  useEffect(() => {
+    fetchSession();
+  }, []);
+
+  const fetchSession = async () => {
+    try {
+      const response = await fetch("/api/auth/session");
+      const data: SessionResponse = await response.json();
+
+      setUser(data.user);
+      setAccessToken(data.accessToken || null);
+
+      // Auto-refresh if token is about to expire
+      if (data.user && data.isExpired) {
+        await refreshToken();
+      }
+    } catch (error) {
+      console.error("Failed to fetch session:", error);
+      setUser(null);
+      setAccessToken(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const refreshToken = async () => {
+    try {
+      await fetch("/api/auth/refresh", { method: "POST" });
+      await fetchSession();
+    } catch (error) {
+      console.error("Failed to refresh token:", error);
+    }
+  };
+
+  const login = (callbackUrl?: string) => {
+    const url = new URL("/api/auth/signin", window.location.origin);
+    if (callbackUrl) {
+      url.searchParams.set("callbackUrl", callbackUrl);
+    }
+    window.location.href = url.toString();
+  };
+
+  const logout = async () => {
+    try {
+      // Call POST to revoke tokens and delete session
+      await fetch("/api/auth/signout", { method: "POST" });
+      setUser(null);
+      setAccessToken(null);
+
+      // Redirect to OAuth server logout (GET endpoint)
+      // This will clear session_id cookie and redirect back to app
+      window.location.href = "/api/auth/signout";
+    } catch (error) {
+      console.error("Failed to sign out:", error);
+      // Fallback to home page
+      window.location.href = "/";
+    }
+  };
 
   return {
     user,
-    isLoggedIn,
+    accessToken,
+    isLoggedIn: !!user,
+    isLoading,
     login,
     logout,
-    updateUser,
+    refreshToken,
   } as const;
-}
-
-/**
- * Mock login for testing
- * Call this to simulate a user login
- */
-export function mockLogin() {
-  useAuthStore.getState().login({
-    id: "mock-user-1",
-    display_name: "John Doe",
-    username: "johndoe",
-    email: "john@example.com",
-    avatar_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=John",
-  });
-}
-
-/**
- * Mock logout for testing
- */
-export function mockLogout() {
-  useAuthStore.getState().logout();
 }
