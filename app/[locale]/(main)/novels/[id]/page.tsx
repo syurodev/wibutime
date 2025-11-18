@@ -25,9 +25,12 @@ import {
   Lock,
   Clock,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { StaticEditorView } from "@/components/editor/static-editor-view";
+import type { TNode } from "platejs";
 
 // --- MOCK DATA ---
 const novelData = {
@@ -45,8 +48,33 @@ const novelData = {
   status: "Completed",
   type: "Novel",
   releaseYear: 1998,
-  description:
-    "Harry returns to Hogwarts School of Witchcraft and Wizardry for his second year. But this year, a mysterious presence is terrorizing the school. Students are being attacked and turned to stone, and a dark message appears on the wall: 'The Chamber of Secrets has been opened.' Harry must uncover the truth behind these attacks before Hogwarts is forced to close forever.",
+  description: [
+    {
+      type: "p",
+      children: [
+        {
+          text: "Harry returns to Hogwarts School of Witchcraft and Wizardry for his second year. But this year, a mysterious presence is terrorizing the school. Students are being attacked and turned to stone, and a dark message appears on the wall: ",
+        },
+        { text: "'The Chamber of Secrets has been opened.'", bold: true },
+      ],
+    },
+    {
+      type: "p",
+      children: [
+        {
+          text: "Harry must uncover the truth behind these attacks before Hogwarts is forced to close forever. With the help of his friends Ron and Hermione, he delves into the school's dark history and discovers secrets that have been hidden for fifty years.",
+        },
+      ],
+    },
+    {
+      type: "p",
+      children: [
+        {
+          text: "As the mystery deepens, Harry finds himself hearing strange voices in the walls and discovers he can speak Parseltongue, the language of serpents. Is Harry the heir of Slytherin? Can he save the school before it's too late?",
+        },
+      ],
+    },
+  ] as const,
   genres: [
     { id: "1", name: "Fantasy" },
     { id: "2", name: "Adventure" },
@@ -268,6 +296,7 @@ const novelData = {
 };
 
 export default function NovelDetailPage() {
+  const t = useTranslations("novel.detail");
   const [isBookmarked, setIsBookmarked] = useState(false);
 
   const totalChapters = novelData.volumes.reduce(
@@ -335,7 +364,7 @@ export default function NovelDetailPage() {
                 <div className="space-y-1">
                   <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
                     <Star className="size-4" />
-                    <span>Rating</span>
+                    <span>{t("rating")}</span>
                   </div>
                   <div className="flex items-baseline gap-1">
                     <span className="text-3xl font-bold">
@@ -346,14 +375,14 @@ export default function NovelDetailPage() {
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {formatNumberAbbreviated(novelData.ratingCount)} reviews
+                    {formatNumberAbbreviated(novelData.ratingCount)} {t("ratings")}
                   </p>
                 </div>
 
                 <div className="space-y-1">
                   <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
                     <Eye className="size-4" />
-                    <span>Views</span>
+                    <span>{t("views")}</span>
                   </div>
                   <div className="text-3xl font-bold">
                     {formatNumberAbbreviated(novelData.views)}
@@ -363,7 +392,7 @@ export default function NovelDetailPage() {
                 <div className="space-y-1">
                   <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
                     <Heart className="size-4" />
-                    <span>Favorites</span>
+                    <span>{t("favorites")}</span>
                   </div>
                   <div className="text-3xl font-bold">
                     {formatNumberAbbreviated(novelData.favorites)}
@@ -373,7 +402,7 @@ export default function NovelDetailPage() {
                 <div className="space-y-1">
                   <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
                     <TrendingUp className="size-4" />
-                    <span>Rank</span>
+                    <span>{t("rank")}</span>
                   </div>
                   <div className="text-3xl font-bold">#12</div>
                 </div>
@@ -383,7 +412,7 @@ export default function NovelDetailPage() {
               <div className="flex flex-wrap gap-3 pt-2">
                 <Button size="lg" className="gap-2">
                   <BookOpen className="size-4" />
-                  Start Reading
+                  {t("startReading")}
                 </Button>
                 <Button
                   size="lg"
@@ -394,7 +423,7 @@ export default function NovelDetailPage() {
                   <Heart
                     className={cn("size-4", isBookmarked && "fill-current")}
                   />
-                  {isBookmarked ? "Bookmarked" : "Add to Library"}
+                  {isBookmarked ? t("bookmarked") : t("addToLibrary")}
                 </Button>
               </div>
             </div>
@@ -409,10 +438,12 @@ export default function NovelDetailPage() {
           <div className="space-y-12">
             {/* Synopsis */}
             <section className="space-y-4">
-              <h2 className="text-2xl font-bold">Synopsis</h2>
-              <p className="text-base text-muted-foreground leading-relaxed">
-                {novelData.description}
-              </p>
+              <h2 className="text-2xl font-bold">{t("synopsis")}</h2>
+              <StaticEditorView
+                content={novelData.description as TNode[]}
+                variant="compact"
+                className="text-base text-muted-foreground leading-relaxed"
+              />
 
               {/* Tags */}
               <div className="flex flex-wrap gap-2 pt-2">
@@ -433,9 +464,9 @@ export default function NovelDetailPage() {
             {/* Volumes & Chapters (3-Level Hierarchy) */}
             <section className="space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold">Volumes & Chapters</h2>
+                <h2 className="text-2xl font-bold">{t("volumesAndChapters")}</h2>
                 <p className="text-sm text-muted-foreground">
-                  {novelData.volumes.length} volumes • {totalChapters} chapters
+                  {novelData.volumes.length} {t("volumes")} • {totalChapters} {t("chapters")}
                 </p>
               </div>
 
@@ -530,9 +561,9 @@ export default function NovelDetailPage() {
             {/* Reviews */}
             <section className="space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold">Reader Reviews</h2>
+                <h2 className="text-2xl font-bold">{t("readerReviews")}</h2>
                 <Button variant="outline" size="sm">
-                  Write Review
+                  {t("writeReview")}
                 </Button>
               </div>
 
@@ -557,7 +588,7 @@ export default function NovelDetailPage() {
                       ))}
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {formatNumberAbbreviated(novelData.ratingCount)} ratings
+                      {formatNumberAbbreviated(novelData.ratingCount)} {t("ratings")}
                     </p>
                   </div>
 
@@ -650,40 +681,40 @@ export default function NovelDetailPage() {
           <aside className="space-y-6">
             {/* Book Details */}
             <Card className="p-6 space-y-4">
-              <h3 className="font-semibold">Book Details</h3>
+              <h3 className="font-semibold">{t("bookDetails")}</h3>
               <Separator />
 
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between gap-4">
-                  <span className="text-muted-foreground">Author</span>
+                  <span className="text-muted-foreground">{t("author")}</span>
                   <span className="font-medium text-right">
                     {novelData.author}
                   </span>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <span className="text-muted-foreground">Artist</span>
+                  <span className="text-muted-foreground">{t("artist")}</span>
                   <span className="font-medium text-right">
                     {novelData.artist}
                   </span>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <span className="text-muted-foreground">Published</span>
+                  <span className="text-muted-foreground">{t("published")}</span>
                   <span className="font-medium">{novelData.releaseYear}</span>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <span className="text-muted-foreground">Status</span>
+                  <span className="text-muted-foreground">{t("status")}</span>
                   <Badge className="bg-green-100 text-green-700 border-0">
                     {novelData.status}
                   </Badge>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <span className="text-muted-foreground">Volumes</span>
+                  <span className="text-muted-foreground">{t("volumes")}</span>
                   <span className="font-medium">
                     {novelData.volumes.length}
                   </span>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <span className="text-muted-foreground">Chapters</span>
+                  <span className="text-muted-foreground">{t("chapters")}</span>
                   <span className="font-medium">{totalChapters}</span>
                 </div>
               </div>
@@ -691,7 +722,7 @@ export default function NovelDetailPage() {
 
             {/* Recommendations */}
             <div className="space-y-4">
-              <h3 className="font-semibold">You May Also Like</h3>
+              <h3 className="font-semibold">{t("youMayAlsoLike")}</h3>
 
               <div className="space-y-3">
                 {novelData.recommendations.map((item) => (

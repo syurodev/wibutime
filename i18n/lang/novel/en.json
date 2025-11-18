@@ -1,0 +1,24 @@
+{
+  "detail": {
+    "startReading": "Start Reading",
+    "addToLibrary": "Add to Library",
+    "bookmarked": "Bookmarked",
+    "synopsis": "Synopsis",
+    "volumesAndChapters": "Volumes & Chapters",
+    "volumes": "volumes",
+    "chapters": "chapters",
+    "readerReviews": "Reader Reviews",
+    "writeReview": "Write Review",
+    "ratings": "ratings",
+    "bookDetails": "Book Details",
+    "author": "Author",
+    "artist": "Artist",
+    "published": "Published",
+    "status": "Status",
+    "youMayAlsoLike": "You May Also Like",
+    "rating": "Rating",
+    "views": "Views",
+    "favorites": "Favorites",
+    "rank": "Rank"
+  }
+}
