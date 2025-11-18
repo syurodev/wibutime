@@ -1,7 +1,7 @@
 import { CONTENT_TYPE } from "@/lib/constants/default";
 import z from "zod";
 import { BaseUserSchema } from "../user/base-user";
-import { MediaUnitSchema } from "./base-content";
+import { MediaUnitSchema, GenreSchema } from "./base-content";
 
 export const NovelBookmarkSchema = z.object({
   node_id: z.string(),
@@ -17,6 +17,7 @@ export const HistoryMediaSchema = z.object({
 
   // Content fields với defaults
   cover_url: z.string().nullable(),
+  description: z.string().nullable().optional(),
 
   // Type và status với defaults
   type: z
@@ -27,6 +28,18 @@ export const HistoryMediaSchema = z.object({
     .default("ongoing"),
 
   author: BaseUserSchema, // người đăng
+
+  // Relations với defaults
+  genres: z.array(GenreSchema).default([]),
+
+  // Stats với defaults
+  rating: z.number().min(0).max(10).default(0),
+  views: z.number().int().min(0).default(0),
+  favorites: z.number().int().min(0).default(0),
+
+  // Progress tracking
+  total_units: z.number().int().min(0).optional(), // Total chapters/episodes
+  user_progress_percentage: z.number().min(0).max(100).optional(), // Calculated %
 
   // Optional fields
   latest_unit: MediaUnitSchema.optional(),

@@ -5,6 +5,8 @@
   "emptyDescription": "Start watching and reading to see your history here",
   "exploreTrending": "Explore Trending",
   "browseAll": "Browse All",
+  "newUpdate": "New!",
+  "progress": "Progress",
   "tabs": {
     "all": "All",
     "anime": "Anime",
@@ -18,6 +20,12 @@
     "recent": "Recently Viewed",
     "title": "Title",
     "updated": "Last Updated"
+  },
+  "status": {
+    "completed": "Completed",
+    "ongoing": "Ongoing",
+    "hiatus": "Hiatus",
+    "cancelled": "Cancelled"
   },
   "actions": {
     "remove": "Remove from History",

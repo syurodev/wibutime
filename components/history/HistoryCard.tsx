@@ -4,7 +4,7 @@ import { Link } from "@/i18n/routing";
 import type { HistoryMedia } from "@/lib/api/models/content/history-content";
 import { CONTENT_TYPE } from "@/lib/constants/default";
 import { cn } from "@/lib/utils";
-import { getContentBg } from "@/lib/utils/get-content-bg";
+import { getContentBadgeVariant } from "@/lib/utils/get-content-bg";
 import { getImageUrlWithDefault } from "@/lib/utils/get-image-url-with-default";
 import { getInitials } from "@/lib/utils/get-initials";
 import { getMediaResumePath } from "@/lib/utils/get-media-resume-path";
@@ -115,9 +115,9 @@ export const HistoryCard = ({
 
           {/* Badge Type */}
           <Badge
+            variant={getContentBadgeVariant(item.type, false)}
             className={cn(
-              "absolute bottom-2 left-1/2 -translate-x-1/2 scale-90 px-2.5 py-0.5 text-[10px] shadow-sm border-0 whitespace-nowrap z-10 capitalize",
-              getContentBg({ type: item.type, blur: false })
+              "absolute bottom-2 left-1/2 -translate-x-1/2 scale-90 px-2.5 py-0.5 text-[10px] shadow-sm border-0 whitespace-nowrap z-10 capitalize"
             )}
           >
             {item.type}

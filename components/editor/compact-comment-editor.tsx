@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { CompactFloatingToolbar } from "@/components/ui/compact-floating-toolbar";
 import { Editor, EditorContainer } from "@/components/ui/editor";
 import { ParagraphElement } from "@/components/ui/paragraph-node";
+import { editorNodeIdConfig } from "@/lib/editor/config";
 
 const PLUGINS = [
   ParagraphPlugin.withComponent(ParagraphElement),
@@ -25,7 +26,6 @@ const PLUGINS = [
 
 const INITIAL_VALUE: TNode[] = [
   {
-    id: "1",
     type: "p",
     children: [{ text: "" }],
   },
@@ -84,6 +84,7 @@ export function CompactCommentEditor({
   const editor = usePlateEditor({
     plugins: PLUGINS,
     value: initialValue as any,
+    nodeId: editorNodeIdConfig,
   });
 
   const handleSubmit = React.useCallback(() => {

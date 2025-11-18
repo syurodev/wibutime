@@ -1,10 +1,10 @@
 /**
  * History Grid Component
- * Grid layout for displaying history items
+ * Grid layout for displaying history items with enhanced cards
  */
 
 import type { HistoryMedia } from "@/lib/api/models/content/history-content";
-import { HistoryCard } from "./HistoryCard";
+import { EnhancedHistoryCard } from "./EnhancedHistoryCard";
 
 export interface HistoryGridProps {
 	readonly history: HistoryMedia[];
@@ -22,12 +22,12 @@ export function HistoryGrid({ history, className }: HistoryGridProps) {
 
 	return (
 		<div
-			className={`grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:gap-6 ${
+			className={`grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 ${
 				className || ""
 			}`}
 		>
 			{history.map((item) => (
-				<HistoryCard key={item.id} item={item} />
+				<EnhancedHistoryCard key={item.id} item={item} />
 			))}
 		</div>
 	);

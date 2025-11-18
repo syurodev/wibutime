@@ -21,10 +21,10 @@ import { WordCount } from "@/components/ui/word-count";
 
 // Import hooks
 import { useAutosave } from "@/hooks/use-autosave";
+import { editorNodeIdConfig } from "@/lib/editor/config";
 
 const INITIAL_VALUE = [
   {
-    id: "1",
     type: "p",
     children: [{ text: "Start writing your novel here..." }],
   },
@@ -59,6 +59,7 @@ export default function CreateNovelPage() {
       ...DndKit,
     ],
     value: initialValue,
+    nodeId: editorNodeIdConfig,
   });
 
   // Auto-save on editor value changes

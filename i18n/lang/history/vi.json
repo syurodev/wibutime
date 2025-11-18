@@ -5,6 +5,8 @@
   "emptyDescription": "Bắt đầu xem và đọc để thấy lịch sử của bạn ở đây",
   "exploreTrending": "Khám phá Thịnh hành",
   "browseAll": "Duyệt tất cả",
+  "newUpdate": "Mới!",
+  "progress": "Tiến độ",
   "tabs": {
     "all": "Tất cả",
     "anime": "Anime",
@@ -18,6 +20,12 @@
     "recent": "Xem gần đây",
     "title": "Tiêu đề",
     "updated": "Cập nhật gần đây"
+  },
+  "status": {
+    "completed": "Hoàn thành",
+    "ongoing": "Đang tiến hành",
+    "hiatus": "Tạm ngưng",
+    "cancelled": "Đã hủy"
   },
   "actions": {
     "remove": "Xóa khỏi lịch sử",

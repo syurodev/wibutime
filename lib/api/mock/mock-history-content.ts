@@ -30,10 +30,16 @@ export const getMockHistoryMedia = (count = 12): HistoryMedia[] => {
   if (!historyCache) {
     const series = getMockMediaSeries(40);
     historyCache = series.map((item, index) => {
+      // Extract chapter/episode number from latest_chapter title
+      const chapterMatch = item.latest_chapter?.title?.match(/(\d+)/);
+      const currentUnit = chapterMatch ? parseInt(chapterMatch[1], 10) : randomInt(10, 80);
+      const totalUnits = randomInt(currentUnit + 10, 150);
+      const progressPercentage = Math.min(Math.round((currentUnit / totalUnits) * 100), 100);
+
       const latestUnit = MediaUnitSchema.parse({
         id: item.latest_chapter?.id ?? crypto.randomUUID(),
         title:
-          item.latest_chapter?.title ?? `Chapter ${randomInt(1, 120).toString()}`,
+          item.latest_chapter?.title ?? `Chapter ${currentUnit}`,
         published_at:
           item.latest_chapter?.published_at ?? item.updated_at ?? new Date().toISOString(),
       });
@@ -42,17 +48,35 @@ export const getMockHistoryMedia = (count = 12): HistoryMedia[] => {
         Date.now() - randomInt(1, 72) * ONE_HOUR_MS - randomInt(0, 59) * 60000
       ).toISOString();
 
+      // Sometimes content_updated_at is after last_viewed_at (new update)
+      const hasUpdate = Math.random() > 0.7; // 30% chance of new update
+      const contentUpdatedAt = hasUpdate
+        ? new Date(Date.now() - randomInt(0, 48) * ONE_HOUR_MS).toISOString()
+        : new Date(new Date(viewedAt).getTime() - randomInt(1, 48) * ONE_HOUR_MS).toISOString();
+
       const baseHistory = {
         id: `${item.id}-history-${index}`,
         title: item.title,
         slug: item.slug,
         cover_url: item.cover_url,
+        description: item.description ?
+          `${item.title} - A captivating ${item.type} series with amazing storyline and characters.` :
+          null,
         type: item.type,
         status: item.status,
         author: item.author,
+        // New fields from MediaSeries
+        genres: item.genres || [],
+        rating: item.rating || randomInt(70, 95) / 10, // 7.0 - 9.5
+        views: item.views || randomInt(10000, 1000000),
+        favorites: item.favorites || randomInt(500, 50000),
+        // Progress tracking
+        total_units: totalUnits,
+        user_progress_percentage: progressPercentage,
+        // Existing fields
         latest_unit: latestUnit,
         last_viewed_at: viewedAt,
-        content_updated_at: item.updated_at,
+        content_updated_at: contentUpdatedAt,
       };
 
       if (item.type === CONTENT_TYPE.ANIME) {

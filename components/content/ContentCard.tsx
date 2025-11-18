@@ -8,7 +8,7 @@ import type { MediaSeries } from "@/lib/api/models/content/base-content";
 import { formatNumberAbbreviated } from "@/lib/api/utils/number";
 import { useUiPreferences } from "@/lib/hooks/use-user-settings";
 import { cn } from "@/lib/utils";
-import { getContentBg } from "@/lib/utils/get-content-bg";
+import { getContentBadgeVariant } from "@/lib/utils/get-content-bg";
 import { getImageUrlWithDefault } from "@/lib/utils/get-image-url-with-default";
 import { getInitials } from "@/lib/utils/get-initials";
 import { AspectRatio } from "../ui/aspect-ratio";
@@ -36,9 +36,9 @@ export const ContentCard = memo(function ContentCard({
 				>
 					{/* Badge */}
 					<Badge
+						variant={getContentBadgeVariant(series.type, true)}
 						className={cn(
-							"absolute z-40 top-3 right-3 capitalize shadow-md pointer-events-none px-2.5 py-0.5 text-[10px]",
-							getContentBg({ type: series.type, blur: true }),
+							"absolute z-40 top-3 right-3 capitalize shadow-md pointer-events-none px-2.5 py-0.5 text-[10px]"
 						)}
 					>
 						{series.type}

@@ -28,23 +28,21 @@ import { HeroSection } from "@/components/home/HeroSection";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { useAutosave } from "@/hooks/use-autosave";
 import { getMockMediaSeries } from "@/lib/api/mock/mock-base-content";
+import { editorNodeIdConfig } from "@/lib/editor/config";
 import { EditorDemoNavigation } from "./EditorDemoNavigation";
 
 const INITIAL_VALUE = [
   {
-    id: "1",
     type: "h1",
     children: [{ text: "Welcome to Editor Demo" }],
   },
   {
-    id: "2",
     type: "p",
     children: [
       { text: "This page demonstrates both editors in the WibuTime system:" },
     ],
   },
   {
-    id: "3",
     type: "p",
     children: [
       { text: "1. ", bold: true },
@@ -55,7 +53,6 @@ const INITIAL_VALUE = [
     ],
   },
   {
-    id: "4",
     type: "p",
     children: [
       { text: "2. ", bold: true },
@@ -66,17 +63,14 @@ const INITIAL_VALUE = [
     ],
   },
   {
-    id: "5",
     type: "h2",
     children: [{ text: "Try the editors below!" }],
   },
   {
-    id: "6",
     type: "p",
     children: [{ text: "Full Novel Editor features:" }],
   },
   {
-    id: "7",
     type: "p",
     children: [
       { text: "• Text formatting: " },
@@ -94,47 +88,38 @@ const INITIAL_VALUE = [
     ],
   },
   {
-    id: "8",
     type: "p",
     children: [{ text: "• Headings (H1-H4) with keyboard shortcuts (⌘⌥1-4)" }],
   },
   {
-    id: "9",
     type: "p",
     children: [{ text: "• Text alignment (left, center, right, justify)" }],
   },
   {
-    id: "10",
     type: "p",
     children: [{ text: "• Links, Images, Videos with resize and captions" }],
   },
   {
-    id: "11",
     type: "p",
     children: [{ text: "• Blockquotes and horizontal rules" }],
   },
   {
-    id: "12",
     type: "p",
     children: [{ text: "• Drag & drop blocks and files" }],
   },
   {
-    id: "13",
     type: "p",
     children: [{ text: "• Undo/Redo (⌘Z / ⌘⇧Z)" }],
   },
   {
-    id: "14",
     type: "p",
     children: [{ text: "• Real-time word count" }],
   },
   {
-    id: "15",
     type: "p",
     children: [{ text: "• Auto-save with localStorage backup" }],
   },
   {
-    id: "16",
     type: "blockquote",
     children: [
       { text: "Start writing your novel here... All changes are auto-saved!" },
@@ -173,6 +158,7 @@ export default function EditorDemoPage() {
       ...DndKit,
     ],
     value: initialValue,
+    nodeId: editorNodeIdConfig,
   });
 
   // Auto-save on editor value changes

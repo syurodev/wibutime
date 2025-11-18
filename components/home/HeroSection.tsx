@@ -12,7 +12,7 @@ import {
 import { MediaSeries } from "@/lib/api/models/content/base-content";
 import { formatNumberAbbreviated } from "@/lib/api/utils/number";
 import { cn } from "@/lib/utils";
-import { getContentBg } from "@/lib/utils/get-content-bg";
+import { getContentBadgeVariant, getContentBg } from "@/lib/utils/get-content-bg";
 import { getImageUrlWithDefault } from "@/lib/utils/get-image-url-with-default";
 import { getInitials } from "@/lib/utils/get-initials";
 import Autoplay from "embla-carousel-autoplay";
@@ -140,10 +140,8 @@ function HeroSlide({
 
             <div className="flex flex-wrap gap-2 animate-in fade-in slide-in-from-bottom-4 duration-700">
               <Badge
-                className={cn(
-                  "capitalize",
-                  getContentBg({ type: featured.type, blur: false })
-                )}
+                variant={getContentBadgeVariant(featured.type, false)}
+                className="capitalize"
               >
                 {featured.type}
               </Badge>
