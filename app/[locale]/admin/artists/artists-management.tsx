@@ -87,8 +87,12 @@ export function ArtistsManagement() {
       setTotalPages(result.total_pages);
       setTotalItems(result.total_items);
     } catch (error) {
-      toast.error("Không thể tải danh sách hoạ sĩ");
+      const message = error instanceof Error ? error.message : "Không thể tải danh sách hoạ sĩ";
+      toast.error(message);
       console.error(error);
+      setArtists([]);
+      setTotalPages(1);
+      setTotalItems(0);
     } finally {
       setLoading(false);
     }
@@ -108,7 +112,8 @@ export function ArtistsManagement() {
       setFormData({ name: "", biography: "", specialization: "" });
       fetchArtists();
     } catch (error) {
-      toast.error("Không thể tạo hoạ sĩ");
+      const message = error instanceof Error ? error.message : "Không thể tạo hoạ sĩ";
+      toast.error(message);
       console.error(error);
     } finally {
       setSubmitting(false);
@@ -129,7 +134,8 @@ export function ArtistsManagement() {
       setFormData({ name: "", biography: "", specialization: "" });
       fetchArtists();
     } catch (error) {
-      toast.error("Không thể cập nhật hoạ sĩ");
+      const message = error instanceof Error ? error.message : "Không thể cập nhật hoạ sĩ";
+      toast.error(message);
       console.error(error);
     } finally {
       setSubmitting(false);
@@ -146,7 +152,8 @@ export function ArtistsManagement() {
       setSelectedArtist(null);
       fetchArtists();
     } catch (error) {
-      toast.error("Không thể xóa hoạ sĩ");
+      const message = error instanceof Error ? error.message : "Không thể xóa hoạ sĩ";
+      toast.error(message);
       console.error(error);
     } finally {
       setSubmitting(false);

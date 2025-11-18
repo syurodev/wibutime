@@ -82,8 +82,12 @@ export function AuthorsManagement() {
       setTotalPages(result.total_pages);
       setTotalItems(result.total_items);
     } catch (error) {
-      toast.error("Không thể tải danh sách tác giả");
+      const message = error instanceof Error ? error.message : "Không thể tải danh sách tác giả";
+      toast.error(message);
       console.error(error);
+      setAuthors([]);
+      setTotalPages(1);
+      setTotalItems(0);
     } finally {
       setLoading(false);
     }
@@ -103,7 +107,8 @@ export function AuthorsManagement() {
       setFormData({ name: "", biography: "" });
       fetchAuthors();
     } catch (error) {
-      toast.error("Không thể tạo tác giả");
+      const message = error instanceof Error ? error.message : "Không thể tạo tác giả";
+      toast.error(message);
       console.error(error);
     } finally {
       setSubmitting(false);
@@ -124,7 +129,8 @@ export function AuthorsManagement() {
       setFormData({ name: "", biography: "" });
       fetchAuthors();
     } catch (error) {
-      toast.error("Không thể cập nhật tác giả");
+      const message = error instanceof Error ? error.message : "Không thể cập nhật tác giả";
+      toast.error(message);
       console.error(error);
     } finally {
       setSubmitting(false);
@@ -141,7 +147,8 @@ export function AuthorsManagement() {
       setSelectedAuthor(null);
       fetchAuthors();
     } catch (error) {
-      toast.error("Không thể xóa tác giả");
+      const message = error instanceof Error ? error.message : "Không thể xóa tác giả";
+      toast.error(message);
       console.error(error);
     } finally {
       setSubmitting(false);

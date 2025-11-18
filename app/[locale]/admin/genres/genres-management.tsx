@@ -84,8 +84,13 @@ export function GenresManagement() {
       setTotalPages(result.total_pages);
       setTotalItems(result.total_items);
     } catch (error) {
-      toast.error("Không thể tải danh sách thể loại");
+      const message = error instanceof Error ? error.message : "Không thể tải danh sách thể loại";
+      toast.error(message);
       console.error(error);
+      // Set empty state instead of keeping old data
+      setGenres([]);
+      setTotalPages(1);
+      setTotalItems(0);
     } finally {
       setLoading(false);
     }
@@ -105,7 +110,8 @@ export function GenresManagement() {
       setFormData({ name: "", description: "" });
       fetchGenres();
     } catch (error) {
-      toast.error("Không thể tạo thể loại");
+      const message = error instanceof Error ? error.message : "Không thể tạo thể loại";
+      toast.error(message);
       console.error(error);
     } finally {
       setSubmitting(false);
@@ -126,7 +132,8 @@ export function GenresManagement() {
       setFormData({ name: "", description: "" });
       fetchGenres();
     } catch (error) {
-      toast.error("Không thể cập nhật thể loại");
+      const message = error instanceof Error ? error.message : "Không thể cập nhật thể loại";
+      toast.error(message);
       console.error(error);
     } finally {
       setSubmitting(false);
@@ -143,7 +150,8 @@ export function GenresManagement() {
       setSelectedGenre(null);
       fetchGenres();
     } catch (error) {
-      toast.error("Không thể xóa thể loại");
+      const message = error instanceof Error ? error.message : "Không thể xóa thể loại";
+      toast.error(message);
       console.error(error);
     } finally {
       setSubmitting(false);
