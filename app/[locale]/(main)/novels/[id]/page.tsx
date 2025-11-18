@@ -24,7 +24,6 @@ import {
   ChevronRight,
   Lock,
   Clock,
-  Book,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -59,6 +58,7 @@ const novelData = {
       id: "vol-1",
       title: "Volume 1: The Mystery Begins",
       description: "Harry's second year starts with strange warnings and mysterious attacks.",
+      coverUrl: "/images/image-1.jpg",
       totalChapters: 6,
       chapters: [
         {
@@ -109,6 +109,7 @@ const novelData = {
       id: "vol-2",
       title: "Volume 2: Dark Secrets",
       description: "The Chamber of Secrets is opened and terror spreads through Hogwarts.",
+      coverUrl: "/images/image-2.jpg",
       totalChapters: 6,
       chapters: [
         {
@@ -159,6 +160,7 @@ const novelData = {
       id: "vol-3",
       title: "Volume 3: The Truth Revealed",
       description: "Harry discovers the shocking truth behind the Chamber of Secrets.",
+      coverUrl: "/images/image-5.jpg",
       totalChapters: 6,
       chapters: [
         {
@@ -452,8 +454,14 @@ export default function NovelDetailPage() {
                     {/* Volume Header */}
                     <AccordionTrigger className="px-6 py-4 hover:no-underline hover:bg-muted/50 [&[data-state=open]]:bg-muted/30">
                       <div className="flex items-center gap-4 w-full text-left pr-4">
-                        <div className="size-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                          <Book className="size-6 text-primary" />
+                        <div className="relative w-16 h-20 rounded-lg overflow-hidden shrink-0 bg-muted border shadow-sm">
+                          <Image
+                            src={volume.coverUrl}
+                            alt={volume.title}
+                            fill
+                            className="object-cover"
+                            sizes="64px"
+                          />
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="font-bold text-base mb-1">
