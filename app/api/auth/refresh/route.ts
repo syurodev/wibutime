@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSession, updateSession } from "@/lib/auth/session";
+import { getSession, updateSession, deleteSession } from "@/lib/auth/session";
 
 export async function POST() {
   const session = await getSession();
@@ -27,8 +27,8 @@ export async function POST() {
     );
 
     if (!tokenResponse.ok) {
-      const error = await tokenResponse.text();
-      console.error("Token refresh failed:", error);
+      // Token refresh failed - delete session cookie to prevent retry loop
+      await deleteSession();
       return NextResponse.json(
         { error: "Token refresh failed" },
         { status: 401 }
@@ -47,7 +47,8 @@ export async function POST() {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Refresh token error:", error);
+    // Internal error during refresh - delete session to prevent retry
+    await deleteSession();
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

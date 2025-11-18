@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import type { NavItem } from "./types";
 import { UserSection } from "./UserSection";
 import { ThemeToggleCompact } from "./ThemeToggleCompact";
+import { LanguageToggleCompact } from "./LanguageToggleCompact";
 import { ReduceBlurToggle } from "./ReduceBlurToggle";
 
 export interface NavAccountMenuContentProps {
@@ -142,6 +143,9 @@ export function NavAccountMenuContent({
       {/* Theme Toggle */}
       <div className="border-t border-border" />
       <ThemeToggleCompact />
+
+      {/* Language Toggle */}
+      <LanguageToggleCompact />
 
       {/* Reduce Blur Toggle */}
       <ReduceBlurToggle />

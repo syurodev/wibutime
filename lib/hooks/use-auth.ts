@@ -6,7 +6,8 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 /**
  * User type matching BaseUser schema
@@ -32,6 +33,12 @@ export function useAuth() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Use ref to track refresh state for reliable synchronous checks
+  const isRefreshingRef = useRef(false);
+
+  // Track if this is initial mount to avoid showing toast on page load
+  const isInitialMountRef = useRef(true);
+
   // Fetch session on mount
   useEffect(() => {
     fetchSession();
@@ -46,11 +53,12 @@ export function useAuth() {
       setAccessToken(data.accessToken || null);
 
       // Auto-refresh if token is about to expire
-      if (data.user && data.isExpired) {
+      // Prevent refresh if already refreshing to avoid spam
+      if (data.user && data.isExpired && !isRefreshingRef.current) {
         await refreshToken();
       }
     } catch (error) {
-      console.error("Failed to fetch session:", error);
+      // Silent fail - session fetch error
       setUser(null);
       setAccessToken(null);
     } finally {
@@ -59,11 +67,45 @@ export function useAuth() {
   };
 
   const refreshToken = async () => {
+    // Prevent multiple simultaneous refresh requests
+    if (isRefreshingRef.current) {
+      return false;
+    }
+
+    isRefreshingRef.current = true;
+
     try {
-      await fetch("/api/auth/refresh", { method: "POST" });
+      const response = await fetch("/api/auth/refresh", { method: "POST" });
+
+      // If refresh fails (401 = invalid/expired refresh token), clear session
+      if (!response.ok) {
+        // Only show toast if not initial mount (user is actively using the app)
+        if (!isInitialMountRef.current) {
+          toast.error("Session expired. Please login again.");
+        }
+        setUser(null);
+        setAccessToken(null);
+        isRefreshingRef.current = false;
+        isInitialMountRef.current = false;
+        return false;
+      }
+
+      // Only fetch session again if refresh was successful
       await fetchSession();
+      isRefreshingRef.current = false;
+      isInitialMountRef.current = false;
+      return true;
     } catch (error) {
-      console.error("Failed to refresh token:", error);
+      // Clear session on error to prevent infinite loop
+      // Only show toast if not initial mount
+      if (!isInitialMountRef.current) {
+        toast.error("Session expired. Please login again.");
+      }
+      setUser(null);
+      setAccessToken(null);
+      isRefreshingRef.current = false;
+      isInitialMountRef.current = false;
+      return false;
     }
   };
 
@@ -86,8 +128,7 @@ export function useAuth() {
       // This will clear session_id cookie and redirect back to app
       window.location.href = "/api/auth/signout";
     } catch (error) {
-      console.error("Failed to sign out:", error);
-      // Fallback to home page
+      // Fallback to home page on error
       window.location.href = "/";
     }
   };
