@@ -32,11 +32,18 @@ export async function signOut() {
 
 /**
  * Refresh access token
+ * Returns true if successful, false if failed
  */
 export async function refreshToken() {
   try {
     const response = await fetch("/api/auth/refresh", { method: "POST" });
-    return response.ok;
+
+    if (!response.ok) {
+      console.error("Token refresh failed:", response.status);
+      return false;
+    }
+
+    return true;
   } catch (error) {
     console.error("Failed to refresh token:", error);
     return false;

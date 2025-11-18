@@ -6,7 +6,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * User type matching BaseUser schema
@@ -32,6 +32,9 @@ export function useAuth() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Use ref to track refresh state for reliable synchronous checks
+  const isRefreshingRef = useRef(false);
+
   // Fetch session on mount
   useEffect(() => {
     fetchSession();
@@ -46,7 +49,8 @@ export function useAuth() {
       setAccessToken(data.accessToken || null);
 
       // Auto-refresh if token is about to expire
-      if (data.user && data.isExpired) {
+      // Prevent refresh if already refreshing to avoid spam
+      if (data.user && data.isExpired && !isRefreshingRef.current) {
         await refreshToken();
       }
     } catch (error) {
@@ -59,11 +63,37 @@ export function useAuth() {
   };
 
   const refreshToken = async () => {
+    // Prevent multiple simultaneous refresh requests
+    if (isRefreshingRef.current) {
+      console.log("Refresh already in progress, skipping...");
+      return false;
+    }
+
+    isRefreshingRef.current = true;
+
     try {
-      await fetch("/api/auth/refresh", { method: "POST" });
+      const response = await fetch("/api/auth/refresh", { method: "POST" });
+
+      // If refresh fails (401 = invalid/expired refresh token), clear session
+      if (!response.ok) {
+        console.error("Token refresh failed, clearing session");
+        setUser(null);
+        setAccessToken(null);
+        isRefreshingRef.current = false;
+        return false;
+      }
+
+      // Only fetch session again if refresh was successful
       await fetchSession();
+      isRefreshingRef.current = false;
+      return true;
     } catch (error) {
       console.error("Failed to refresh token:", error);
+      // Clear session on error to prevent infinite loop
+      setUser(null);
+      setAccessToken(null);
+      isRefreshingRef.current = false;
+      return false;
     }
   };
 
