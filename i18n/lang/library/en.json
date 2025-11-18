@@ -1,0 +1,34 @@
+{
+  "title": "My Library",
+  "subtitle": "Your collection of anime, manga, and novels",
+  "empty": "Your library is empty",
+  "emptyDescription": "Start adding content to build your personal collection",
+  "tabs": {
+    "all": "All",
+    "anime": "Anime",
+    "manga": "Manga",
+    "novel": "Novel"
+  },
+  "filters": {
+    "sort": "Sort by",
+    "status": "Status",
+    "type": "Type"
+  },
+  "sortOptions": {
+    "recent": "Recently Added",
+    "title": "Title",
+    "updated": "Last Updated",
+    "rating": "Rating"
+  },
+  "stats": {
+    "total": "Total Items",
+    "reading": "Reading",
+    "completed": "Completed",
+    "planToRead": "Plan to Read"
+  },
+  "actions": {
+    "removeFromLibrary": "Remove from Library",
+    "markAsRead": "Mark as Read",
+    "viewDetails": "View Details"
+  }
+}

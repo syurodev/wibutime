@@ -1,0 +1,34 @@
+{
+  "title": "Thư Viện Của Tôi",
+  "subtitle": "Bộ sưu tập anime, manga và tiểu thuyết của bạn",
+  "empty": "Thư viện của bạn đang trống",
+  "emptyDescription": "Hãy bắt đầu thêm nội dung để xây dựng bộ sưu tập cá nhân",
+  "tabs": {
+    "all": "Tất Cả",
+    "anime": "Anime",
+    "manga": "Manga",
+    "novel": "Tiểu Thuyết"
+  },
+  "filters": {
+    "sort": "Sắp xếp",
+    "status": "Trạng thái",
+    "type": "Loại"
+  },
+  "sortOptions": {
+    "recent": "Mới Thêm",
+    "title": "Tiêu Đề",
+    "updated": "Cập Nhật Gần Đây",
+    "rating": "Đánh Giá"
+  },
+  "stats": {
+    "total": "Tổng Số",
+    "reading": "Đang Đọc",
+    "completed": "Hoàn Thành",
+    "planToRead": "Dự Định Đọc"
+  },
+  "actions": {
+    "removeFromLibrary": "Xóa Khỏi Thư Viện",
+    "markAsRead": "Đánh Dấu Đã Đọc",
+    "viewDetails": "Xem Chi Tiết"
+  }
+}
