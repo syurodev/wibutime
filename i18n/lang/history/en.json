@@ -1,0 +1,27 @@
+{
+  "title": "History",
+  "subtitle": "View your watching and reading history",
+  "empty": "Your history is empty",
+  "emptyDescription": "Start watching and reading to see your history here",
+  "exploreTrending": "Explore Trending",
+  "browseAll": "Browse All",
+  "tabs": {
+    "all": "All",
+    "anime": "Anime",
+    "manga": "Manga",
+    "novel": "Novel"
+  },
+  "filters": {
+    "sort": "Sort by"
+  },
+  "sortOptions": {
+    "recent": "Recently Viewed",
+    "title": "Title",
+    "updated": "Last Updated"
+  },
+  "actions": {
+    "remove": "Remove from History",
+    "resume": "Resume",
+    "viewDetails": "View Details"
+  }
+}
