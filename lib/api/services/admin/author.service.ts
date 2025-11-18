@@ -42,34 +42,46 @@ export class AuthorService {
     total_items: number;
     total_pages: number;
   }> {
-    await mockDelay();
+    try {
+      await mockDelay();
 
-    const params = new URLSearchParams();
-    if (query?.page) params.append("page", query.page.toString());
-    if (query?.limit) params.append("limit", query.limit.toString());
-    if (query?.search) params.append("search", query.search);
-    if (query?.sort_by) params.append("sort_by", query.sort_by);
-    if (query?.sort_order) params.append("sort_order", query.sort_order);
-    if (query?.is_verified !== undefined)
-      params.append("is_verified", query.is_verified.toString());
+      const params = new URLSearchParams();
+      if (query?.page) params.append("page", query.page.toString());
+      if (query?.limit) params.append("limit", query.limit.toString());
+      if (query?.search) params.append("search", query.search);
+      if (query?.sort_by) params.append("sort_by", query.sort_by);
+      if (query?.sort_order) params.append("sort_order", query.sort_order);
+      if (query?.is_verified !== undefined)
+        params.append("is_verified", query.is_verified.toString());
 
-    const url = `${API_BASE_URL}/authors?${params.toString()}`;
-    const res = await fetch(url);
-    const response: StandardResponse<Author[]> = await res.json();
+      const url = `${API_BASE_URL}/authors?${params.toString()}`;
+      const res = await fetch(url);
 
-    if (!isSuccessResponse(response)) {
-      throw new Error(response.message || "Failed to fetch authors");
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
+      const response: StandardResponse<Author[]> = await res.json();
+
+      if (!isSuccessResponse(response)) {
+        throw new Error(response.message || "Failed to fetch authors");
+      }
+
+      const items = ApiParser.parseResponseArray(AuthorArraySchema, response);
+
+      return {
+        items,
+        page: response.meta?.page || 1,
+        limit: response.meta?.limit || 20,
+        total_items: response.meta?.total_items || items.length,
+        total_pages: response.meta?.total_pages || 1,
+      };
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Lỗi khi tải danh sách tác giả: ${error.message}`);
+      }
+      throw new Error("Không thể kết nối đến server");
     }
-
-    const items = ApiParser.parseResponseArray(AuthorArraySchema, response);
-
-    return {
-      items,
-      page: response.meta?.page || 1,
-      limit: response.meta?.limit || 20,
-      total_items: response.meta?.total_items || items.length,
-      total_pages: response.meta?.total_pages || 1,
-    };
   }
 
   /**
@@ -81,17 +93,29 @@ export class AuthorService {
    * ```
    */
   static async getById(id: string): Promise<Author> {
-    await mockDelay();
+    try {
+      await mockDelay();
 
-    const url = `${API_BASE_URL}/authors/${id}`;
-    const res = await fetch(url);
-    const response: StandardResponse<Author> = await res.json();
+      const url = `${API_BASE_URL}/authors/${id}`;
+      const res = await fetch(url);
 
-    if (!isSuccessResponse(response)) {
-      throw new Error(response.message || "Failed to fetch author");
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
+      const response: StandardResponse<Author> = await res.json();
+
+      if (!isSuccessResponse(response)) {
+        throw new Error(response.message || "Failed to fetch author");
+      }
+
+      return ApiParser.parse(AuthorSchema, response);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Lỗi khi tải thông tin tác giả: ${error.message}`);
+      }
+      throw new Error("Không thể kết nối đến server");
     }
-
-    return ApiParser.parse(AuthorSchema, response);
   }
 
   /**
@@ -106,23 +130,35 @@ export class AuthorService {
    * ```
    */
   static async create(data: CreateAuthorRequest): Promise<Author> {
-    await mockDelay();
+    try {
+      await mockDelay();
 
-    const url = `${API_BASE_URL}/authors`;
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    const response: StandardResponse<Author> = await res.json();
+      const url = `${API_BASE_URL}/authors`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-    if (!isSuccessResponse(response)) {
-      throw new Error(response.message || "Failed to create author");
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
+      const response: StandardResponse<Author> = await res.json();
+
+      if (!isSuccessResponse(response)) {
+        throw new Error(response.message || "Failed to create author");
+      }
+
+      return ApiParser.parse(AuthorSchema, response);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Lỗi khi tạo tác giả: ${error.message}`);
+      }
+      throw new Error("Không thể kết nối đến server");
     }
-
-    return ApiParser.parse(AuthorSchema, response);
   }
 
   /**
@@ -136,23 +172,35 @@ export class AuthorService {
    * ```
    */
   static async update(id: string, data: UpdateAuthorRequest): Promise<Author> {
-    await mockDelay();
+    try {
+      await mockDelay();
 
-    const url = `${API_BASE_URL}/authors/${id}`;
-    const res = await fetch(url, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    const response: StandardResponse<Author> = await res.json();
+      const url = `${API_BASE_URL}/authors/${id}`;
+      const res = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-    if (!isSuccessResponse(response)) {
-      throw new Error(response.message || "Failed to update author");
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
+      const response: StandardResponse<Author> = await res.json();
+
+      if (!isSuccessResponse(response)) {
+        throw new Error(response.message || "Failed to update author");
+      }
+
+      return ApiParser.parse(AuthorSchema, response);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Lỗi khi cập nhật tác giả: ${error.message}`);
+      }
+      throw new Error("Không thể kết nối đến server");
     }
-
-    return ApiParser.parse(AuthorSchema, response);
   }
 
   /**
@@ -164,16 +212,28 @@ export class AuthorService {
    * ```
    */
   static async delete(id: string): Promise<void> {
-    await mockDelay();
+    try {
+      await mockDelay();
 
-    const url = `${API_BASE_URL}/authors/${id}`;
-    const res = await fetch(url, {
-      method: "DELETE",
-    });
-    const response: StandardResponse = await res.json();
+      const url = `${API_BASE_URL}/authors/${id}`;
+      const res = await fetch(url, {
+        method: "DELETE",
+      });
 
-    if (!isSuccessResponse(response)) {
-      throw new Error(response.message || "Failed to delete author");
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
+      const response: StandardResponse = await res.json();
+
+      if (!isSuccessResponse(response)) {
+        throw new Error(response.message || "Failed to delete author");
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Lỗi khi xóa tác giả: ${error.message}`);
+      }
+      throw new Error("Không thể kết nối đến server");
     }
   }
 }

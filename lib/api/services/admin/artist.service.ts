@@ -42,35 +42,47 @@ export class ArtistService {
     total_items: number;
     total_pages: number;
   }> {
-    await mockDelay();
+    try {
+      await mockDelay();
 
-    const params = new URLSearchParams();
-    if (query?.page) params.append("page", query.page.toString());
-    if (query?.limit) params.append("limit", query.limit.toString());
-    if (query?.search) params.append("search", query.search);
-    if (query?.sort_by) params.append("sort_by", query.sort_by);
-    if (query?.sort_order) params.append("sort_order", query.sort_order);
-    if (query?.specialization) params.append("specialization", query.specialization);
-    if (query?.is_verified !== undefined)
-      params.append("is_verified", query.is_verified.toString());
+      const params = new URLSearchParams();
+      if (query?.page) params.append("page", query.page.toString());
+      if (query?.limit) params.append("limit", query.limit.toString());
+      if (query?.search) params.append("search", query.search);
+      if (query?.sort_by) params.append("sort_by", query.sort_by);
+      if (query?.sort_order) params.append("sort_order", query.sort_order);
+      if (query?.specialization) params.append("specialization", query.specialization);
+      if (query?.is_verified !== undefined)
+        params.append("is_verified", query.is_verified.toString());
 
-    const url = `${API_BASE_URL}/artists?${params.toString()}`;
-    const res = await fetch(url);
-    const response: StandardResponse<Artist[]> = await res.json();
+      const url = `${API_BASE_URL}/artists?${params.toString()}`;
+      const res = await fetch(url);
 
-    if (!isSuccessResponse(response)) {
-      throw new Error(response.message || "Failed to fetch artists");
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
+      const response: StandardResponse<Artist[]> = await res.json();
+
+      if (!isSuccessResponse(response)) {
+        throw new Error(response.message || "Failed to fetch artists");
+      }
+
+      const items = ApiParser.parseResponseArray(ArtistArraySchema, response);
+
+      return {
+        items,
+        page: response.meta?.page || 1,
+        limit: response.meta?.limit || 20,
+        total_items: response.meta?.total_items || items.length,
+        total_pages: response.meta?.total_pages || 1,
+      };
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Lỗi khi tải danh sách hoạ sĩ: ${error.message}`);
+      }
+      throw new Error("Không thể kết nối đến server");
     }
-
-    const items = ApiParser.parseResponseArray(ArtistArraySchema, response);
-
-    return {
-      items,
-      page: response.meta?.page || 1,
-      limit: response.meta?.limit || 20,
-      total_items: response.meta?.total_items || items.length,
-      total_pages: response.meta?.total_pages || 1,
-    };
   }
 
   /**
@@ -82,17 +94,29 @@ export class ArtistService {
    * ```
    */
   static async getById(id: string): Promise<Artist> {
-    await mockDelay();
+    try {
+      await mockDelay();
 
-    const url = `${API_BASE_URL}/artists/${id}`;
-    const res = await fetch(url);
-    const response: StandardResponse<Artist> = await res.json();
+      const url = `${API_BASE_URL}/artists/${id}`;
+      const res = await fetch(url);
 
-    if (!isSuccessResponse(response)) {
-      throw new Error(response.message || "Failed to fetch artist");
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
+      const response: StandardResponse<Artist> = await res.json();
+
+      if (!isSuccessResponse(response)) {
+        throw new Error(response.message || "Failed to fetch artist");
+      }
+
+      return ApiParser.parse(ArtistSchema, response);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Lỗi khi tải thông tin hoạ sĩ: ${error.message}`);
+      }
+      throw new Error("Không thể kết nối đến server");
     }
-
-    return ApiParser.parse(ArtistSchema, response);
   }
 
   /**
@@ -108,23 +132,35 @@ export class ArtistService {
    * ```
    */
   static async create(data: CreateArtistRequest): Promise<Artist> {
-    await mockDelay();
+    try {
+      await mockDelay();
 
-    const url = `${API_BASE_URL}/artists`;
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    const response: StandardResponse<Artist> = await res.json();
+      const url = `${API_BASE_URL}/artists`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-    if (!isSuccessResponse(response)) {
-      throw new Error(response.message || "Failed to create artist");
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
+      const response: StandardResponse<Artist> = await res.json();
+
+      if (!isSuccessResponse(response)) {
+        throw new Error(response.message || "Failed to create artist");
+      }
+
+      return ApiParser.parse(ArtistSchema, response);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Lỗi khi tạo hoạ sĩ: ${error.message}`);
+      }
+      throw new Error("Không thể kết nối đến server");
     }
-
-    return ApiParser.parse(ArtistSchema, response);
   }
 
   /**
@@ -139,23 +175,35 @@ export class ArtistService {
    * ```
    */
   static async update(id: string, data: UpdateArtistRequest): Promise<Artist> {
-    await mockDelay();
+    try {
+      await mockDelay();
 
-    const url = `${API_BASE_URL}/artists/${id}`;
-    const res = await fetch(url, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    const response: StandardResponse<Artist> = await res.json();
+      const url = `${API_BASE_URL}/artists/${id}`;
+      const res = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-    if (!isSuccessResponse(response)) {
-      throw new Error(response.message || "Failed to update artist");
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
+      const response: StandardResponse<Artist> = await res.json();
+
+      if (!isSuccessResponse(response)) {
+        throw new Error(response.message || "Failed to update artist");
+      }
+
+      return ApiParser.parse(ArtistSchema, response);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Lỗi khi cập nhật hoạ sĩ: ${error.message}`);
+      }
+      throw new Error("Không thể kết nối đến server");
     }
-
-    return ApiParser.parse(ArtistSchema, response);
   }
 
   /**
@@ -167,16 +215,28 @@ export class ArtistService {
    * ```
    */
   static async delete(id: string): Promise<void> {
-    await mockDelay();
+    try {
+      await mockDelay();
 
-    const url = `${API_BASE_URL}/artists/${id}`;
-    const res = await fetch(url, {
-      method: "DELETE",
-    });
-    const response: StandardResponse = await res.json();
+      const url = `${API_BASE_URL}/artists/${id}`;
+      const res = await fetch(url, {
+        method: "DELETE",
+      });
 
-    if (!isSuccessResponse(response)) {
-      throw new Error(response.message || "Failed to delete artist");
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
+      const response: StandardResponse = await res.json();
+
+      if (!isSuccessResponse(response)) {
+        throw new Error(response.message || "Failed to delete artist");
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Lỗi khi xóa hoạ sĩ: ${error.message}`);
+      }
+      throw new Error("Không thể kết nối đến server");
     }
   }
 }

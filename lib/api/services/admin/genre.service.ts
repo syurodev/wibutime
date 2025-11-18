@@ -42,33 +42,47 @@ export class GenreService {
     total_items: number;
     total_pages: number;
   }> {
-    await mockDelay();
+    try {
+      await mockDelay();
 
-    const params = new URLSearchParams();
-    if (query?.page) params.append("page", query.page.toString());
-    if (query?.limit) params.append("limit", query.limit.toString());
-    if (query?.search) params.append("search", query.search);
-    if (query?.sort_by) params.append("sort_by", query.sort_by);
-    if (query?.sort_order) params.append("sort_order", query.sort_order);
-    if (query?.active_only) params.append("active_only", "true");
+      const params = new URLSearchParams();
+      if (query?.page) params.append("page", query.page.toString());
+      if (query?.limit) params.append("limit", query.limit.toString());
+      if (query?.search) params.append("search", query.search);
+      if (query?.sort_by) params.append("sort_by", query.sort_by);
+      if (query?.sort_order) params.append("sort_order", query.sort_order);
+      if (query?.active_only) params.append("active_only", "true");
 
-    const url = `${API_BASE_URL}/genres?${params.toString()}`;
-    const res = await fetch(url);
-    const response: StandardResponse<Genre[]> = await res.json();
+      const url = `${API_BASE_URL}/genres?${params.toString()}`;
+      const res = await fetch(url);
 
-    if (!isSuccessResponse(response)) {
-      throw new Error(response.message || "Failed to fetch genres");
+      // Check HTTP status
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
+      const response: StandardResponse<Genre[]> = await res.json();
+
+      if (!isSuccessResponse(response)) {
+        throw new Error(response.message || "Failed to fetch genres");
+      }
+
+      const items = ApiParser.parseResponseArray(GenreArraySchema, response);
+
+      return {
+        items,
+        page: response.meta?.page || 1,
+        limit: response.meta?.limit || 20,
+        total_items: response.meta?.total_items || items.length,
+        total_pages: response.meta?.total_pages || 1,
+      };
+    } catch (error) {
+      // Network error or parsing error
+      if (error instanceof Error) {
+        throw new Error(`Lỗi khi tải danh sách thể loại: ${error.message}`);
+      }
+      throw new Error("Không thể kết nối đến server");
     }
-
-    const items = ApiParser.parseResponseArray(GenreArraySchema, response);
-
-    return {
-      items,
-      page: response.meta?.page || 1,
-      limit: response.meta?.limit || 20,
-      total_items: response.meta?.total_items || items.length,
-      total_pages: response.meta?.total_pages || 1,
-    };
   }
 
   /**
@@ -80,17 +94,29 @@ export class GenreService {
    * ```
    */
   static async getById(id: string): Promise<Genre> {
-    await mockDelay();
+    try {
+      await mockDelay();
 
-    const url = `${API_BASE_URL}/genres/${id}`;
-    const res = await fetch(url);
-    const response: StandardResponse<Genre> = await res.json();
+      const url = `${API_BASE_URL}/genres/${id}`;
+      const res = await fetch(url);
 
-    if (!isSuccessResponse(response)) {
-      throw new Error(response.message || "Failed to fetch genre");
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
+      const response: StandardResponse<Genre> = await res.json();
+
+      if (!isSuccessResponse(response)) {
+        throw new Error(response.message || "Failed to fetch genre");
+      }
+
+      return ApiParser.parse(GenreSchema, response);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Lỗi khi tải thông tin thể loại: ${error.message}`);
+      }
+      throw new Error("Không thể kết nối đến server");
     }
-
-    return ApiParser.parse(GenreSchema, response);
   }
 
   /**
@@ -105,23 +131,35 @@ export class GenreService {
    * ```
    */
   static async create(data: CreateGenreRequest): Promise<Genre> {
-    await mockDelay();
+    try {
+      await mockDelay();
 
-    const url = `${API_BASE_URL}/genres`;
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    const response: StandardResponse<Genre> = await res.json();
+      const url = `${API_BASE_URL}/genres`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-    if (!isSuccessResponse(response)) {
-      throw new Error(response.message || "Failed to create genre");
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
+      const response: StandardResponse<Genre> = await res.json();
+
+      if (!isSuccessResponse(response)) {
+        throw new Error(response.message || "Failed to create genre");
+      }
+
+      return ApiParser.parse(GenreSchema, response);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Lỗi khi tạo thể loại: ${error.message}`);
+      }
+      throw new Error("Không thể kết nối đến server");
     }
-
-    return ApiParser.parse(GenreSchema, response);
   }
 
   /**
@@ -136,23 +174,35 @@ export class GenreService {
    * ```
    */
   static async update(id: string, data: UpdateGenreRequest): Promise<Genre> {
-    await mockDelay();
+    try {
+      await mockDelay();
 
-    const url = `${API_BASE_URL}/genres/${id}`;
-    const res = await fetch(url, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    const response: StandardResponse<Genre> = await res.json();
+      const url = `${API_BASE_URL}/genres/${id}`;
+      const res = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-    if (!isSuccessResponse(response)) {
-      throw new Error(response.message || "Failed to update genre");
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
+      const response: StandardResponse<Genre> = await res.json();
+
+      if (!isSuccessResponse(response)) {
+        throw new Error(response.message || "Failed to update genre");
+      }
+
+      return ApiParser.parse(GenreSchema, response);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Lỗi khi cập nhật thể loại: ${error.message}`);
+      }
+      throw new Error("Không thể kết nối đến server");
     }
-
-    return ApiParser.parse(GenreSchema, response);
   }
 
   /**
@@ -164,16 +214,28 @@ export class GenreService {
    * ```
    */
   static async delete(id: string): Promise<void> {
-    await mockDelay();
+    try {
+      await mockDelay();
 
-    const url = `${API_BASE_URL}/genres/${id}`;
-    const res = await fetch(url, {
-      method: "DELETE",
-    });
-    const response: StandardResponse = await res.json();
+      const url = `${API_BASE_URL}/genres/${id}`;
+      const res = await fetch(url, {
+        method: "DELETE",
+      });
 
-    if (!isSuccessResponse(response)) {
-      throw new Error(response.message || "Failed to delete genre");
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
+      const response: StandardResponse = await res.json();
+
+      if (!isSuccessResponse(response)) {
+        throw new Error(response.message || "Failed to delete genre");
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Lỗi khi xóa thể loại: ${error.message}`);
+      }
+      throw new Error("Không thể kết nối đến server");
     }
   }
 }
