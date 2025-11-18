@@ -1,0 +1,24 @@
+{
+  "detail": {
+    "startReading": "Bắt Đầu Đọc",
+    "addToLibrary": "Thêm Vào Thư Viện",
+    "bookmarked": "Đã Lưu",
+    "synopsis": "Tóm Tắt",
+    "volumesAndChapters": "Tập & Chương",
+    "volumes": "tập",
+    "chapters": "chương",
+    "readerReviews": "Đánh Giá Của Độc Giả",
+    "writeReview": "Viết Đánh Giá",
+    "ratings": "đánh giá",
+    "bookDetails": "Chi Tiết Sách",
+    "author": "Tác Giả",
+    "artist": "Họa Sĩ",
+    "published": "Xuất Bản",
+    "status": "Trạng Thái",
+    "youMayAlsoLike": "Bạn Có Thể Thích",
+    "rating": "Xếp Hạng",
+    "views": "Lượt Xem",
+    "favorites": "Yêu Thích",
+    "rank": "Hạng"
+  }
+}

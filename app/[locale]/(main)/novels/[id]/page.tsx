@@ -4,355 +4,758 @@ import { Container } from "@/components/layout/Container";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { formatNumberAbbreviated } from "@/lib/api/utils/number";
 import { cn } from "@/lib/utils";
-import { BookOpen, Eye, Flag, Heart, Share2, Star, User } from "lucide-react";
+import {
+  BookOpen,
+  Eye,
+  Heart,
+  Star,
+  User,
+  TrendingUp,
+  ChevronRight,
+  Lock,
+  Clock,
+} from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { NovelTabs } from "./novel-tabs";
+import { StaticEditorView } from "@/components/editor/static-editor-view";
+import type { TNode } from "platejs";
 
-// --- 1. MOCK DATA ---
+// --- MOCK DATA ---
 const novelData = {
   id: "1",
-  title: "Thợ Săn Cấp SSS Không Muốn Thăng Hạng",
-  originalTitle: "The SSS-Class Hunter Doesn't Want to Rank Up",
-  slug: "tho-san-cap-sss",
+  title: "The Chambers of Secrets",
+  originalTitle: "Harry Potter and the Chamber of Secrets",
+  slug: "chambers-of-secrets",
   coverUrl: "/images/image-4.jpg",
-  author: "Dungeon Master",
-  artist: "Studio Red",
+  author: "J.K. Rowlings",
+  artist: "Mary GrandPré",
   rating: 4.8,
   ratingCount: 1240,
   views: 850000,
   favorites: 45000,
-  status: "Đang tiến hành",
+  status: "Completed",
   type: "Novel",
-  releaseYear: 2024,
-  description: `
-    <p class="mb-4">Thế giới thay đổi khi các Cổng (Gates) xuất hiện. Quái vật tràn vào nhân gian, và những người thức tỉnh năng lực đặc biệt được gọi là Thợ Săn (Hunters).</p>
-    <p class="mb-4">Tôi, <strong>Kang Jin-woo</strong>, thức tỉnh với tư cách là một Thợ Săn cấp F yếu ớt. Nhưng một ngày nọ, tôi tình cờ tìm thấy một hệ thống kỳ lạ cho phép tôi "Sao chép" kỹ năng của người khác...</p>
-    <p>Vấn đề là? Tôi chỉ muốn sống một cuộc đời bình yên làm nông dân trong hầm ngục thôi! Tại sao các người cứ bắt tôi đi cứu thế giới vậy?</p>
-  `,
-  genres: [
-    { id: "1", name: "Action" },
-    { id: "2", name: "Fantasy" },
-    { id: "3", name: "System" },
-    { id: "4", name: "Comedy" },
+  releaseYear: 1998,
+  description: [
+    {
+      type: "p",
+      children: [
+        {
+          text: "Harry returns to Hogwarts School of Witchcraft and Wizardry for his second year. But this year, a mysterious presence is terrorizing the school. Students are being attacked and turned to stone, and a dark message appears on the wall: ",
+        },
+        { text: "'The Chamber of Secrets has been opened.'", bold: true },
+      ],
+    },
+    {
+      type: "p",
+      children: [
+        {
+          text: "Harry must uncover the truth behind these attacks before Hogwarts is forced to close forever. With the help of his friends Ron and Hermione, he delves into the school's dark history and discovers secrets that have been hidden for fifty years.",
+        },
+      ],
+    },
+    {
+      type: "p",
+      children: [
+        {
+          text: "As the mystery deepens, Harry finds himself hearing strange voices in the walls and discovers he can speak Parseltongue, the language of serpents. Is Harry the heir of Slytherin? Can he save the school before it's too late?",
+        },
+      ],
+    },
   ],
-  tags: ["Main Bá", "Giấu Nghề", "Hài Hước", "Harem", "Reincarnation"],
+  genres: [
+    { id: "1", name: "Fantasy" },
+    { id: "2", name: "Adventure" },
+    { id: "3", name: "Mystery" },
+  ],
+  tags: ["Magic", "Wizards", "School Life", "Adventure", "Young Adult"],
   volumes: [
     {
-      id: "vol-3",
-      title: "Tập 3: Chiến tranh bang hội",
-      totalChapters: 12,
-      chapters: Array.from({ length: 12 }, (_, i) => ({
-        id: `3-${12 - i}`,
-        title: `Chương ${138 + (12 - i)}: Cuộc chiến cuối cùng phần ${12 - i}`,
-        views: 12500,
-        createdAt: `${i + 1} giờ trước`,
-        isFree: false,
-      })),
+      id: "vol-1",
+      title: "Volume 1: The Mystery Begins",
+      description: "Harry's second year starts with strange warnings and mysterious attacks.",
+      coverUrl: "/images/image-1.jpg",
+      totalChapters: 6,
+      chapters: [
+        {
+          id: "ch-1",
+          title: "Chapter 1: The Worst Birthday",
+          views: 95000,
+          createdAt: "1 year ago",
+          isFree: true,
+        },
+        {
+          id: "ch-2",
+          title: "Chapter 2: Dobby's Warning",
+          views: 92000,
+          createdAt: "1 year ago",
+          isFree: true,
+        },
+        {
+          id: "ch-3",
+          title: "Chapter 3: The Burrow",
+          views: 89000,
+          createdAt: "1 year ago",
+          isFree: true,
+        },
+        {
+          id: "ch-4",
+          title: "Chapter 4: At Flourish and Blotts",
+          views: 86000,
+          createdAt: "1 year ago",
+          isFree: true,
+        },
+        {
+          id: "ch-5",
+          title: "Chapter 5: The Whomping Willow",
+          views: 83000,
+          createdAt: "1 year ago",
+          isFree: true,
+        },
+        {
+          id: "ch-6",
+          title: "Chapter 6: Gilderoy Lockhart",
+          views: 80000,
+          createdAt: "11 months ago",
+          isFree: true,
+        },
+      ],
     },
     {
       id: "vol-2",
-      title: "Tập 2: Học viện Thợ Săn",
-      totalChapters: 50,
-      chapters: Array.from({ length: 6 }, (_, i) => ({
-        id: `2-${50 - i}`,
-        title: `Chương ${138 - i}: Bài kiểm tra đầu vào`,
-        views: 45000,
-        createdAt: "1 tháng trước",
-        isFree: true,
-      })),
+      title: "Volume 2: Dark Secrets",
+      description: "The Chamber of Secrets is opened and terror spreads through Hogwarts.",
+      coverUrl: "/images/image-2.jpg",
+      totalChapters: 6,
+      chapters: [
+        {
+          id: "ch-7",
+          title: "Chapter 7: Mudbloods and Murmurs",
+          views: 77000,
+          createdAt: "10 months ago",
+          isFree: true,
+        },
+        {
+          id: "ch-8",
+          title: "Chapter 8: The Deathday Party",
+          views: 74000,
+          createdAt: "9 months ago",
+          isFree: true,
+        },
+        {
+          id: "ch-9",
+          title: "Chapter 9: The Writing on the Wall",
+          views: 71000,
+          createdAt: "8 months ago",
+          isFree: false,
+        },
+        {
+          id: "ch-10",
+          title: "Chapter 10: The Rogue Bludger",
+          views: 68000,
+          createdAt: "7 months ago",
+          isFree: false,
+        },
+        {
+          id: "ch-11",
+          title: "Chapter 11: The Dueling Club",
+          views: 65000,
+          createdAt: "6 months ago",
+          isFree: false,
+        },
+        {
+          id: "ch-12",
+          title: "Chapter 12: The Polyjuice Potion",
+          views: 62000,
+          createdAt: "5 months ago",
+          isFree: false,
+        },
+      ],
     },
     {
-      id: "vol-1",
-      title: "Tập 1: Sự thức tỉnh",
-      totalChapters: 88,
-      chapters: Array.from({ length: 5 }, (_, i) => ({
-        id: `1-${88 - i}`,
-        title: `Chương ${88 - i}: Bắt đầu hành trình`,
-        views: 90000,
-        createdAt: "1 năm trước",
-        isFree: true,
-      })),
+      id: "vol-3",
+      title: "Volume 3: The Truth Revealed",
+      description: "Harry discovers the shocking truth behind the Chamber of Secrets.",
+      coverUrl: "/images/image-5.jpg",
+      totalChapters: 6,
+      chapters: [
+        {
+          id: "ch-13",
+          title: "Chapter 13: The Very Secret Diary",
+          views: 59000,
+          createdAt: "4 months ago",
+          isFree: false,
+        },
+        {
+          id: "ch-14",
+          title: "Chapter 14: Cornelius Fudge",
+          views: 56000,
+          createdAt: "3 months ago",
+          isFree: false,
+        },
+        {
+          id: "ch-15",
+          title: "Chapter 15: Aragog",
+          views: 53000,
+          createdAt: "2 months ago",
+          isFree: false,
+        },
+        {
+          id: "ch-16",
+          title: "Chapter 16: The Chamber of Secrets",
+          views: 50000,
+          createdAt: "1 month ago",
+          isFree: false,
+        },
+        {
+          id: "ch-17",
+          title: "Chapter 17: The Heir of Slytherin",
+          views: 47000,
+          createdAt: "2 weeks ago",
+          isFree: false,
+        },
+        {
+          id: "ch-18",
+          title: "Chapter 18: Dobby's Reward",
+          views: 44000,
+          createdAt: "1 week ago",
+          isFree: false,
+        },
+      ],
+    },
+  ],
+  readerComments: [
+    {
+      id: 1,
+      user: {
+        name: "Roberto Jordan",
+        avatar: "/images/avatar-1.jpg",
+      },
+      comment:
+        "What a delightful and magical chapter it is! It indeed transports readers to the wizarding world.",
+      rating: 5,
+      time: "2 min ago",
+    },
+    {
+      id: 2,
+      user: {
+        name: "Anna Henry",
+        avatar: "/images/avatar-2.jpg",
+      },
+      comment:
+        "I finished reading the chapter last night and I'm completely hooked! The mystery is getting deeper.",
+      rating: 5,
+      time: "1 hour ago",
+    },
+    {
+      id: 3,
+      user: {
+        name: "Michael Chen",
+        avatar: "/images/avatar-3.jpg",
+      },
+      comment: "The plot twist in this chapter was absolutely mind-blowing!",
+      rating: 4,
+      time: "3 hours ago",
     },
   ],
   recommendations: [
     {
       id: 1,
-      title: "Ta Là Tà Đế",
-      rating: 4.5,
+      title: "The Philosopher's Stone",
+      subtitle: "Harry Potter Vol I",
+      rating: 4.9,
       image: "/images/image-1.jpg",
     },
     {
       id: 2,
-      title: "Toàn Trí Độc Giả",
-      rating: 4.9,
+      title: "The Prisoner of Azkaban",
+      subtitle: "Harry Potter Vol III",
+      rating: 4.7,
       image: "/images/image-2.jpg",
     },
     {
       id: 3,
-      title: "Thăng Cấp Một Mình",
-      rating: 4.7,
+      title: "The Goblet of Fire",
+      subtitle: "Harry Potter Vol IV",
+      rating: 4.8,
       image: "/images/image-5.jpg",
-    },
-    {
-      id: 4,
-      title: "Đỉnh Cấp Khí Vận",
-      rating: 4.2,
-      image: "/images/image-4.jpg",
     },
   ],
 };
 
 export default function NovelDetailPage() {
+  const t = useTranslations("novel.detail");
   const [isBookmarked, setIsBookmarked] = useState(false);
 
-  return (
-    <div className="min-h-screen bg-background pb-20">
-      {/* ================= HEADER SECTION (IMMERSIVE) ================= */}
-      <div className="relative w-full h-auto md:h-[550px] bg-background overflow-hidden group">
-        {/* LAYER 1: BACKGROUND BLUR (Với hiệu ứng tan biến chân trang) */}
-        <div
-          className="absolute inset-0 w-full h-full z-0 pointer-events-none"
-          style={{
-            // Kỹ thuật Mask Image để làm ảnh "tan chảy" vào nền web
-            maskImage:
-              "linear-gradient(to bottom, black 40%, transparent 100%)",
-            WebkitMaskImage:
-              "linear-gradient(to bottom, black 40%, transparent 100%)",
-          }}
-        >
-          <Image
-            src={novelData.coverUrl}
-            alt={novelData.title}
-            fill
-            className="object-cover opacity-40 blur-3xl scale-110 saturate-150 transform-gpu"
-            priority
-          />
-          {/* Gradient overlay nhẹ để bảo vệ text trắng */}
-          <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
-        </div>
+  const totalChapters = novelData.volumes.reduce(
+    (sum, vol) => sum + vol.totalChapters,
+    0
+  );
 
-        {/* LAYER 2: HERO CONTENT */}
-        <Container className="relative z-10 pt-24 pb-8 md:pt-32 md:pb-12 h-full flex flex-col justify-end">
-          <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-center md:items-end text-center md:text-left">
-            {/* POSTER (Floating 3D Effect) */}
-            <div className="relative shrink-0 group w-[160px] md:w-[240px]">
-              <div className="absolute -inset-4 bg-primary/20 rounded-xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
-              <div className="relative aspect-[2/3] rounded-xl overflow-hidden shadow-2xl border border-white/10 rotate-0 md:rotate-3 group-hover:rotate-0 transition-transform duration-500 bg-zinc-900">
+  return (
+    <div className="min-h-screen bg-background">
+      {/* ================= HERO SECTION ================= */}
+      <div className="border-b bg-gradient-to-b from-muted/30 to-background">
+        <Container className="py-12 md:py-16">
+          <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-8 md:gap-12">
+            {/* Cover Image */}
+            <div className="mx-auto md:mx-0">
+              <div className="relative w-56 md:w-64 lg:w-72 aspect-[2/3] rounded-xl overflow-hidden border-2 bg-muted shadow-2xl">
                 <Image
                   src={novelData.coverUrl}
                   alt={novelData.title}
                   fill
                   className="object-cover"
-                  sizes="(max-width: 768px) 160px, 240px"
+                  priority
+                  sizes="(max-width: 768px) 224px, (max-width: 1024px) 256px, 288px"
                 />
               </div>
             </div>
 
-            {/* INFO AREA */}
-            <div className="flex-1 space-y-4 w-full">
+            {/* Content */}
+            <div className="flex flex-col gap-6">
               {/* Badges */}
-              <div className="flex flex-wrap justify-center md:justify-start gap-2">
-                <Badge className="bg-primary/20 text-primary border-primary/20 backdrop-blur-md hover:bg-primary/30">
-                  {novelData.type}
-                </Badge>
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge variant="secondary">{novelData.type}</Badge>
                 <Badge
                   variant="outline"
-                  className="border-green-500/30 text-green-500 bg-green-500/10"
+                  className="border-green-600/30 text-green-600 bg-green-600/5"
                 >
                   {novelData.status}
                 </Badge>
-                {novelData.genres.map((g) => (
-                  <Badge
-                    key={g.id}
-                    variant="secondary"
-                    className="bg-background/50 backdrop-blur-md"
-                  >
-                    {g.name}
+                <Separator orientation="vertical" className="h-4" />
+                {novelData.genres.map((genre) => (
+                  <Badge key={genre.id} variant="outline">
+                    {genre.name}
                   </Badge>
                 ))}
               </div>
 
               {/* Title */}
-              <div className="space-y-1">
-                <h1 className="text-2xl md:text-4xl lg:text-5xl font-extrabold leading-tight text-foreground drop-shadow-sm">
+              <div className="space-y-2">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
                   {novelData.title}
                 </h1>
-                <p className="text-muted-foreground text-sm md:text-base font-medium">
+                <p className="text-lg text-muted-foreground">
                   {novelData.originalTitle}
                 </p>
               </div>
 
-              {/* Author & Stats */}
-              <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 md:gap-8 text-sm md:text-base text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <User className="size-4" />
-                  <span className="font-medium text-foreground">
-                    {novelData.author}
-                  </span>
+              {/* Author */}
+              <div className="flex items-center gap-2 text-base">
+                <User className="size-4 text-muted-foreground" />
+                <span className="font-medium">{novelData.author}</span>
+              </div>
+
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
+                    <Star className="size-4" />
+                    <span>{t("rating")}</span>
+                  </div>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-bold">
+                      {novelData.rating}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      / 5.0
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {formatNumberAbbreviated(novelData.ratingCount)} {t("ratings")}
+                  </p>
                 </div>
-                <div className="flex items-center gap-1.5 text-yellow-500">
-                  <Star className="size-4 fill-current" />
-                  <span className="font-bold">{novelData.rating}</span>
-                  <span className="text-muted-foreground text-xs ml-1">
-                    ({formatNumberAbbreviated(novelData.ratingCount)})
-                  </span>
+
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
+                    <Eye className="size-4" />
+                    <span>{t("views")}</span>
+                  </div>
+                  <div className="text-3xl font-bold">
+                    {formatNumberAbbreviated(novelData.views)}
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <Eye className="size-4" />
-                  <span>{formatNumberAbbreviated(novelData.views)}</span>
+
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
+                    <Heart className="size-4" />
+                    <span>{t("favorites")}</span>
+                  </div>
+                  <div className="text-3xl font-bold">
+                    {formatNumberAbbreviated(novelData.favorites)}
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <Heart className="size-4" />
-                  <span>{formatNumberAbbreviated(novelData.favorites)}</span>
+
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
+                    <TrendingUp className="size-4" />
+                    <span>{t("rank")}</span>
+                  </div>
+                  <div className="text-3xl font-bold">#12</div>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap justify-center md:justify-start gap-3 pt-2">
-                <Button
-                  size="lg"
-                  className="h-12 px-8 text-base font-bold shadow-lg shadow-primary/20 rounded-full gap-2"
-                >
-                  <BookOpen className="size-5" />
-                  Đọc Từ Đầu
+              <div className="flex flex-wrap gap-3 pt-2">
+                <Button size="lg" className="gap-2">
+                  <BookOpen className="size-4" />
+                  {t("startReading")}
                 </Button>
                 <Button
                   size="lg"
                   variant={isBookmarked ? "secondary" : "outline"}
-                  className={cn(
-                    "h-12 px-6 text-base font-semibold rounded-full gap-2 transition-all",
-                    isBookmarked &&
-                      "bg-pink-500/10 text-pink-500 border-pink-500/50 hover:bg-pink-500/20"
-                  )}
+                  className="gap-2"
                   onClick={() => setIsBookmarked(!isBookmarked)}
                 >
                   <Heart
-                    className={cn("size-5", isBookmarked && "fill-current")}
+                    className={cn("size-4", isBookmarked && "fill-current")}
                   />
-                  {isBookmarked ? "Đã Lưu" : "Yêu Thích"}
+                  {isBookmarked ? t("bookmarked") : t("addToLibrary")}
                 </Button>
-
-                <div className="flex gap-2">
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="size-12 rounded-full hover:bg-muted/50"
-                  >
-                    <Share2 className="size-5" />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="size-12 rounded-full hover:bg-muted/50"
-                  >
-                    <Flag className="size-5" />
-                  </Button>
-                </div>
               </div>
             </div>
           </div>
         </Container>
       </div>
 
-      {/* ================= BODY SECTION ================= */}
-      <Container className="mt-8 md:mt-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-          {/* --- LEFT COLUMN: MAIN CONTENT (TABS) --- */}
-          {/* Chiếm 8/12 không gian */}
-          <div className="lg:col-span-8 space-y-8">
-            {/* === SỬ DỤNG TAB COMPONENT ĐÃ TÁCH === */}
-            <NovelTabs novel={novelData} />
+      {/* ================= CONTENT SECTION ================= */}
+      <Container className="py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-12">
+          {/* Main Content */}
+          <div className="space-y-12">
+            {/* Synopsis */}
+            <section className="space-y-4">
+              <h2 className="text-2xl font-bold">{t("synopsis")}</h2>
+              <StaticEditorView
+                content={novelData.description as TNode[]}
+                variant="compact"
+                className="text-base text-muted-foreground leading-relaxed"
+              />
+
+              {/* Tags */}
+              <div className="flex flex-wrap gap-2 pt-2">
+                {novelData.tags.map((tag) => (
+                  <Badge
+                    key={tag}
+                    variant="secondary"
+                    className="cursor-pointer hover:bg-primary/10"
+                  >
+                    #{tag}
+                  </Badge>
+                ))}
+              </div>
+            </section>
+
+            <Separator />
+
+            {/* Volumes & Chapters (3-Level Hierarchy) */}
+            <section className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold">{t("volumesAndChapters")}</h2>
+                <p className="text-sm text-muted-foreground">
+                  {novelData.volumes.length} {t("volumes")} • {totalChapters} {t("chapters")}
+                </p>
+              </div>
+
+              {/* Volumes Accordion */}
+              <Accordion
+                type="multiple"
+                defaultValue={[novelData.volumes[0].id]}
+                className="space-y-4"
+              >
+                {novelData.volumes.map((volume, volumeIndex) => (
+                  <AccordionItem
+                    key={volume.id}
+                    value={volume.id}
+                    className="border rounded-xl overflow-hidden bg-card"
+                  >
+                    {/* Volume Header */}
+                    <AccordionTrigger className="px-6 py-4 hover:no-underline hover:bg-muted/50 [&[data-state=open]]:bg-muted/30">
+                      <div className="flex items-center gap-4 w-full text-left pr-4">
+                        <div className="relative w-16 h-20 rounded-lg overflow-hidden shrink-0 bg-muted border shadow-sm">
+                          <Image
+                            src={volume.coverUrl}
+                            alt={volume.title}
+                            fill
+                            className="object-cover"
+                            sizes="64px"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-base mb-1">
+                            {volume.title}
+                          </h3>
+                          <p className="text-sm text-muted-foreground line-clamp-1">
+                            {volume.description}
+                          </p>
+                        </div>
+                        <div className="shrink-0">
+                          <Badge variant="secondary" className="font-normal">
+                            {volume.totalChapters} chapters
+                          </Badge>
+                        </div>
+                      </div>
+                    </AccordionTrigger>
+
+                    {/* Volume Chapters */}
+                    <AccordionContent className="px-6 pb-4">
+                      <div className="border-t pt-4 space-y-2">
+                        {volume.chapters.map((chapter, chapterIndex) => (
+                          <Link
+                            href={`/read/${novelData.slug}/${chapter.id}`}
+                            key={chapter.id}
+                            className="group block"
+                          >
+                            <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                              <div className="flex items-center gap-3 flex-1 min-w-0">
+                                <span className="text-sm font-medium text-muted-foreground shrink-0 w-8">
+                                  {volumeIndex * 6 + chapterIndex + 1}
+                                </span>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <h4 className="font-medium group-hover:text-primary transition-colors truncate">
+                                      {chapter.title}
+                                    </h4>
+                                    {!chapter.isFree && (
+                                      <Lock className="size-4 text-amber-500 shrink-0" />
+                                    )}
+                                  </div>
+                                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                    <span className="flex items-center gap-1">
+                                      <Clock className="size-3" />
+                                      {chapter.createdAt}
+                                    </span>
+                                    <span className="flex items-center gap-1">
+                                      <Eye className="size-3" />
+                                      {formatNumberAbbreviated(chapter.views)}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                              <ChevronRight className="size-5 text-muted-foreground/50 group-hover:text-primary transition-colors shrink-0" />
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </section>
+
+            <Separator />
+
+            {/* Reviews */}
+            <section className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold">{t("readerReviews")}</h2>
+                <Button variant="outline" size="sm">
+                  {t("writeReview")}
+                </Button>
+              </div>
+
+              {/* Rating Summary */}
+              <Card className="p-6">
+                <div className="flex flex-col sm:flex-row gap-8">
+                  <div className="text-center sm:text-left">
+                    <div className="text-5xl font-bold mb-2">
+                      {novelData.rating}
+                    </div>
+                    <div className="flex items-center gap-1 justify-center sm:justify-start mb-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={cn(
+                            "size-5",
+                            star <= Math.round(novelData.rating)
+                              ? "fill-amber-400 text-amber-400"
+                              : "text-muted"
+                          )}
+                        />
+                      ))}
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {formatNumberAbbreviated(novelData.ratingCount)} {t("ratings")}
+                    </p>
+                  </div>
+
+                  <div className="flex-1 space-y-2">
+                    {[5, 4, 3, 2, 1].map((stars) => (
+                      <div key={stars} className="flex items-center gap-3">
+                        <span className="text-sm text-muted-foreground w-12">
+                          {stars} star
+                        </span>
+                        <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-amber-400 rounded-full transition-all"
+                            style={{
+                              width: `${
+                                stars === 5
+                                  ? 70
+                                  : stars === 4
+                                    ? 20
+                                    : stars === 3
+                                      ? 8
+                                      : 2
+                              }%`,
+                            }}
+                          />
+                        </div>
+                        <span className="text-sm text-muted-foreground w-12 text-right">
+                          {stars === 5
+                            ? "70%"
+                            : stars === 4
+                              ? "20%"
+                              : stars === 3
+                                ? "8%"
+                                : "2%"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Card>
+
+              {/* Recent Reviews */}
+              <div className="space-y-4">
+                {novelData.readerComments.map((review) => (
+                  <Card key={review.id} className="p-6">
+                    <div className="flex gap-4">
+                      <Avatar className="size-12 shrink-0">
+                        <AvatarImage src={review.user.avatar} />
+                        <AvatarFallback>
+                          {review.user.name.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 space-y-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <p className="font-semibold">
+                              {review.user.name}
+                            </p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <div className="flex items-center gap-0.5">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <Star
+                                    key={star}
+                                    className={cn(
+                                      "size-4",
+                                      star <= review.rating
+                                        ? "fill-amber-400 text-amber-400"
+                                        : "text-muted"
+                                    )}
+                                  />
+                                ))}
+                              </div>
+                              <span className="text-sm text-muted-foreground">
+                                {review.time}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {review.comment}
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </section>
           </div>
 
-          {/* --- RIGHT COLUMN: SIDEBAR --- */}
-          {/* Chiếm 4/12 không gian */}
-          <div className="lg:col-span-4 flex flex-col gap-8">
-            {/* 1. Info Box */}
-            <Card className="overflow-hidden shadow-sm border-border/50">
-              <div className="px-5 py-3 border-b bg-muted/30">
-                <h3 className="font-bold text-sm">Thông Tin Chi Tiết</h3>
-              </div>
-              <div className="p-5 space-y-4 text-sm">
-                <div className="flex justify-between items-start">
-                  <span className="text-muted-foreground shrink-0">
-                    Tên khác
-                  </span>
-                  <span className="font-medium text-right pl-4 line-clamp-2">
-                    {novelData.originalTitle}
-                  </span>
-                </div>
-                <Separator />
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Tác giả</span>
-                  <span className="font-medium text-primary">
+          {/* Sidebar */}
+          <aside className="space-y-6">
+            {/* Book Details */}
+            <Card className="p-6 space-y-4">
+              <h3 className="font-semibold">{t("bookDetails")}</h3>
+              <Separator />
+
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between gap-4">
+                  <span className="text-muted-foreground">{t("author")}</span>
+                  <span className="font-medium text-right">
                     {novelData.author}
                   </span>
                 </div>
-                <Separator />
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Hoạ sĩ</span>
-                  <span className="font-medium">{novelData.artist}</span>
+                <div className="flex justify-between gap-4">
+                  <span className="text-muted-foreground">{t("artist")}</span>
+                  <span className="font-medium text-right">
+                    {novelData.artist}
+                  </span>
                 </div>
-                <Separator />
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Năm phát hành</span>
+                <div className="flex justify-between gap-4">
+                  <span className="text-muted-foreground">{t("published")}</span>
                   <span className="font-medium">{novelData.releaseYear}</span>
                 </div>
-                <Separator />
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Quốc gia</span>
-                  <span className="font-medium">Hàn Quốc</span>
+                <div className="flex justify-between gap-4">
+                  <span className="text-muted-foreground">{t("status")}</span>
+                  <Badge className="bg-green-100 text-green-700 border-0">
+                    {novelData.status}
+                  </Badge>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <span className="text-muted-foreground">{t("volumes")}</span>
+                  <span className="font-medium">
+                    {novelData.volumes.length}
+                  </span>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <span className="text-muted-foreground">{t("chapters")}</span>
+                  <span className="font-medium">{totalChapters}</span>
                 </div>
               </div>
             </Card>
 
-            {/* 2. Recommendations List */}
+            {/* Recommendations */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between px-1">
-                <h3 className="font-bold text-lg">Có thể bạn thích</h3>
-                <Link href="#" className="text-xs text-primary hover:underline">
-                  Xem thêm
-                </Link>
-              </div>
-              <ScrollArea className="h-[400px] pr-4 -mr-4">
-                <div className="flex flex-col gap-3">
-                  {novelData.recommendations.map((item) => (
-                    <Link key={item.id} href="#" className="group">
-                      <div className="flex gap-3 p-2 rounded-lg hover:bg-accent/50 transition-colors border border-transparent hover:border-border/50">
-                        <div className="relative w-14 h-20 rounded-md overflow-hidden shrink-0 border shadow-sm bg-muted">
+              <h3 className="font-semibold">{t("youMayAlsoLike")}</h3>
+
+              <div className="space-y-3">
+                {novelData.recommendations.map((item) => (
+                  <Link key={item.id} href="#" className="group block">
+                    <Card className="p-3 hover:shadow-md transition-all">
+                      <div className="flex gap-3">
+                        <div className="relative w-16 h-20 rounded overflow-hidden shrink-0 bg-muted">
                           <Image
                             src={item.image}
                             alt={item.title}
                             fill
-                            className="object-cover group-hover:scale-110 transition-transform duration-300"
+                            className="object-cover"
                           />
                         </div>
-                        <div className="flex flex-col justify-center gap-1">
-                          <h4 className="font-semibold text-sm line-clamp-2 group-hover:text-primary transition-colors leading-tight">
+                        <div className="flex flex-col justify-center gap-1.5 min-w-0">
+                          <h4 className="font-semibold text-sm line-clamp-2 group-hover:text-primary transition-colors">
                             {item.title}
                           </h4>
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <span className="flex items-center text-yellow-500 font-medium">
-                              <Star className="size-3 mr-1 fill-current" />{" "}
-                              {item.rating}
-                            </span>
-                            <span>•</span>
-                            <span>Manhwa</span>
+                          <p className="text-xs text-muted-foreground italic">
+                            {item.subtitle}
+                          </p>
+                          <div className="flex items-center gap-1 text-xs">
+                            <Star className="size-3 fill-amber-400 text-amber-400" />
+                            <span className="font-medium">{item.rating}</span>
                           </div>
                         </div>
                       </div>
-                    </Link>
-                  ))}
-                </div>
-              </ScrollArea>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          </aside>
         </div>
       </Container>
     </div>
