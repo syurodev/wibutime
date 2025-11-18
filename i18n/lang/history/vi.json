@@ -1,0 +1,27 @@
+{
+  "title": "Lịch sử",
+  "subtitle": "Xem lịch sử xem và đọc của bạn",
+  "empty": "Lịch sử của bạn trống",
+  "emptyDescription": "Bắt đầu xem và đọc để thấy lịch sử của bạn ở đây",
+  "exploreTrending": "Khám phá Thịnh hành",
+  "browseAll": "Duyệt tất cả",
+  "tabs": {
+    "all": "Tất cả",
+    "anime": "Anime",
+    "manga": "Manga",
+    "novel": "Novel"
+  },
+  "filters": {
+    "sort": "Sắp xếp theo"
+  },
+  "sortOptions": {
+    "recent": "Xem gần đây",
+    "title": "Tiêu đề",
+    "updated": "Cập nhật gần đây"
+  },
+  "actions": {
+    "remove": "Xóa khỏi lịch sử",
+    "resume": "Tiếp tục",
+    "viewDetails": "Xem chi tiết"
+  }
+}
