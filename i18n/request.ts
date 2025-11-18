@@ -16,6 +16,7 @@ async function loadMessages(locale: Locale) {
   const home = (await import(`./lang/home/${locale}.json`)).default;
   const novel = (await import(`./lang/novel/${locale}.json`)).default;
   const library = (await import(`./lang/library/${locale}.json`)).default;
+  const history = (await import(`./lang/history/${locale}.json`)).default;
 
   return {
     common,
@@ -25,6 +26,7 @@ async function loadMessages(locale: Locale) {
     home,
     novel,
     library,
+    history,
   };
 }
 
