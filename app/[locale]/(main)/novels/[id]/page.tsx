@@ -6,6 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { formatNumberAbbreviated } from "@/lib/api/utils/number";
 import { cn } from "@/lib/utils";
 import {
@@ -13,12 +19,12 @@ import {
   Eye,
   Heart,
   Star,
-  Calendar,
   User,
   TrendingUp,
   ChevronRight,
   Lock,
   Clock,
+  Book,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -40,8 +46,6 @@ const novelData = {
   status: "Completed",
   type: "Novel",
   releaseYear: 1998,
-  currentPage: 154,
-  totalPages: 300,
   description:
     "Harry returns to Hogwarts School of Witchcraft and Wizardry for his second year. But this year, a mysterious presence is terrorizing the school. Students are being attacked and turned to stone, and a dark message appears on the wall: 'The Chamber of Secrets has been opened.' Harry must uncover the truth behind these attacks before Hogwarts is forced to close forever.",
   genres: [
@@ -53,36 +57,153 @@ const novelData = {
   volumes: [
     {
       id: "vol-1",
-      title: "Complete Edition",
-      totalChapters: 18,
-      chapters: Array.from({ length: 18 }, (_, i) => ({
-        id: `ch-${18 - i}`,
-        title: `Chapter ${18 - i}: ${
-          [
-            "The Epilogue",
-            "Dobby's Reward",
-            "The Heir of Slytherin",
-            "Cornelius Fudge",
-            "The Diary",
-            "The Writing on the Wall",
-            "The Dueling Club",
-            "The Polyjuice Potion",
-            "The Rogue Bludger",
-            "Mudbloods and Murmurs",
-            "The Death-Day Party",
-            "Gilderoy Lockhart",
-            "The Whomping Willow",
-            "At Flourish and Blotts",
-            "Dobby's Warning",
-            "The Burrow",
-            "Aragog",
-            "The Very Secret Diary",
-          ][i] || `Chapter ${18 - i}`
-        }`,
-        views: 95000 - i * 3000,
-        createdAt: `${i + 1} months ago`,
-        isFree: true,
-      })),
+      title: "Volume 1: The Mystery Begins",
+      description: "Harry's second year starts with strange warnings and mysterious attacks.",
+      totalChapters: 6,
+      chapters: [
+        {
+          id: "ch-1",
+          title: "Chapter 1: The Worst Birthday",
+          views: 95000,
+          createdAt: "1 year ago",
+          isFree: true,
+        },
+        {
+          id: "ch-2",
+          title: "Chapter 2: Dobby's Warning",
+          views: 92000,
+          createdAt: "1 year ago",
+          isFree: true,
+        },
+        {
+          id: "ch-3",
+          title: "Chapter 3: The Burrow",
+          views: 89000,
+          createdAt: "1 year ago",
+          isFree: true,
+        },
+        {
+          id: "ch-4",
+          title: "Chapter 4: At Flourish and Blotts",
+          views: 86000,
+          createdAt: "1 year ago",
+          isFree: true,
+        },
+        {
+          id: "ch-5",
+          title: "Chapter 5: The Whomping Willow",
+          views: 83000,
+          createdAt: "1 year ago",
+          isFree: true,
+        },
+        {
+          id: "ch-6",
+          title: "Chapter 6: Gilderoy Lockhart",
+          views: 80000,
+          createdAt: "11 months ago",
+          isFree: true,
+        },
+      ],
+    },
+    {
+      id: "vol-2",
+      title: "Volume 2: Dark Secrets",
+      description: "The Chamber of Secrets is opened and terror spreads through Hogwarts.",
+      totalChapters: 6,
+      chapters: [
+        {
+          id: "ch-7",
+          title: "Chapter 7: Mudbloods and Murmurs",
+          views: 77000,
+          createdAt: "10 months ago",
+          isFree: true,
+        },
+        {
+          id: "ch-8",
+          title: "Chapter 8: The Deathday Party",
+          views: 74000,
+          createdAt: "9 months ago",
+          isFree: true,
+        },
+        {
+          id: "ch-9",
+          title: "Chapter 9: The Writing on the Wall",
+          views: 71000,
+          createdAt: "8 months ago",
+          isFree: false,
+        },
+        {
+          id: "ch-10",
+          title: "Chapter 10: The Rogue Bludger",
+          views: 68000,
+          createdAt: "7 months ago",
+          isFree: false,
+        },
+        {
+          id: "ch-11",
+          title: "Chapter 11: The Dueling Club",
+          views: 65000,
+          createdAt: "6 months ago",
+          isFree: false,
+        },
+        {
+          id: "ch-12",
+          title: "Chapter 12: The Polyjuice Potion",
+          views: 62000,
+          createdAt: "5 months ago",
+          isFree: false,
+        },
+      ],
+    },
+    {
+      id: "vol-3",
+      title: "Volume 3: The Truth Revealed",
+      description: "Harry discovers the shocking truth behind the Chamber of Secrets.",
+      totalChapters: 6,
+      chapters: [
+        {
+          id: "ch-13",
+          title: "Chapter 13: The Very Secret Diary",
+          views: 59000,
+          createdAt: "4 months ago",
+          isFree: false,
+        },
+        {
+          id: "ch-14",
+          title: "Chapter 14: Cornelius Fudge",
+          views: 56000,
+          createdAt: "3 months ago",
+          isFree: false,
+        },
+        {
+          id: "ch-15",
+          title: "Chapter 15: Aragog",
+          views: 53000,
+          createdAt: "2 months ago",
+          isFree: false,
+        },
+        {
+          id: "ch-16",
+          title: "Chapter 16: The Chamber of Secrets",
+          views: 50000,
+          createdAt: "1 month ago",
+          isFree: false,
+        },
+        {
+          id: "ch-17",
+          title: "Chapter 17: The Heir of Slytherin",
+          views: 47000,
+          createdAt: "2 weeks ago",
+          isFree: false,
+        },
+        {
+          id: "ch-18",
+          title: "Chapter 18: Dobby's Reward",
+          views: 44000,
+          createdAt: "1 week ago",
+          isFree: false,
+        },
+      ],
     },
   ],
   readerComments: [
@@ -146,8 +267,10 @@ const novelData = {
 
 export default function NovelDetailPage() {
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const progressPercent = Math.round(
-    (novelData.currentPage / novelData.totalPages) * 100
+
+  const totalChapters = novelData.volumes.reduce(
+    (sum, vol) => sum + vol.totalChapters,
+    0
   );
 
   return (
@@ -305,53 +428,93 @@ export default function NovelDetailPage() {
 
             <Separator />
 
-            {/* Chapters */}
+            {/* Volumes & Chapters (3-Level Hierarchy) */}
             <section className="space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold">Chapters</h2>
+                <h2 className="text-2xl font-bold">Volumes & Chapters</h2>
                 <p className="text-sm text-muted-foreground">
-                  {novelData.volumes[0].totalChapters} chapters
+                  {novelData.volumes.length} volumes • {totalChapters} chapters
                 </p>
               </div>
 
-              <div className="grid gap-2">
-                {novelData.volumes[0].chapters.map((chapter, index) => (
-                  <Link
-                    href={`/read/${novelData.slug}/${chapter.id}`}
-                    key={chapter.id}
-                    className="group"
+              {/* Volumes Accordion */}
+              <Accordion
+                type="multiple"
+                defaultValue={[novelData.volumes[0].id]}
+                className="space-y-4"
+              >
+                {novelData.volumes.map((volume, volumeIndex) => (
+                  <AccordionItem
+                    key={volume.id}
+                    value={volume.id}
+                    className="border rounded-xl overflow-hidden bg-card"
                   >
-                    <Card className="p-4 hover:shadow-md transition-all border-border/50 hover:border-border">
-                      <div className="flex items-center justify-between gap-4">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-3 mb-2">
-                            <span className="text-sm font-medium text-muted-foreground shrink-0">
-                              #{18 - index}
-                            </span>
-                            <h3 className="font-semibold group-hover:text-primary transition-colors truncate">
-                              {chapter.title}
-                            </h3>
-                            {!chapter.isFree && (
-                              <Lock className="size-4 text-amber-500 shrink-0" />
-                            )}
-                          </div>
-                          <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <Clock className="size-3" />
-                              {chapter.createdAt}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Eye className="size-3" />
-                              {formatNumberAbbreviated(chapter.views)} views
-                            </span>
-                          </div>
+                    {/* Volume Header */}
+                    <AccordionTrigger className="px-6 py-4 hover:no-underline hover:bg-muted/50 [&[data-state=open]]:bg-muted/30">
+                      <div className="flex items-center gap-4 w-full text-left pr-4">
+                        <div className="size-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <Book className="size-6 text-primary" />
                         </div>
-                        <ChevronRight className="size-5 text-muted-foreground/50 group-hover:text-primary transition-colors shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-base mb-1">
+                            {volume.title}
+                          </h3>
+                          <p className="text-sm text-muted-foreground line-clamp-1">
+                            {volume.description}
+                          </p>
+                        </div>
+                        <div className="shrink-0">
+                          <Badge variant="secondary" className="font-normal">
+                            {volume.totalChapters} chapters
+                          </Badge>
+                        </div>
                       </div>
-                    </Card>
-                  </Link>
+                    </AccordionTrigger>
+
+                    {/* Volume Chapters */}
+                    <AccordionContent className="px-6 pb-4">
+                      <div className="border-t pt-4 space-y-2">
+                        {volume.chapters.map((chapter, chapterIndex) => (
+                          <Link
+                            href={`/read/${novelData.slug}/${chapter.id}`}
+                            key={chapter.id}
+                            className="group block"
+                          >
+                            <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                              <div className="flex items-center gap-3 flex-1 min-w-0">
+                                <span className="text-sm font-medium text-muted-foreground shrink-0 w-8">
+                                  {volumeIndex * 6 + chapterIndex + 1}
+                                </span>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <h4 className="font-medium group-hover:text-primary transition-colors truncate">
+                                      {chapter.title}
+                                    </h4>
+                                    {!chapter.isFree && (
+                                      <Lock className="size-4 text-amber-500 shrink-0" />
+                                    )}
+                                  </div>
+                                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                    <span className="flex items-center gap-1">
+                                      <Clock className="size-3" />
+                                      {chapter.createdAt}
+                                    </span>
+                                    <span className="flex items-center gap-1">
+                                      <Eye className="size-3" />
+                                      {formatNumberAbbreviated(chapter.views)}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                              <ChevronRight className="size-5 text-muted-foreground/50 group-hover:text-primary transition-colors shrink-0" />
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
                 ))}
-              </div>
+              </Accordion>
             </section>
 
             <Separator />
@@ -506,10 +669,14 @@ export default function NovelDetailPage() {
                   </Badge>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <span className="text-muted-foreground">Chapters</span>
+                  <span className="text-muted-foreground">Volumes</span>
                   <span className="font-medium">
-                    {novelData.volumes[0].totalChapters}
+                    {novelData.volumes.length}
                   </span>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <span className="text-muted-foreground">Chapters</span>
+                  <span className="font-medium">{totalChapters}</span>
                 </div>
               </div>
             </Card>
