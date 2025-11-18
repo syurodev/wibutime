@@ -36,6 +36,9 @@ export function useAuth() {
   // Use ref to track refresh state for reliable synchronous checks
   const isRefreshingRef = useRef(false);
 
+  // Track if this is initial mount to avoid showing toast on page load
+  const isInitialMountRef = useRef(true);
+
   // Fetch session on mount
   useEffect(() => {
     fetchSession();
@@ -76,23 +79,32 @@ export function useAuth() {
 
       // If refresh fails (401 = invalid/expired refresh token), clear session
       if (!response.ok) {
-        toast.error("Session expired. Please login again.");
+        // Only show toast if not initial mount (user is actively using the app)
+        if (!isInitialMountRef.current) {
+          toast.error("Session expired. Please login again.");
+        }
         setUser(null);
         setAccessToken(null);
         isRefreshingRef.current = false;
+        isInitialMountRef.current = false;
         return false;
       }
 
       // Only fetch session again if refresh was successful
       await fetchSession();
       isRefreshingRef.current = false;
+      isInitialMountRef.current = false;
       return true;
     } catch (error) {
       // Clear session on error to prevent infinite loop
-      toast.error("Session expired. Please login again.");
+      // Only show toast if not initial mount
+      if (!isInitialMountRef.current) {
+        toast.error("Session expired. Please login again.");
+      }
       setUser(null);
       setAccessToken(null);
       isRefreshingRef.current = false;
+      isInitialMountRef.current = false;
       return false;
     }
   };
