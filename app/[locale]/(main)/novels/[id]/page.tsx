@@ -74,7 +74,7 @@ const novelData = {
         },
       ],
     },
-  ] as const,
+  ],
   genres: [
     { id: "1", name: "Fantasy" },
     { id: "2", name: "Adventure" },
