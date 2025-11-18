@@ -4,18 +4,17 @@ import { Container } from "@/components/layout/Container";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatNumberAbbreviated } from "@/lib/api/utils/number";
 import { cn } from "@/lib/utils";
 import {
   BookOpen,
   Eye,
   Heart,
-  Share2,
   Star,
-  Calendar,
+  MessageSquare,
+  Clock,
   User,
-  TrendingUp,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -25,312 +24,397 @@ import { NovelTabs } from "./novel-tabs";
 // --- MOCK DATA ---
 const novelData = {
   id: "1",
-  title: "Thợ Săn Cấp SSS Không Muốn Thăng Hạng",
-  originalTitle: "The SSS-Class Hunter Doesn't Want to Rank Up",
-  slug: "tho-san-cap-sss",
+  title: "The Chambers of Secrets",
+  originalTitle: "Harry Potter and the Chamber of Secrets",
+  slug: "chambers-of-secrets",
   coverUrl: "/images/image-4.jpg",
-  author: "Dungeon Master",
-  artist: "Studio Red",
+  author: "J.K. Rowlings",
+  artist: "Mary GrandPré",
   rating: 4.8,
   ratingCount: 1240,
   views: 850000,
   favorites: 45000,
-  status: "Đang tiến hành",
+  status: "Completed",
   type: "Novel",
-  releaseYear: 2024,
-  description: `
-    <p class="mb-4">Thế giới thay đổi khi các Cổng (Gates) xuất hiện. Quái vật tràn vào nhân gian, và những người thức tỉnh năng lực đặc biệt được gọi là Thợ Săn (Hunters).</p>
-    <p class="mb-4">Tôi, <strong>Kang Jin-woo</strong>, thức tỉnh với tư cách là một Thợ Săn cấp F yếu ớt. Nhưng một ngày nọ, tôi tình cờ tìm thấy một hệ thống kỳ lạ cho phép tôi "Sao chép" kỹ năng của người khác...</p>
-    <p>Vấn đề là? Tôi chỉ muốn sống một cuộc đời bình yên làm nông dân trong hầm ngục thôi! Tại sao các người cứ bắt tôi đi cứu thế giới vậy?</p>
-  `,
+  releaseYear: 1998,
+  currentPage: 154,
+  totalPages: 300,
+  description:
+    "Harry as he returns to Hogwarts school of witchcraft and wizardry for his 2nd year, only to discover that a mysterious presence is terrorizing the school...",
   genres: [
-    { id: "1", name: "Action" },
-    { id: "2", name: "Fantasy" },
-    { id: "3", name: "System" },
-    { id: "4", name: "Comedy" },
+    { id: "1", name: "Fantasy" },
+    { id: "2", name: "Adventure" },
+    { id: "3", name: "Mystery" },
   ],
-  tags: ["Main Bá", "Giấu Nghề", "Hài Hước", "Harem", "Reincarnation"],
+  tags: ["Magic", "Wizards", "School Life", "Adventure", "Young Adult"],
   volumes: [
     {
-      id: "vol-3",
-      title: "Tập 3: Chiến tranh bang hội",
-      totalChapters: 12,
-      chapters: Array.from({ length: 12 }, (_, i) => ({
-        id: `3-${12 - i}`,
-        title: `Chương ${138 + (12 - i)}: Cuộc chiến cuối cùng phần ${12 - i}`,
-        views: 12500,
-        createdAt: `${i + 1} giờ trước`,
-        isFree: false,
-      })),
-    },
-    {
-      id: "vol-2",
-      title: "Tập 2: Học viện Thợ Săn",
-      totalChapters: 50,
-      chapters: Array.from({ length: 6 }, (_, i) => ({
-        id: `2-${50 - i}`,
-        title: `Chương ${138 - i}: Bài kiểm tra đầu vào`,
-        views: 45000,
-        createdAt: "1 tháng trước",
-        isFree: true,
-      })),
-    },
-    {
       id: "vol-1",
-      title: "Tập 1: Sự thức tỉnh",
-      totalChapters: 88,
-      chapters: Array.from({ length: 5 }, (_, i) => ({
-        id: `1-${88 - i}`,
-        title: `Chương ${88 - i}: Bắt đầu hành trình`,
-        views: 90000,
-        createdAt: "1 năm trước",
+      title: "Complete Edition",
+      totalChapters: 18,
+      chapters: Array.from({ length: 8 }, (_, i) => ({
+        id: `ch-${18 - i}`,
+        title: `Chapter ${18 - i}: ${
+          [
+            "The Epilogue",
+            "Dobby's Reward",
+            "The Heir of Slytherin",
+            "Cornelius Fudge",
+            "The Diary",
+            "The Writing on the Wall",
+            "The Dueling Club",
+            "The Polyjuice Potion",
+          ][i]
+        }`,
+        views: 95000 - i * 5000,
+        createdAt: `${i + 1} months ago`,
         isFree: true,
       })),
+    },
+  ],
+  readerComments: [
+    {
+      id: 1,
+      user: {
+        name: "Roberto Jordan",
+        avatar: "/images/avatar-1.jpg",
+      },
+      comment:
+        "What a delightful and magical chapter it is! It indeed transports readers to the wizarding world.",
+      chapter: "Chapter Five: Diagon Alley",
+      time: "2 min ago",
+    },
+    {
+      id: 2,
+      user: {
+        name: "Anna Henry",
+        avatar: "/images/avatar-2.jpg",
+      },
+      comment:
+        "I finished reading the chapter last night and I'm completely hooked! The mystery is getting deeper.",
+      chapter: "Chapter Seven: The Dueling Club",
+      time: "1 hour ago",
+    },
+    {
+      id: 3,
+      user: {
+        name: "Michael Chen",
+        avatar: "/images/avatar-3.jpg",
+      },
+      comment: "The plot twist in this chapter was absolutely mind-blowing!",
+      chapter: "Chapter Ten: The Rogue Bludger",
+      time: "3 hours ago",
     },
   ],
   recommendations: [
     {
       id: 1,
-      title: "Ta Là Tà Đế",
-      rating: 4.5,
+      title: "The Philosopher's Stone",
+      subtitle: "Harry Potter Vol I",
+      rating: 4.9,
       image: "/images/image-1.jpg",
     },
     {
       id: 2,
-      title: "Toàn Trí Độc Giả",
-      rating: 4.9,
+      title: "The Prisoner of Azkaban",
+      subtitle: "Harry Potter Vol III",
+      rating: 4.7,
       image: "/images/image-2.jpg",
     },
     {
       id: 3,
-      title: "Thăng Cấp Một Mình",
-      rating: 4.7,
+      title: "The Goblet of Fire",
+      subtitle: "Harry Potter Vol IV",
+      rating: 4.8,
       image: "/images/image-5.jpg",
-    },
-    {
-      id: 4,
-      title: "Đỉnh Cấp Khí Vận",
-      rating: 4.2,
-      image: "/images/image-4.jpg",
     },
   ],
 };
 
 export default function NovelDetailPage() {
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const progressPercent = Math.round(
+    (novelData.currentPage / novelData.totalPages) * 100
+  );
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* ================= CLEAN HERO SECTION ================= */}
-      <Container className="py-8 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-8 md:gap-12">
-          {/* Cover Image - Clean, No Effects */}
-          <div className="mx-auto md:mx-0">
-            <div className="relative w-48 md:w-56 lg:w-64 aspect-[2/3] rounded-lg overflow-hidden border bg-muted">
-              <Image
-                src={novelData.coverUrl}
-                alt={novelData.title}
-                fill
-                className="object-cover"
-                priority
-                sizes="(max-width: 768px) 192px, (max-width: 1024px) 224px, 256px"
-              />
+    <div className="min-h-screen bg-[#f5f3ef]">
+      {/* ================= HERO SECTION (Book-Opened Style) ================= */}
+      <Container className="py-12 md:py-16">
+        {/* Greeting */}
+        <div className="mb-8">
+          <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#2d2d2d] mb-3">
+            Continue reading,
+          </h1>
+          <p className="text-lg text-[#666] max-w-2xl leading-relaxed">
+            You've made great progress! Only{" "}
+            <span className="font-semibold text-[#2d2d2d]">
+              {novelData.totalPages - novelData.currentPage} pages
+            </span>{" "}
+            left to finish this amazing story.
+          </p>
+        </div>
+
+        {/* Book Display with Info */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-12 items-center">
+          {/* Book Opened Visual */}
+          <div className="relative">
+            {/* Shadow underneath */}
+            <div className="absolute inset-x-0 bottom-0 h-8 bg-black/5 blur-2xl" />
+
+            {/* Book Pages */}
+            <div className="relative bg-white rounded-lg shadow-2xl p-8 md:p-12">
+              {/* Simulated book binding in the middle */}
+              <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 -translate-x-1/2" />
+
+              <div className="grid grid-cols-2 gap-8">
+                {/* Left Page - Text Content */}
+                <div className="space-y-4 text-sm leading-relaxed text-gray-700 font-serif pr-4">
+                  <p className="text-xs text-gray-400 mb-4">CHAPTER SIX</p>
+                  <p>
+                    Harry had been to several Hogwarts feasts, but never one
+                    quite like this. Everybody was in their pajamas, and the
+                    celebration had been going on all night...
+                  </p>
+                  <p className="text-xs text-gray-400 text-right mt-8">154</p>
+                </div>
+
+                {/* Right Page - Image */}
+                <div className="relative aspect-[3/4] overflow-hidden rounded-sm pl-4">
+                  <Image
+                    src={novelData.coverUrl}
+                    alt={novelData.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Content */}
-          <div className="flex flex-col gap-6">
-            {/* Status Badge */}
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="secondary" className="text-xs font-normal">
-                {novelData.type}
-              </Badge>
-              <Badge
-                variant="outline"
-                className="text-xs font-normal border-green-600/30 text-green-600 bg-green-600/5"
-              >
-                {novelData.status}
-              </Badge>
-            </div>
-
-            {/* Title */}
-            <div className="space-y-2">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
+          {/* Book Info */}
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-serif font-bold text-[#2d2d2d] mb-2">
                 {novelData.title}
-              </h1>
-              <p className="text-muted-foreground text-sm md:text-base">
-                {novelData.originalTitle}
-              </p>
-            </div>
-
-            {/* Genres */}
-            <div className="flex flex-wrap gap-2">
-              {novelData.genres.map((genre) => (
-                <Badge
-                  key={genre.id}
-                  variant="secondary"
-                  className="text-xs font-normal"
-                >
-                  {genre.name}
-                </Badge>
-              ))}
-            </div>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-4">
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center gap-1.5 text-muted-foreground">
-                  <Star className="size-4" />
-                  <span className="text-xs font-medium">Rating</span>
-                </div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-bold">{novelData.rating}</span>
-                  <span className="text-xs text-muted-foreground">
-                    ({formatNumberAbbreviated(novelData.ratingCount)})
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center gap-1.5 text-muted-foreground">
-                  <Eye className="size-4" />
-                  <span className="text-xs font-medium">Views</span>
-                </div>
-                <span className="text-2xl font-bold">
-                  {formatNumberAbbreviated(novelData.views)}
+              </h2>
+              <div className="flex items-center gap-2 text-[#e85d4d] font-medium">
+                <span className="text-xl">
+                  {novelData.currentPage} / {novelData.totalPages} pages
                 </span>
               </div>
+            </div>
 
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center gap-1.5 text-muted-foreground">
-                  <Heart className="size-4" />
-                  <span className="text-xs font-medium">Favorites</span>
-                </div>
-                <span className="text-2xl font-bold">
-                  {formatNumberAbbreviated(novelData.favorites)}
+            <p className="text-base text-[#666] leading-relaxed">
+              {novelData.description}
+            </p>
+
+            <div className="flex items-center gap-2 text-sm text-[#666]">
+              <span>–</span>
+              <span className="font-medium text-[#2d2d2d]">
+                {novelData.author}
+              </span>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-[#666]">Reading progress</span>
+                <span className="font-semibold text-[#2d2d2d]">
+                  {progressPercent}%
                 </span>
               </div>
-
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center gap-1.5 text-muted-foreground">
-                  <TrendingUp className="size-4" />
-                  <span className="text-xs font-medium">Rank</span>
-                </div>
-                <span className="text-2xl font-bold">#12</span>
+              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-[#2d2d2d] rounded-full transition-all duration-500"
+                  style={{ width: `${progressPercent}%` }}
+                />
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-wrap gap-3">
-              <Button size="lg" className="gap-2">
+            <div className="flex flex-wrap gap-3 pt-2">
+              <Button
+                size="lg"
+                className="bg-[#2d2d2d] hover:bg-[#1a1a1a] text-white rounded-full px-8 gap-2"
+              >
                 <BookOpen className="size-4" />
-                Đọc Từ Đầu
+                Continue Reading
               </Button>
               <Button
                 size="lg"
-                variant={isBookmarked ? "secondary" : "outline"}
-                className="gap-2"
+                variant="outline"
+                className={cn(
+                  "rounded-full px-6 gap-2 border-[#2d2d2d] hover:bg-[#2d2d2d] hover:text-white",
+                  isBookmarked && "bg-[#2d2d2d] text-white"
+                )}
                 onClick={() => setIsBookmarked(!isBookmarked)}
               >
                 <Heart
                   className={cn("size-4", isBookmarked && "fill-current")}
                 />
-                {isBookmarked ? "Đã Lưu" : "Yêu Thích"}
+                {isBookmarked ? "Bookmarked" : "Bookmark"}
               </Button>
-              <Button size="lg" variant="ghost" className="gap-2">
-                <Share2 className="size-4" />
-                Chia sẻ
-              </Button>
+            </div>
+
+            {/* Stats */}
+            <div className="flex items-center gap-6 pt-4 text-sm text-[#666]">
+              <div className="flex items-center gap-1.5">
+                <Star className="size-4 fill-amber-400 text-amber-400" />
+                <span className="font-semibold text-[#2d2d2d]">
+                  {novelData.rating}
+                </span>
+                <span>({formatNumberAbbreviated(novelData.ratingCount)})</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Eye className="size-4" />
+                <span>{formatNumberAbbreviated(novelData.views)}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Heart className="size-4" />
+                <span>{formatNumberAbbreviated(novelData.favorites)}</span>
+              </div>
             </div>
           </div>
         </div>
       </Container>
-
-      <Separator />
 
       {/* ================= CONTENT SECTION ================= */}
-      <Container className="py-8 md:py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 lg:gap-12">
-          {/* Main Content */}
-          <div className="min-w-0">
-            <NovelTabs novel={novelData} />
-          </div>
+      <div className="bg-white/50 py-12">
+        <Container>
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-12">
+            {/* Main Content */}
+            <div className="min-w-0">
+              <NovelTabs novel={novelData} />
+            </div>
 
-          {/* Sidebar */}
-          <aside className="space-y-8">
-            {/* Info Card */}
-            <Card className="p-6 space-y-4">
-              <h3 className="font-semibold text-sm">Thông Tin</h3>
-              <Separator />
-
-              <div className="space-y-4 text-sm">
-                <div className="flex items-start gap-3">
-                  <User className="size-4 text-muted-foreground mt-0.5 shrink-0" />
-                  <div className="flex flex-col gap-1 min-w-0">
-                    <span className="text-xs text-muted-foreground">Tác giả</span>
-                    <span className="font-medium truncate">{novelData.author}</span>
-                  </div>
+            {/* Sidebar */}
+            <aside className="space-y-8">
+              {/* Reader Comments/Friends Activity */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-serif font-bold text-[#2d2d2d]">
+                    Reader Friends
+                  </h3>
+                  <button className="text-xs text-[#666] hover:text-[#2d2d2d]">
+                    See all
+                  </button>
                 </div>
 
-                <div className="flex items-start gap-3">
-                  <User className="size-4 text-muted-foreground mt-0.5 shrink-0" />
-                  <div className="flex flex-col gap-1 min-w-0">
-                    <span className="text-xs text-muted-foreground">Họa sĩ</span>
-                    <span className="font-medium truncate">{novelData.artist}</span>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <Calendar className="size-4 text-muted-foreground mt-0.5 shrink-0" />
-                  <div className="flex flex-col gap-1">
-                    <span className="text-xs text-muted-foreground">Năm phát hành</span>
-                    <span className="font-medium">{novelData.releaseYear}</span>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            {/* Recommendations */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-sm">Có thể bạn thích</h3>
-                <Link
-                  href="#"
-                  className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Xem thêm
-                </Link>
-              </div>
-
-              <div className="space-y-3">
-                {novelData.recommendations.map((item) => (
-                  <Link key={item.id} href="#" className="group block">
-                    <div className="flex gap-3 p-2 rounded-lg hover:bg-accent/50 transition-colors">
-                      <div className="relative w-12 h-16 rounded overflow-hidden shrink-0 bg-muted border">
-                        <Image
-                          src={item.image}
-                          alt={item.title}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <div className="flex flex-col justify-center gap-1 min-w-0">
-                        <h4 className="font-medium text-sm line-clamp-2 group-hover:text-primary transition-colors">
-                          {item.title}
-                        </h4>
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <Star className="size-3 fill-yellow-500 text-yellow-500" />
-                          <span className="font-medium">{item.rating}</span>
+                <div className="space-y-4">
+                  {novelData.readerComments.map((comment) => (
+                    <Card
+                      key={comment.id}
+                      className="p-4 bg-white border-gray-200 hover:shadow-md transition-shadow"
+                    >
+                      <div className="flex gap-3">
+                        <Avatar className="size-10 shrink-0">
+                          <AvatarImage src={comment.user.avatar} />
+                          <AvatarFallback>
+                            {comment.user.name.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0 space-y-2">
+                          <div className="flex items-start justify-between gap-2">
+                            <span className="font-semibold text-sm text-[#2d2d2d]">
+                              {comment.user.name}
+                            </span>
+                            <span className="text-xs text-[#999] shrink-0">
+                              {comment.time}
+                            </span>
+                          </div>
+                          <p className="text-sm text-[#666] leading-relaxed italic">
+                            "{comment.comment}"
+                          </p>
+                          <div className="flex items-center gap-1 text-xs text-[#e85d4d]">
+                            <span className="line-clamp-1">
+                              ✓ {comment.chapter}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </Link>
-                ))}
+                    </Card>
+                  ))}
+                </div>
               </div>
-            </div>
-          </aside>
-        </div>
-      </Container>
+
+              {/* Book Info Card */}
+              <Card className="p-6 bg-white border-gray-200">
+                <h3 className="text-sm font-semibold text-[#2d2d2d] mb-4">
+                  Book Details
+                </h3>
+
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-[#999]">Author</span>
+                    <span className="font-medium text-[#2d2d2d]">
+                      {novelData.author}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[#999]">Artist</span>
+                    <span className="font-medium text-[#2d2d2d]">
+                      {novelData.artist}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[#999]">Published</span>
+                    <span className="font-medium text-[#2d2d2d]">
+                      {novelData.releaseYear}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[#999]">Status</span>
+                    <Badge className="bg-green-100 text-green-700 border-0 text-xs">
+                      {novelData.status}
+                    </Badge>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Recommendations */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-serif font-bold text-[#2d2d2d]">
+                  You May Also Like
+                </h3>
+
+                <div className="space-y-3">
+                  {novelData.recommendations.map((item) => (
+                    <Link key={item.id} href="#" className="group block">
+                      <Card className="p-3 bg-white border-gray-200 hover:shadow-md transition-all">
+                        <div className="flex gap-3">
+                          <div className="relative w-16 h-20 rounded overflow-hidden shrink-0 bg-gray-100">
+                            <Image
+                              src={item.image}
+                              alt={item.title}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="flex flex-col justify-center gap-1.5 min-w-0">
+                            <h4 className="font-semibold text-sm text-[#2d2d2d] line-clamp-1 group-hover:text-[#e85d4d] transition-colors">
+                              {item.title}
+                            </h4>
+                            <p className="text-xs text-[#999] italic">
+                              {item.subtitle}
+                            </p>
+                            <div className="flex items-center gap-1 text-xs">
+                              <Star className="size-3 fill-amber-400 text-amber-400" />
+                              <span className="font-medium text-[#2d2d2d]">
+                                {item.rating}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </aside>
+          </div>
+        </Container>
+      </div>
     </div>
   );
 }
