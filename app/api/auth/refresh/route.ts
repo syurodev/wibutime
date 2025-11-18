@@ -27,8 +27,7 @@ export async function POST() {
     );
 
     if (!tokenResponse.ok) {
-      const error = await tokenResponse.text();
-      console.error("Token refresh failed:", error);
+      // Token refresh failed - return 401 to trigger session clear on client
       return NextResponse.json(
         { error: "Token refresh failed" },
         { status: 401 }
@@ -47,7 +46,7 @@ export async function POST() {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Refresh token error:", error);
+    // Internal error during refresh
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

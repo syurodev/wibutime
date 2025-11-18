@@ -26,7 +26,8 @@ export async function signOut() {
     await fetch("/api/auth/signout", { method: "POST" });
     globalThis.window.location.href = "/";
   } catch (error) {
-    console.error("Failed to sign out:", error);
+    // Silent fail - redirect anyway
+    globalThis.window.location.href = "/";
   }
 }
 
@@ -37,15 +38,9 @@ export async function signOut() {
 export async function refreshToken() {
   try {
     const response = await fetch("/api/auth/refresh", { method: "POST" });
-
-    if (!response.ok) {
-      console.error("Token refresh failed:", response.status);
-      return false;
-    }
-
-    return true;
+    return response.ok;
   } catch (error) {
-    console.error("Failed to refresh token:", error);
+    // Silent fail
     return false;
   }
 }

@@ -7,6 +7,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 /**
  * User type matching BaseUser schema
@@ -54,7 +55,7 @@ export function useAuth() {
         await refreshToken();
       }
     } catch (error) {
-      console.error("Failed to fetch session:", error);
+      // Silent fail - session fetch error
       setUser(null);
       setAccessToken(null);
     } finally {
@@ -65,7 +66,6 @@ export function useAuth() {
   const refreshToken = async () => {
     // Prevent multiple simultaneous refresh requests
     if (isRefreshingRef.current) {
-      console.log("Refresh already in progress, skipping...");
       return false;
     }
 
@@ -76,7 +76,7 @@ export function useAuth() {
 
       // If refresh fails (401 = invalid/expired refresh token), clear session
       if (!response.ok) {
-        console.error("Token refresh failed, clearing session");
+        toast.error("Session expired. Please login again.");
         setUser(null);
         setAccessToken(null);
         isRefreshingRef.current = false;
@@ -88,8 +88,8 @@ export function useAuth() {
       isRefreshingRef.current = false;
       return true;
     } catch (error) {
-      console.error("Failed to refresh token:", error);
       // Clear session on error to prevent infinite loop
+      toast.error("Session expired. Please login again.");
       setUser(null);
       setAccessToken(null);
       isRefreshingRef.current = false;
@@ -116,8 +116,7 @@ export function useAuth() {
       // This will clear session_id cookie and redirect back to app
       window.location.href = "/api/auth/signout";
     } catch (error) {
-      console.error("Failed to sign out:", error);
-      // Fallback to home page
+      // Fallback to home page on error
       window.location.href = "/";
     }
   };
