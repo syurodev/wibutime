@@ -1,10 +1,10 @@
+import { deleteSession, getSession, updateSession } from "@/lib/auth/session";
 import { NextResponse } from "next/server";
-import { getSession, updateSession, deleteSession } from "@/lib/auth/session";
 
 export async function POST() {
   const session = await getSession();
 
-  if (!session || !session.refreshToken) {
+  if (!session?.refreshToken) {
     return NextResponse.json({ error: "No session found" }, { status: 401 });
   }
 
@@ -45,8 +45,12 @@ export async function POST() {
       expiresAt: Date.now() + tokens.expires_in * 1000,
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ 
+      success: true,
+      accessToken: tokens.access_token 
+    });
   } catch (error) {
+    console.error("Token refresh error:", error);
     // Internal error during refresh - delete session to prevent retry
     await deleteSession();
     return NextResponse.json(

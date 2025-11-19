@@ -3,7 +3,7 @@
  * Tập trung xử lý tất cả API calls với logging, error handling, và caching
  */
 
-import { getClientAuthToken } from "../auth-client";
+import { clearAuthToken, getClientAuthToken, setAuthToken } from "../auth-client";
 import { API_CONFIG } from "../config";
 import { ApiError, logError, logRequest, logResponse } from "./error-handler";
 
@@ -141,6 +141,30 @@ function buildNextConfig(options?: FetchOptions): RequestInit {
 }
 
 /**
+ * Refresh auth token
+ */
+async function refreshAuthToken(): Promise<string | null> {
+  try {
+    const response = await fetch("/api/auth/refresh", {
+      method: "POST",
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    if (data.success && data.accessToken) {
+      return data.accessToken;
+    }
+    return null;
+  } catch (error) {
+    console.error("Token refresh failed:", error);
+    return null;
+  }
+}
+
+/**
  * Main fetch function with full features
  */
 export async function apiFetch<T = unknown>(
@@ -210,10 +234,42 @@ export async function apiFetch<T = unknown>(
 
     // Handle 401 Unauthorized
     if (response.status === 401) {
-      console.warn("🔒 401 Unauthorized - No auto redirect (disabled for debugging)");
-      const error = await parseApiError(response);
-      logError(method, fullURL, error);
-      throw error;
+      // Prevent infinite loop if refresh endpoint itself returns 401
+      if (fullURL.includes("/auth/refresh")) {
+        throw await parseApiError(response);
+      }
+
+      console.log("🔒 401 Unauthorized - Attempting token refresh...");
+      
+      // Try to refresh token
+      const newToken = await refreshAuthToken();
+      
+      if (newToken) {
+        console.log("✅ Token refreshed successfully, retrying request...");
+        
+        // Update local storage
+        setAuthToken(newToken);
+        
+        // Retry original request with new token
+        const newHeaders = new Headers(options?.headers);
+        newHeaders.set("Authorization", `Bearer ${newToken}`);
+        
+        // Update headers in options
+        const newOptions = {
+          ...options,
+          headers: newHeaders,
+          token: newToken
+        };
+        
+        // Recursive call with new token
+        return apiFetch<T>(url, newOptions);
+      } else {
+        console.warn("❌ Token refresh failed, clearing auth...");
+        clearAuthToken();
+        const error = await parseApiError(response);
+        logError(method, fullURL, error);
+        throw error;
+      }
     }
 
     // Handle errors
