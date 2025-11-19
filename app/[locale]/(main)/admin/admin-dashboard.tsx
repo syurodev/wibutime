@@ -6,8 +6,8 @@
  */
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "@/i18n/routing";
 import { BookOpen, Palette, Tags, TrendingUp, Users } from "lucide-react";
-import Link from "next/link";
 
 const stats = [
   {

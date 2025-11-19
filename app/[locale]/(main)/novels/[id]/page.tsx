@@ -1,36 +1,36 @@
 "use client";
 
+import { StaticEditorView } from "@/components/editor/static-editor-view";
 import { Container } from "@/components/layout/Container";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { Link } from "@/i18n/routing";
 import { formatNumberAbbreviated } from "@/lib/api/utils/number";
 import { cn } from "@/lib/utils";
 import {
-  BookOpen,
-  Eye,
-  Heart,
-  Star,
-  User,
-  TrendingUp,
-  ChevronRight,
-  Lock,
-  Clock,
+    BookOpen,
+    ChevronRight,
+    Clock,
+    Eye,
+    Heart,
+    Lock,
+    Star,
+    TrendingUp,
+    User,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
-import { StaticEditorView } from "@/components/editor/static-editor-view";
 import type { TNode } from "platejs";
+import { useState } from "react";
 
 // --- MOCK DATA ---
 const novelData = {

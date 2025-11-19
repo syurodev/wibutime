@@ -3,12 +3,13 @@
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
 import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Link } from "@/i18n/routing";
 import { MediaSeries } from "@/lib/api/models/content/base-content";
 import { formatNumberAbbreviated } from "@/lib/api/utils/number";
 import { cn } from "@/lib/utils";
@@ -19,7 +20,6 @@ import Autoplay from "embla-carousel-autoplay";
 import { Eye, Heart, Play, Plus, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import Link from "next/link";
 import { useMemo } from "react";
 import { BasicStaticEditorView } from "../editor/basic-static-editor-view";
 import { AspectRatio } from "../ui/aspect-ratio";

@@ -4,8 +4,8 @@
  */
 
 import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/routing";
 import { ChevronRight } from "lucide-react";
-import Link from "next/link";
 
 export interface SectionHeaderProps {
   readonly title: string;

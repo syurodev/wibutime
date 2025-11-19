@@ -13,7 +13,7 @@ import {
 } from "@/lib/api/models/content/base-content";
 import type { CONTENT_TYPE } from "@/lib/constants/default";
 import { ApiParser } from "@/lib/api/utils/parsers";
-import { isSuccessResponse } from "@/lib/api/types";
+import { isSuccessResponse, type StandardResponse } from "@/lib/api/types";
 
 /**
  * Content query parameters
@@ -34,7 +34,7 @@ export interface ContentQuery {
 export const getFeaturedContent = cache(async (): Promise<MediaSeries> => {
   const url = endpoint("content", "featured");
 
-  const response = await serverApi.get(url, {
+  const response = await serverApi.get<StandardResponse<unknown>>(url, {
     next: {
       revalidate: 300, // Cache 5 minutes
       tags: ["content-featured"],

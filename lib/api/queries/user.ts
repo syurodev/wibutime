@@ -12,7 +12,7 @@ import {
   type UserSettings,
 } from "@/lib/api/models/user/user-settings";
 import { ApiParser } from "@/lib/api/utils/parsers";
-import { isSuccessResponse } from "@/lib/api/types";
+import { isSuccessResponse, type StandardResponse } from "@/lib/api/types";
 
 /**
  * Get user settings
@@ -24,7 +24,7 @@ import { isSuccessResponse } from "@/lib/api/types";
 export const getUserSettings = cache(async (): Promise<UserSettings> => {
   const url = endpoint("user", "settings");
 
-  const response = await serverApi.get(url, {
+  const response = await serverApi.get<StandardResponse<unknown>>(url, {
     next: {
       revalidate: 60, // Cache 1 minute
       tags: ["user-settings"],

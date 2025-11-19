@@ -13,7 +13,7 @@ import {
   type AuthorQuery,
 } from "@/lib/api/models/admin/author";
 import { ApiParser } from "@/lib/api/utils/parsers";
-import { isSuccessResponse } from "@/lib/api/types";
+import { isSuccessResponse, type StandardResponse } from "@/lib/api/types";
 
 /**
  * Get list of authors with pagination
@@ -31,7 +31,7 @@ export const getAuthors = cache(
   }> => {
     const url = endpoint("authors", params || {});
 
-    const response = await serverApi.get(url, {
+    const response = await serverApi.get<StandardResponse<unknown>>(url, {
       next: {
         revalidate: 300, // Cache 5 minutes
         tags: ["authors"],
@@ -63,7 +63,7 @@ export const getAuthors = cache(
 export const getAuthorById = cache(async (id: string): Promise<Author> => {
   const url = endpoint("authors", id);
 
-  const response = await serverApi.get(url, {
+  const response = await serverApi.get<StandardResponse<unknown>>(url, {
     next: {
       revalidate: 300, // Cache 5 minutes
       tags: [`author-${id}`, "authors"],

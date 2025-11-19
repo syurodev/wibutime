@@ -13,7 +13,7 @@ import {
   type GenreQuery,
 } from "@/lib/api/models/admin/genre";
 import { ApiParser } from "@/lib/api/utils/parsers";
-import { isSuccessResponse } from "@/lib/api/types";
+import { isSuccessResponse, type StandardResponse } from "@/lib/api/types";
 
 /**
  * Get list of genres with pagination
@@ -32,7 +32,7 @@ export const getGenres = cache(
   }> => {
     const url = endpoint("genres", params || {});
 
-    const response = await serverApi.get(url, {
+    const response = await serverApi.get<StandardResponse<unknown>>(url, {
       next: {
         revalidate: 300, // Cache 5 minutes
         tags: ["genres"],
@@ -65,7 +65,7 @@ export const getGenres = cache(
 export const getGenreById = cache(async (id: string): Promise<Genre> => {
   const url = endpoint("genres", id);
 
-  const response = await serverApi.get(url, {
+  const response = await serverApi.get<StandardResponse<unknown>>(url, {
     next: {
       revalidate: 300, // Cache 5 minutes
       tags: [`genre-${id}`, "genres"],

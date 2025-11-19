@@ -4,12 +4,12 @@
  */
 
 import type {
-  CreateGenreRequest,
-  Genre,
-  GenreQuery,
-  UpdateGenreRequest,
+    CreateGenreRequest,
+    Genre,
+    GenreQuery,
+    UpdateGenreRequest,
 } from "../../models/admin/genre";
-import { GenreArraySchema, GenreSchema } from "../../models/admin/genre";
+import { GenreSchema } from "../../models/admin/genre";
 import { isSuccessResponse, type StandardResponse } from "../../types";
 import { ApiError } from "../../utils/error-handler";
 import { api } from "../../utils/fetch";
@@ -62,7 +62,7 @@ export class GenreService {
         );
       }
 
-      const items = ApiParser.parseResponseArray(GenreArraySchema, response);
+      const items = ApiParser.parseResponseArray(GenreSchema, response);
 
       return {
         items,

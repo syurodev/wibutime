@@ -8,7 +8,7 @@ import { SeriesGrid } from "@/components/content/SeriesGrid";
 import { SeriesGridSkeleton } from "@/components/content/SeriesGridSkeleton";
 import { Container } from "@/components/layout/Container";
 import { ContentService } from "@/lib/api/services/base-content/content.service";
-import type { CONTENT_TYPE } from "@/lib/constants/default";
+import { DEFAULT_LIMIT, DEFAULT_PAGE, type CONTENT_TYPE } from "@/lib/constants/default";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
@@ -45,7 +45,7 @@ async function TrendingContent({
   const { items } = await ContentService.getTrendingPaginated({
     type,
     page,
-    limit: 15,
+    limit: DEFAULT_LIMIT,
   });
 
   return <SeriesGrid series={items} />;
@@ -64,7 +64,7 @@ export default async function TrendingPage({
 
   // Parse URL parameters
   const type = (params.type || "all") as CONTENT_TYPE | "all";
-  const page = Number(params.page) || 1;
+  const page = Number(params.page) || DEFAULT_PAGE;
 
   // Validate type
   const validTypes = ["all", "anime", "manga", "novel"];
@@ -75,7 +75,7 @@ export default async function TrendingPage({
     {
       type: selectedType,
       page,
-      limit: 10,
+      limit: DEFAULT_LIMIT,
     }
   );
 

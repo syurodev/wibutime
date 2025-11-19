@@ -3,17 +3,17 @@
  * Uses React cache for automatic deduplication
  */
 
-import { cache } from "react";
-import { serverApi } from "@/lib/api/server";
-import { endpoint } from "@/lib/api/utils/endpoint";
 import {
-  ArtistSchema,
   ArtistArraySchema,
+  ArtistSchema,
   type Artist,
   type ArtistQuery,
 } from "@/lib/api/models/admin/artist";
+import { serverApi } from "@/lib/api/server";
+import { isSuccessResponse, type StandardResponse } from "@/lib/api/types";
+import { endpoint } from "@/lib/api/utils/endpoint";
 import { ApiParser } from "@/lib/api/utils/parsers";
-import { isSuccessResponse } from "@/lib/api/types";
+import { cache } from "react";
 
 /**
  * Get list of artists with pagination
@@ -31,7 +31,7 @@ export const getArtists = cache(
   }> => {
     const url = endpoint("artists", params || {});
 
-    const response = await serverApi.get(url, {
+    const response = await serverApi.get<StandardResponse<unknown>>(url, {
       next: {
         revalidate: 300, // Cache 5 minutes
         tags: ["artists"],
@@ -63,7 +63,7 @@ export const getArtists = cache(
 export const getArtistById = cache(async (id: string): Promise<Artist> => {
   const url = endpoint("artists", id);
 
-  const response = await serverApi.get(url, {
+  const response = await serverApi.get<StandardResponse<unknown>>(url, {
     next: {
       revalidate: 300, // Cache 5 minutes
       tags: [`artist-${id}`, "artists"],

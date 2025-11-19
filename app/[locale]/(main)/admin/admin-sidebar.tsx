@@ -5,18 +5,18 @@
  * Sidebar navigation cho admin pages
  */
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import {
-  LayoutDashboard,
-  Tags,
-  Users,
-  Palette,
-  BookOpen,
-  Settings,
-  ChevronRight,
+    BookOpen,
+    ChevronRight,
+    LayoutDashboard,
+    Palette,
+    Settings,
+    Tags,
+    Users,
 } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 const navigation = [
   {

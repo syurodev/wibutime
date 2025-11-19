@@ -12,7 +12,7 @@ import {
 } from "@/lib/api/models/content/history-content";
 import type { CONTENT_TYPE } from "@/lib/constants/default";
 import { ApiParser } from "@/lib/api/utils/parsers";
-import { isSuccessResponse } from "@/lib/api/types";
+import { isSuccessResponse, type StandardResponse } from "@/lib/api/types";
 
 /**
  * History query parameters
@@ -35,7 +35,7 @@ export const getRecentHistory = cache(
   async (params?: { limit?: number }): Promise<HistoryMedia[]> => {
     const url = endpoint("history", params || {});
 
-    const response = await serverApi.get(url, {
+    const response = await serverApi.get<StandardResponse<unknown>>(url, {
       next: {
         revalidate: 60, // Cache 1 minute
         tags: ["user-history"],
@@ -66,7 +66,7 @@ export const getHistory = cache(
   }> => {
     const url = endpoint("history", params || {});
 
-    const response = await serverApi.get(url, {
+    const response = await serverApi.get<StandardResponse<unknown>>(url, {
       next: {
         revalidate: 60, // Cache 1 minute
         tags: ["user-history"],
@@ -99,7 +99,7 @@ export const getHistoryById = cache(
   async (id: string): Promise<HistoryMedia> => {
     const url = endpoint("history", id);
 
-    const response = await serverApi.get(url, {
+    const response = await serverApi.get<StandardResponse<unknown>>(url, {
       next: {
         revalidate: 60, // Cache 1 minute
         tags: [`history-${id}`, "user-history"],

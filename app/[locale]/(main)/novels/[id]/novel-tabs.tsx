@@ -1,25 +1,25 @@
 "use client";
 
 import {
-	Book,
-	ChevronRight,
-	Eye,
-	List,
-	Lock,
-	MessageSquare,
-} from "lucide-react";
-import Link from "next/link";
-import {
-	Accordion,
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Link } from "@/i18n/routing";
 import { formatNumberAbbreviated } from "@/lib/api/utils/number";
+import {
+    Book,
+    ChevronRight,
+    Eye,
+    List,
+    Lock,
+    MessageSquare,
+} from "lucide-react";
 
 interface NovelTabsProps {
 	novel: any; // Bạn nên thay 'any' bằng Interface chuẩn của bạn (e.g., MediaSeries)
