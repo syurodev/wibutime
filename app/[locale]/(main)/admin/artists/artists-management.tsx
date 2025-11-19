@@ -88,20 +88,18 @@ export function ArtistsManagement() {
   const updateURL = (updates: { page?: number; search?: string }) => {
     const params = new URLSearchParams(searchParams.toString());
 
-    if (updates.page !== undefined) {
-      if (updates.page === DEFAULT_PAGE) {
-        params.delete("page");
-      } else {
-        params.set("page", String(updates.page));
-      }
+    // Handle page parameter
+    if (updates.page === DEFAULT_PAGE) {
+      params.delete("page");
+    } else if (updates.page) {
+      params.set("page", String(updates.page));
     }
 
-    if (updates.search !== undefined) {
-      if (!updates.search) {
-        params.delete("search");
-      } else {
-        params.set("search", updates.search);
-      }
+    // Handle search parameter
+    if (updates.search === "") {
+      params.delete("search");
+    } else if (updates.search) {
+      params.set("search", updates.search);
     }
 
     const queryString = params.toString();
