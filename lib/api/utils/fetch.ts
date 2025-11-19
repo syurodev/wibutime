@@ -80,6 +80,16 @@ function buildHeaders(options?: FetchOptions): Headers {
 
   // Auto attach Authorization token
   const token = options?.token || getAuthToken();
+
+  // Debug logging for token
+  if (process.env.NODE_ENV === "development") {
+    if (token) {
+      console.log(`🔑 Auth token found: ${token.substring(0, 20)}...`);
+    } else {
+      console.warn("⚠️ No auth token found in localStorage/sessionStorage");
+    }
+  }
+
   if (token && !headers.has("Authorization")) {
     headers.set("Authorization", `Bearer ${token}`);
   }
@@ -171,7 +181,7 @@ export async function apiFetch<T = unknown>(
   }
 
   // Log request
-  logRequest(method, fullURL, options?.body);
+  logRequest(method, fullURL, options?.body, headers);
 
   try {
     const response = await fetch(fullURL, fetchOptions);

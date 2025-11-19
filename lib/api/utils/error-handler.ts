@@ -24,12 +24,22 @@ export class ApiError extends Error {
 export function logRequest(
   method: string,
   url: string,
-  body?: unknown
+  body?: unknown,
+  headers?: Headers
 ): void {
   if (process.env.NODE_ENV === "development") {
     console.group(`🔵 API Request: ${method} ${url}`);
     console.log("Method:", method);
     console.log("URL:", url);
+    if (headers) {
+      const headersObj: Record<string, string> = {};
+      headers.forEach((value, key) => {
+        headersObj[key] = key.toLowerCase() === "authorization"
+          ? `Bearer ${value.substring(7, 27)}...`
+          : value;
+      });
+      console.log("Headers:", headersObj);
+    }
     if (body) {
       console.log("Body:", body);
     }
