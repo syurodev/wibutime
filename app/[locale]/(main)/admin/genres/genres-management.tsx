@@ -225,7 +225,7 @@ export function GenresManagement() {
 
   // Helper function to render trend badge
   const renderTrendBadge = (trend: string) => {
-    const trendInfo = GenreUtils.getTrendBadge(trend);
+    const trendInfo = GenreUtils.getTrendBadge(trend as any);
 
     if (trend === "rising") {
       return (
