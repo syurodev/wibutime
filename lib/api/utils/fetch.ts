@@ -3,7 +3,7 @@
  * Tập trung xử lý tất cả API calls với logging, error handling, và caching
  */
 
-import { ApiError, logError, logRequest, logResponse, handle401Unauthorized } from "./error-handler";
+import { ApiError, logError, logRequest, logResponse } from "./error-handler";
 
 /**
  * Fetch options with Next.js caching support
@@ -184,8 +184,10 @@ export async function apiFetch<T = unknown>(
 
     // Handle 401 Unauthorized
     if (response.status === 401) {
-      handle401Unauthorized();
-      throw new ApiError("Unauthorized - Redirecting to login", 401);
+      console.warn("🔒 401 Unauthorized - No auto redirect (disabled for debugging)");
+      const error = await parseApiError(response);
+      logError(method, fullURL, error);
+      throw error;
     }
 
     // Handle errors
