@@ -96,8 +96,8 @@ function buildURL(url: string, baseURL?: string): string {
     return url;
   }
 
-  // Use provided baseURL or environment variable
-  const base = baseURL || process.env.NEXT_PUBLIC_API_URL || "";
+  // Use provided baseURL or environment variable or default fallback
+  const base = baseURL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
   return `${base}${url.startsWith("/") ? url : `/${url}`}`;
 }
 
