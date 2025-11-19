@@ -1,8 +1,8 @@
 "use client";
 
 /**
- * Artists Management Component - Client Component
- * CRUD interface for artists
+ * Artists Management Component - Client Component with URL State
+ * CRUD interface for artists with URL-synced pagination and search
  */
 
 import { Button } from "@/components/ui/button";
@@ -31,11 +31,11 @@ import type {
 } from "@/lib/api/models/admin/artist";
 import {
   ARTIST_SPECIALIZATION_LABELS,
-  ARTIST_SPECIALIZATIONS,
   ArtistUtils,
 } from "@/lib/api/models/admin/artist";
 import { ArtistService } from "@/lib/api/services/admin/artist.service";
 import { ApiError } from "@/lib/api/utils/error-handler";
+import { DEFAULT_LIMIT, DEFAULT_PAGE } from "@/lib/constants/default";
 import {
   AlertCircle,
   CheckCircle,
@@ -45,17 +45,27 @@ import {
   Search,
   Trash2,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 
 export function ArtistsManagement() {
-  // State
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
+
+  // Get state from URL
+  const currentPage = Number(searchParams.get("page")) || DEFAULT_PAGE;
+  const currentSearch = searchParams.get("search") || "";
+
+  // Data state
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+
+  // Local search input state (for debouncing)
+  const [searchInput, setSearchInput] = useState(currentSearch);
 
   // Dialog states
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -73,14 +83,40 @@ export function ArtistsManagement() {
   });
   const [submitting, setSubmitting] = useState(false);
 
-  // Fetch artists
+  // URL update helpers
+  const updateURL = (updates: { page?: number; search?: string }) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (updates.page !== undefined) {
+      if (updates.page === DEFAULT_PAGE) {
+        params.delete("page");
+      } else {
+        params.set("page", String(updates.page));
+      }
+    }
+
+    if (updates.search !== undefined) {
+      if (!updates.search) {
+        params.delete("search");
+      } else {
+        params.set("search", updates.search);
+      }
+    }
+
+    const queryString = params.toString();
+    startTransition(() => {
+      router.push(queryString ? `?${queryString}` : window.location.pathname);
+    });
+  };
+
+  // Fetch artists function
   const fetchArtists = async () => {
     try {
       setLoading(true);
       const result = await ArtistService.getList({
-        page,
-        limit: 20,
-        search: search || undefined,
+        page: currentPage,
+        limit: DEFAULT_LIMIT,
+        search: currentSearch || undefined,
         sort_by: "created",
         sort_order: "desc",
       });
@@ -98,9 +134,27 @@ export function ArtistsManagement() {
     }
   };
 
+  // Fetch when URL params change
   useEffect(() => {
     fetchArtists();
-  }, [page, search]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, currentSearch]);
+
+  // Sync search input with URL (when navigating back/forward)
+  useEffect(() => {
+    setSearchInput(currentSearch);
+  }, [currentSearch]);
+
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchInput !== currentSearch) {
+        updateURL({ search: searchInput, page: DEFAULT_PAGE });
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   // Handlers
   const handleCreate = async () => {
@@ -183,8 +237,8 @@ export function ArtistsManagement() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
               <Input
                 placeholder="Tìm kiếm hoạ sĩ..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -291,23 +345,26 @@ export function ArtistsManagement() {
               {/* Pagination */}
               <div className="flex items-center justify-between border-t px-4 py-3">
                 <p className="text-sm text-muted-foreground">
-                  Hiển thị {(page - 1) * 20 + 1}-
-                  {Math.min(page * 20, totalItems)} / {totalItems}
+                  Hiển thị {(currentPage - 1) * DEFAULT_LIMIT + 1}-
+                  {Math.min(currentPage * DEFAULT_LIMIT, totalItems)} / {totalItems}
                 </p>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    disabled={page === 1}
-                    onClick={() => setPage(page - 1)}
+                    disabled={currentPage === 1 || isPending}
+                    onClick={() => updateURL({ page: currentPage - 1 })}
                   >
                     Trước
                   </Button>
+                  <span className="flex items-center px-3 text-sm">
+                    Trang {currentPage} / {totalPages}
+                  </span>
                   <Button
                     variant="outline"
                     size="sm"
-                    disabled={page === totalPages}
-                    onClick={() => setPage(page + 1)}
+                    disabled={currentPage === totalPages || isPending}
+                    onClick={() => updateURL({ page: currentPage + 1 })}
                   >
                     Sau
                   </Button>
