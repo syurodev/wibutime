@@ -226,6 +226,137 @@ export function ArtistsManagement() {
     setDeleteDialogOpen(true);
   };
 
+  // Helper function to render table content based on state
+  const renderTableContent = () => {
+    if (loading) {
+      return (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="size-6 animate-spin text-muted-foreground" />
+        </div>
+      );
+    }
+
+    if (artists.length === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+          <AlertCircle className="size-12 mb-4" />
+          <p>Không tìm thấy hoạ sĩ nào</p>
+        </div>
+      );
+    }
+
+    return (
+      <>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Tên</TableHead>
+              <TableHead>Slug</TableHead>
+              <TableHead>Chuyên môn</TableHead>
+              <TableHead>Xác minh</TableHead>
+              <TableHead className="text-right">Số truyện</TableHead>
+              <TableHead className="text-right">Artworks</TableHead>
+              <TableHead className="text-right">Followers</TableHead>
+              <TableHead>Ngày tạo</TableHead>
+              <TableHead className="text-right">Thao tác</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {artists.map((artist) => (
+              <TableRow key={artist.id}>
+                <TableCell className="font-medium">
+                  {artist.name}
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  {artist.slug}
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline">
+                    {ArtistUtils.getSpecializationLabel(
+                      artist.specialization
+                    )}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  {artist.is_verified ? (
+                    <Badge variant="default" className="bg-blue-600">
+                      <CheckCircle className="size-3" />
+                      Verified
+                    </Badge>
+                  ) : (
+                    <Badge variant="secondary">
+                      <AlertCircle className="size-3" />
+                      Unverified
+                    </Badge>
+                  )}
+                </TableCell>
+                <TableCell className="text-right">
+                  {artist.novel_count}
+                </TableCell>
+                <TableCell className="text-right">
+                  {artist.artwork_count}
+                </TableCell>
+                <TableCell className="text-right">
+                  {ArtistUtils.formatFollowers(artist.follower_count)}
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  {ArtistUtils.formatDate(artist.created_at)}
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      onClick={() => openEditDialog(artist)}
+                    >
+                      <Edit2 className="size-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      onClick={() => openDeleteDialog(artist)}
+                    >
+                      <Trash2 className="size-4 text-destructive" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+
+        {/* Pagination */}
+        <div className="flex items-center justify-between border-t px-4 py-3">
+          <p className="text-sm text-muted-foreground">
+            Hiển thị {(currentPage - 1) * DEFAULT_LIMIT + 1}-
+            {Math.min(currentPage * DEFAULT_LIMIT, totalItems)} / {totalItems}
+          </p>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage === 1 || isPending}
+              onClick={() => updateURL({ page: currentPage - 1 })}
+            >
+              Trước
+            </Button>
+            <span className="flex items-center px-3 text-sm">
+              Trang {currentPage} / {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage === totalPages || isPending}
+              onClick={() => updateURL({ page: currentPage + 1 })}
+            >
+              Sau
+            </Button>
+          </div>
+        </div>
+      </>
+    );
+  };
+
   return (
     <div className="space-y-4">
       {/* Toolbar */}
@@ -252,125 +383,7 @@ export function ArtistsManagement() {
       {/* Table */}
       <Card>
         <CardContent className="p-0">
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="size-6 animate-spin text-muted-foreground" />
-            </div>
-          ) : artists.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-              <AlertCircle className="size-12 mb-4" />
-              <p>Không tìm thấy hoạ sĩ nào</p>
-            </div>
-          ) : (
-            <>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Tên</TableHead>
-                    <TableHead>Slug</TableHead>
-                    <TableHead>Chuyên môn</TableHead>
-                    <TableHead>Xác minh</TableHead>
-                    <TableHead className="text-right">Số truyện</TableHead>
-                    <TableHead className="text-right">Artworks</TableHead>
-                    <TableHead className="text-right">Followers</TableHead>
-                    <TableHead>Ngày tạo</TableHead>
-                    <TableHead className="text-right">Thao tác</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {artists.map((artist) => (
-                    <TableRow key={artist.id}>
-                      <TableCell className="font-medium">
-                        {artist.name}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {artist.slug}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">
-                          {ArtistUtils.getSpecializationLabel(
-                            artist.specialization
-                          )}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {artist.is_verified ? (
-                          <Badge variant="default" className="bg-blue-600">
-                            <CheckCircle className="size-3" />
-                            Verified
-                          </Badge>
-                        ) : (
-                          <Badge variant="secondary">
-                            <AlertCircle className="size-3" />
-                            Unverified
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {artist.novel_count}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {artist.artwork_count}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {ArtistUtils.formatFollowers(artist.follower_count)}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {ArtistUtils.formatDate(artist.created_at)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            onClick={() => openEditDialog(artist)}
-                          >
-                            <Edit2 className="size-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            onClick={() => openDeleteDialog(artist)}
-                          >
-                            <Trash2 className="size-4 text-destructive" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-
-              {/* Pagination */}
-              <div className="flex items-center justify-between border-t px-4 py-3">
-                <p className="text-sm text-muted-foreground">
-                  Hiển thị {(currentPage - 1) * DEFAULT_LIMIT + 1}-
-                  {Math.min(currentPage * DEFAULT_LIMIT, totalItems)} / {totalItems}
-                </p>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={currentPage === 1 || isPending}
-                    onClick={() => updateURL({ page: currentPage - 1 })}
-                  >
-                    Trước
-                  </Button>
-                  <span className="flex items-center px-3 text-sm">
-                    Trang {currentPage} / {totalPages}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={currentPage === totalPages || isPending}
-                    onClick={() => updateURL({ page: currentPage + 1 })}
-                  >
-                    Sau
-                  </Button>
-                </div>
-              </div>
-            </>
-          )}
+          {renderTableContent()}
         </CardContent>
       </Card>
 

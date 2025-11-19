@@ -252,6 +252,129 @@ export function GenresManagement() {
     );
   };
 
+  // Helper function to render table content based on state
+  const renderTableContent = () => {
+    if (loading) {
+      return (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="size-6 animate-spin text-muted-foreground" />
+        </div>
+      );
+    }
+
+    if (genres.length === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+          <AlertCircle className="size-12 mb-4" />
+          <p>Không tìm thấy thể loại nào</p>
+        </div>
+      );
+    }
+
+    return (
+      <>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Tên</TableHead>
+              <TableHead>Slug</TableHead>
+              <TableHead>Trạng thái</TableHead>
+              <TableHead>Xu hướng</TableHead>
+              <TableHead className="text-right">Số truyện</TableHead>
+              <TableHead className="text-right">Lượt xem</TableHead>
+              <TableHead>Ngày tạo</TableHead>
+              <TableHead className="text-right">Thao tác</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {genres.map((genre) => (
+              <TableRow key={genre.id}>
+                <TableCell className="font-medium">
+                  {genre.name}
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  {genre.slug}
+                </TableCell>
+                <TableCell>
+                  {genre.is_active ? (
+                    <Badge variant="default" className="bg-green-600">
+                      <CheckCircle className="size-3" />
+                      Active
+                    </Badge>
+                  ) : (
+                    <Badge variant="secondary">
+                      <AlertCircle className="size-3" />
+                      Inactive
+                    </Badge>
+                  )}
+                </TableCell>
+                <TableCell>
+                  {renderTrendBadge(genre.trend)}
+                </TableCell>
+                <TableCell className="text-right">
+                  {genre.series_count}
+                </TableCell>
+                <TableCell className="text-right">
+                  {GenreUtils.formatViews(genre.total_views)}
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  {GenreUtils.formatDate(genre.created_at)}
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      onClick={() => openEditDialog(genre)}
+                    >
+                      <Edit2 className="size-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      onClick={() => openDeleteDialog(genre)}
+                    >
+                      <Trash2 className="size-4 text-destructive" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+
+        {/* Pagination */}
+        <div className="flex items-center justify-between border-t px-4 py-3">
+          <p className="text-sm text-muted-foreground">
+            Hiển thị {(currentPage - 1) * DEFAULT_LIMIT + 1}-
+            {Math.min(currentPage * DEFAULT_LIMIT, totalItems)} / {totalItems}
+          </p>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage === 1 || isPending}
+              onClick={() => updateURL({ page: currentPage - 1 })}
+            >
+              Trước
+            </Button>
+            <span className="flex items-center px-3 text-sm">
+              Trang {currentPage} / {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage === totalPages || isPending}
+              onClick={() => updateURL({ page: currentPage + 1 })}
+            >
+              Sau
+            </Button>
+          </div>
+        </div>
+      </>
+    );
+  };
+
   return (
     <div className="space-y-4">
       {/* Toolbar */}
@@ -278,117 +401,7 @@ export function GenresManagement() {
       {/* Table */}
       <Card>
         <CardContent className="p-0">
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="size-6 animate-spin text-muted-foreground" />
-            </div>
-          ) : genres.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-              <AlertCircle className="size-12 mb-4" />
-              <p>Không tìm thấy thể loại nào</p>
-            </div>
-          ) : (
-            <>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Tên</TableHead>
-                    <TableHead>Slug</TableHead>
-                    <TableHead>Trạng thái</TableHead>
-                    <TableHead>Xu hướng</TableHead>
-                    <TableHead className="text-right">Số truyện</TableHead>
-                    <TableHead className="text-right">Lượt xem</TableHead>
-                    <TableHead>Ngày tạo</TableHead>
-                    <TableHead className="text-right">Thao tác</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {genres.map((genre) => (
-                    <TableRow key={genre.id}>
-                      <TableCell className="font-medium">
-                        {genre.name}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {genre.slug}
-                      </TableCell>
-                      <TableCell>
-                        {genre.is_active ? (
-                          <Badge variant="default" className="bg-green-600">
-                            <CheckCircle className="size-3" />
-                            Active
-                          </Badge>
-                        ) : (
-                          <Badge variant="secondary">
-                            <AlertCircle className="size-3" />
-                            Inactive
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {renderTrendBadge(genre.trend)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {genre.series_count}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {GenreUtils.formatViews(genre.total_views)}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {GenreUtils.formatDate(genre.created_at)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            onClick={() => openEditDialog(genre)}
-                          >
-                            <Edit2 className="size-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            onClick={() => openDeleteDialog(genre)}
-                          >
-                            <Trash2 className="size-4 text-destructive" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-
-              {/* Pagination */}
-              <div className="flex items-center justify-between border-t px-4 py-3">
-                <p className="text-sm text-muted-foreground">
-                  Hiển thị {(currentPage - 1) * DEFAULT_LIMIT + 1}-
-                  {Math.min(currentPage * DEFAULT_LIMIT, totalItems)} / {totalItems}
-                </p>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={currentPage === 1 || isPending}
-                    onClick={() => updateURL({ page: currentPage - 1 })}
-                  >
-                    Trước
-                  </Button>
-                  <span className="flex items-center px-3 text-sm">
-                    Trang {currentPage} / {totalPages}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={currentPage === totalPages || isPending}
-                    onClick={() => updateURL({ page: currentPage + 1 })}
-                  >
-                    Sau
-                  </Button>
-                </div>
-              </div>
-            </>
-          )}
+          {renderTableContent()}
         </CardContent>
       </Card>
 
