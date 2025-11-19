@@ -104,7 +104,7 @@ export function GenresManagement() {
 
     const queryString = params.toString();
     startTransition(() => {
-      router.push(queryString ? `?${queryString}` : window.location.pathname);
+      router.push(queryString ? `?${queryString}` : globalThis.window.location.pathname);
     });
   };
 

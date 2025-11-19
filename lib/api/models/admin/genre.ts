@@ -109,11 +109,11 @@ export const GenreUtils = {
   getTrendBadge(trend: Genre["trend"]): { color: string; label: string } {
     switch (trend) {
       case "rising":
-        return { color: "text-green-600", label: "🔥 Rising" };
+        return { color: "text-green-600", label: "Rising" };
       case "falling":
-        return { color: "text-red-600", label: "📉 Falling" };
+        return { color: "text-red-600", label: "Falling" };
       default:
-        return { color: "text-gray-600", label: "➖ Stable" };
+        return { color: "text-gray-600", label: "Stable" };
     }
   },
 
