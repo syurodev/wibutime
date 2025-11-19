@@ -223,6 +223,35 @@ export function GenresManagement() {
     setDeleteDialogOpen(true);
   };
 
+  // Helper function to render trend badge
+  const renderTrendBadge = (trend: string) => {
+    const trendInfo = GenreUtils.getTrendBadge(trend);
+
+    if (trend === "rising") {
+      return (
+        <Badge variant="default" className="bg-green-600">
+          <TrendingUp className="size-3" />
+          {trendInfo.label}
+        </Badge>
+      );
+    }
+
+    if (trend === "falling") {
+      return (
+        <Badge variant="destructive">
+          <TrendingDown className="size-3" />
+          {trendInfo.label}
+        </Badge>
+      );
+    }
+
+    return (
+      <Badge variant="secondary">
+        {trendInfo.label}
+      </Badge>
+    );
+  };
+
   return (
     <div className="space-y-4">
       {/* Toolbar */}
@@ -296,21 +325,7 @@ export function GenresManagement() {
                         )}
                       </TableCell>
                       <TableCell>
-                        {genre.trend === "rising" ? (
-                          <Badge variant="default" className="bg-green-600">
-                            <TrendingUp className="size-3" />
-                            {GenreUtils.getTrendBadge(genre.trend).label}
-                          </Badge>
-                        ) : genre.trend === "falling" ? (
-                          <Badge variant="destructive">
-                            <TrendingDown className="size-3" />
-                            {GenreUtils.getTrendBadge(genre.trend).label}
-                          </Badge>
-                        ) : (
-                          <Badge variant="secondary">
-                            {GenreUtils.getTrendBadge(genre.trend).label}
-                          </Badge>
-                        )}
+                        {renderTrendBadge(genre.trend)}
                       </TableCell>
                       <TableCell className="text-right">
                         {genre.series_count}
