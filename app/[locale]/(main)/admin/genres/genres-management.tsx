@@ -5,6 +5,7 @@
  * CRUD interface for genres with URL-synced pagination and search
  */
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -285,29 +286,33 @@ export function GenresManagement() {
                       </TableCell>
                       <TableCell>
                         {genre.is_active ? (
-                          <span className="inline-flex items-center gap-1 text-green-600">
+                          <Badge variant="default" className="bg-green-600">
                             <CheckCircle className="size-3" />
                             Active
-                          </span>
+                          </Badge>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-gray-500">
+                          <Badge variant="secondary">
                             <AlertCircle className="size-3" />
                             Inactive
-                          </span>
+                          </Badge>
                         )}
                       </TableCell>
                       <TableCell>
-                        <span
-                          className={`inline-flex items-center gap-1 ${GenreUtils.getTrendBadge(genre.trend).color}`}
-                        >
-                          {genre.trend === "rising" && (
+                        {genre.trend === "rising" ? (
+                          <Badge variant="default" className="bg-green-600">
                             <TrendingUp className="size-3" />
-                          )}
-                          {genre.trend === "falling" && (
+                            {GenreUtils.getTrendBadge(genre.trend).label}
+                          </Badge>
+                        ) : genre.trend === "falling" ? (
+                          <Badge variant="destructive">
                             <TrendingDown className="size-3" />
-                          )}
-                          {GenreUtils.getTrendBadge(genre.trend).label}
-                        </span>
+                            {GenreUtils.getTrendBadge(genre.trend).label}
+                          </Badge>
+                        ) : (
+                          <Badge variant="secondary">
+                            {GenreUtils.getTrendBadge(genre.trend).label}
+                          </Badge>
+                        )}
                       </TableCell>
                       <TableCell className="text-right">
                         {genre.series_count}

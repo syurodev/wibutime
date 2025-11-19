@@ -5,6 +5,7 @@
  * CRUD interface for authors with URL-synced pagination and search
  */
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -283,15 +284,15 @@ export function AuthorsManagement() {
                       </TableCell>
                       <TableCell>
                         {author.is_verified ? (
-                          <span className="inline-flex items-center gap-1 text-blue-600">
+                          <Badge variant="default" className="bg-blue-600">
                             <CheckCircle className="size-3" />
                             Verified
-                          </span>
+                          </Badge>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-gray-500">
+                          <Badge variant="secondary">
                             <AlertCircle className="size-3" />
                             Unverified
-                          </span>
+                          </Badge>
                         )}
                       </TableCell>
                       <TableCell className="text-right">
