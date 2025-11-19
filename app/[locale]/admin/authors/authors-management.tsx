@@ -31,6 +31,7 @@ import type {
 } from "@/lib/api/models/admin/author";
 import { AuthorUtils } from "@/lib/api/models/admin/author";
 import { AuthorService } from "@/lib/api/services/admin/author.service";
+import { ApiError } from "@/lib/api/utils/error-handler";
 import {
   AlertCircle,
   CheckCircle,
@@ -82,9 +83,8 @@ export function AuthorsManagement() {
       setTotalPages(result.total_pages);
       setTotalItems(result.total_items);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Không thể tải danh sách tác giả";
+      const message = error instanceof ApiError ? error.message : "Không thể tải danh sách tác giả";
       toast.error(message);
-      console.error(error);
       setAuthors([]);
       setTotalPages(1);
       setTotalItems(0);
@@ -107,9 +107,8 @@ export function AuthorsManagement() {
       setFormData({ name: "", biography: "" });
       fetchAuthors();
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Không thể tạo tác giả";
+      const message = error instanceof ApiError ? error.message : "Không thể tạo tác giả";
       toast.error(message);
-      console.error(error);
     } finally {
       setSubmitting(false);
     }
@@ -129,9 +128,8 @@ export function AuthorsManagement() {
       setFormData({ name: "", biography: "" });
       fetchAuthors();
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Không thể cập nhật tác giả";
+      const message = error instanceof ApiError ? error.message : "Không thể cập nhật tác giả";
       toast.error(message);
-      console.error(error);
     } finally {
       setSubmitting(false);
     }
@@ -147,9 +145,8 @@ export function AuthorsManagement() {
       setSelectedAuthor(null);
       fetchAuthors();
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Không thể xóa tác giả";
+      const message = error instanceof ApiError ? error.message : "Không thể xóa tác giả";
       toast.error(message);
-      console.error(error);
     } finally {
       setSubmitting(false);
     }

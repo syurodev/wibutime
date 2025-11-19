@@ -31,6 +31,7 @@ import type {
 } from "@/lib/api/models/admin/genre";
 import { GenreUtils } from "@/lib/api/models/admin/genre";
 import { GenreService } from "@/lib/api/services/admin/genre.service";
+import { ApiError } from "@/lib/api/utils/error-handler";
 import {
   AlertCircle,
   CheckCircle,
@@ -84,9 +85,8 @@ export function GenresManagement() {
       setTotalPages(result.total_pages);
       setTotalItems(result.total_items);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Không thể tải danh sách thể loại";
+      const message = error instanceof ApiError ? error.message : "Không thể tải danh sách thể loại";
       toast.error(message);
-      console.error(error);
       // Set empty state instead of keeping old data
       setGenres([]);
       setTotalPages(1);
@@ -110,9 +110,8 @@ export function GenresManagement() {
       setFormData({ name: "", description: "" });
       fetchGenres();
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Không thể tạo thể loại";
+      const message = error instanceof ApiError ? error.message : "Không thể tạo thể loại";
       toast.error(message);
-      console.error(error);
     } finally {
       setSubmitting(false);
     }
@@ -132,9 +131,8 @@ export function GenresManagement() {
       setFormData({ name: "", description: "" });
       fetchGenres();
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Không thể cập nhật thể loại";
+      const message = error instanceof ApiError ? error.message : "Không thể cập nhật thể loại";
       toast.error(message);
-      console.error(error);
     } finally {
       setSubmitting(false);
     }
@@ -150,9 +148,8 @@ export function GenresManagement() {
       setSelectedGenre(null);
       fetchGenres();
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Không thể xóa thể loại";
+      const message = error instanceof ApiError ? error.message : "Không thể xóa thể loại";
       toast.error(message);
-      console.error(error);
     } finally {
       setSubmitting(false);
     }

@@ -11,6 +11,10 @@ import type {
 } from "../../models/admin/genre";
 import { GenreArraySchema, GenreSchema } from "../../models/admin/genre";
 import { isSuccessResponse, type StandardResponse } from "../../types";
+import {
+  ApiError,
+  fetchWithErrorHandling,
+} from "../../utils/error-handler";
 import { ApiParser } from "../../utils/parsers";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
@@ -54,17 +58,15 @@ export class GenreService {
       if (query?.active_only) params.append("active_only", "true");
 
       const url = `${API_BASE_URL}/genres?${params.toString()}`;
-      const res = await fetch(url);
-
-      // Check HTTP status
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-      }
+      const res = await fetchWithErrorHandling(url);
 
       const response: StandardResponse<Genre[]> = await res.json();
 
       if (!isSuccessResponse(response)) {
-        throw new Error(response.message || "Failed to fetch genres");
+        throw new ApiError(
+          response.message || "Failed to fetch genres",
+          res.status
+        );
       }
 
       const items = ApiParser.parseResponseArray(GenreArraySchema, response);
@@ -77,11 +79,10 @@ export class GenreService {
         total_pages: response.meta?.total_pages || 1,
       };
     } catch (error) {
-      // Network error or parsing error
-      if (error instanceof Error) {
-        throw new Error(`Lỗi khi tải danh sách thể loại: ${error.message}`);
+      if (error instanceof ApiError) {
+        throw error;
       }
-      throw new Error("Không thể kết nối đến server");
+      throw new ApiError("Lỗi khi tải danh sách thể loại");
     }
   }
 
@@ -98,24 +99,23 @@ export class GenreService {
       await mockDelay();
 
       const url = `${API_BASE_URL}/genres/${id}`;
-      const res = await fetch(url);
-
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-      }
+      const res = await fetchWithErrorHandling(url);
 
       const response: StandardResponse<Genre> = await res.json();
 
       if (!isSuccessResponse(response)) {
-        throw new Error(response.message || "Failed to fetch genre");
+        throw new ApiError(
+          response.message || "Failed to fetch genre",
+          res.status
+        );
       }
 
       return ApiParser.parse(GenreSchema, response);
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Lỗi khi tải thông tin thể loại: ${error.message}`);
+      if (error instanceof ApiError) {
+        throw error;
       }
-      throw new Error("Không thể kết nối đến server");
+      throw new ApiError("Lỗi khi tải thông tin thể loại");
     }
   }
 
@@ -135,7 +135,7 @@ export class GenreService {
       await mockDelay();
 
       const url = `${API_BASE_URL}/genres`;
-      const res = await fetch(url, {
+      const res = await fetchWithErrorHandling(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -143,22 +143,21 @@ export class GenreService {
         body: JSON.stringify(data),
       });
 
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-      }
-
       const response: StandardResponse<Genre> = await res.json();
 
       if (!isSuccessResponse(response)) {
-        throw new Error(response.message || "Failed to create genre");
+        throw new ApiError(
+          response.message || "Failed to create genre",
+          res.status
+        );
       }
 
       return ApiParser.parse(GenreSchema, response);
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Lỗi khi tạo thể loại: ${error.message}`);
+      if (error instanceof ApiError) {
+        throw error;
       }
-      throw new Error("Không thể kết nối đến server");
+      throw new ApiError("Lỗi khi tạo thể loại");
     }
   }
 
@@ -178,7 +177,7 @@ export class GenreService {
       await mockDelay();
 
       const url = `${API_BASE_URL}/genres/${id}`;
-      const res = await fetch(url, {
+      const res = await fetchWithErrorHandling(url, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -186,22 +185,21 @@ export class GenreService {
         body: JSON.stringify(data),
       });
 
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-      }
-
       const response: StandardResponse<Genre> = await res.json();
 
       if (!isSuccessResponse(response)) {
-        throw new Error(response.message || "Failed to update genre");
+        throw new ApiError(
+          response.message || "Failed to update genre",
+          res.status
+        );
       }
 
       return ApiParser.parse(GenreSchema, response);
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Lỗi khi cập nhật thể loại: ${error.message}`);
+      if (error instanceof ApiError) {
+        throw error;
       }
-      throw new Error("Không thể kết nối đến server");
+      throw new ApiError("Lỗi khi cập nhật thể loại");
     }
   }
 
@@ -218,24 +216,23 @@ export class GenreService {
       await mockDelay();
 
       const url = `${API_BASE_URL}/genres/${id}`;
-      const res = await fetch(url, {
+      const res = await fetchWithErrorHandling(url, {
         method: "DELETE",
       });
-
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-      }
 
       const response: StandardResponse = await res.json();
 
       if (!isSuccessResponse(response)) {
-        throw new Error(response.message || "Failed to delete genre");
+        throw new ApiError(
+          response.message || "Failed to delete genre",
+          res.status
+        );
       }
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Lỗi khi xóa thể loại: ${error.message}`);
+      if (error instanceof ApiError) {
+        throw error;
       }
-      throw new Error("Không thể kết nối đến server");
+      throw new ApiError("Lỗi khi xóa thể loại");
     }
   }
 }

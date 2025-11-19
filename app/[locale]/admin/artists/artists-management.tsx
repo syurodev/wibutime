@@ -35,6 +35,7 @@ import {
   ArtistUtils,
 } from "@/lib/api/models/admin/artist";
 import { ArtistService } from "@/lib/api/services/admin/artist.service";
+import { ApiError } from "@/lib/api/utils/error-handler";
 import {
   AlertCircle,
   CheckCircle,
@@ -87,9 +88,8 @@ export function ArtistsManagement() {
       setTotalPages(result.total_pages);
       setTotalItems(result.total_items);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Không thể tải danh sách hoạ sĩ";
+      const message = error instanceof ApiError ? error.message : "Không thể tải danh sách hoạ sĩ";
       toast.error(message);
-      console.error(error);
       setArtists([]);
       setTotalPages(1);
       setTotalItems(0);
@@ -112,9 +112,8 @@ export function ArtistsManagement() {
       setFormData({ name: "", biography: "", specialization: "" });
       fetchArtists();
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Không thể tạo hoạ sĩ";
+      const message = error instanceof ApiError ? error.message : "Không thể tạo hoạ sĩ";
       toast.error(message);
-      console.error(error);
     } finally {
       setSubmitting(false);
     }
@@ -134,9 +133,8 @@ export function ArtistsManagement() {
       setFormData({ name: "", biography: "", specialization: "" });
       fetchArtists();
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Không thể cập nhật hoạ sĩ";
+      const message = error instanceof ApiError ? error.message : "Không thể cập nhật hoạ sĩ";
       toast.error(message);
-      console.error(error);
     } finally {
       setSubmitting(false);
     }
@@ -152,9 +150,8 @@ export function ArtistsManagement() {
       setSelectedArtist(null);
       fetchArtists();
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Không thể xóa hoạ sĩ";
+      const message = error instanceof ApiError ? error.message : "Không thể xóa hoạ sĩ";
       toast.error(message);
-      console.error(error);
     } finally {
       setSubmitting(false);
     }

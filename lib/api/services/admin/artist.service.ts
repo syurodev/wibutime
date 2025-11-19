@@ -11,6 +11,10 @@ import type {
 } from "../../models/admin/artist";
 import { ArtistArraySchema, ArtistSchema } from "../../models/admin/artist";
 import { isSuccessResponse, type StandardResponse } from "../../types";
+import {
+  ApiError,
+  fetchWithErrorHandling,
+} from "../../utils/error-handler";
 import { ApiParser } from "../../utils/parsers";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
@@ -29,11 +33,6 @@ async function mockDelay(min = 200, max = 500): Promise<void> {
 export class ArtistService {
   /**
    * Get list of artists with pagination
-   *
-   * @example
-   * ```ts
-   * const result = await ArtistService.getList({ page: 1, limit: 20 });
-   * ```
    */
   static async getList(query?: Partial<ArtistQuery>): Promise<{
     items: Artist[];
@@ -56,16 +55,15 @@ export class ArtistService {
         params.append("is_verified", query.is_verified.toString());
 
       const url = `${API_BASE_URL}/artists?${params.toString()}`;
-      const res = await fetch(url);
-
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-      }
+      const res = await fetchWithErrorHandling(url);
 
       const response: StandardResponse<Artist[]> = await res.json();
 
       if (!isSuccessResponse(response)) {
-        throw new Error(response.message || "Failed to fetch artists");
+        throw new ApiError(
+          response.message || "Failed to fetch artists",
+          res.status
+        );
       }
 
       const items = ApiParser.parseResponseArray(ArtistArraySchema, response);
@@ -78,65 +76,50 @@ export class ArtistService {
         total_pages: response.meta?.total_pages || 1,
       };
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Lỗi khi tải danh sách hoạ sĩ: ${error.message}`);
+      if (error instanceof ApiError) {
+        throw error;
       }
-      throw new Error("Không thể kết nối đến server");
+      throw new ApiError("Lỗi khi tải danh sách hoạ sĩ");
     }
   }
 
   /**
    * Get artist by ID
-   *
-   * @example
-   * ```ts
-   * const artist = await ArtistService.getById("550e8400-e29b-41d4-a716-446655440000");
-   * ```
    */
   static async getById(id: string): Promise<Artist> {
     try {
       await mockDelay();
 
       const url = `${API_BASE_URL}/artists/${id}`;
-      const res = await fetch(url);
-
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-      }
+      const res = await fetchWithErrorHandling(url);
 
       const response: StandardResponse<Artist> = await res.json();
 
       if (!isSuccessResponse(response)) {
-        throw new Error(response.message || "Failed to fetch artist");
+        throw new ApiError(
+          response.message || "Failed to fetch artist",
+          res.status
+        );
       }
 
       return ApiParser.parse(ArtistSchema, response);
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Lỗi khi tải thông tin hoạ sĩ: ${error.message}`);
+      if (error instanceof ApiError) {
+        throw error;
       }
-      throw new Error("Không thể kết nối đến server");
+      throw new ApiError("Lỗi khi tải thông tin hoạ sĩ");
     }
   }
 
   /**
    * Create new artist
-   *
-   * @example
-   * ```ts
-   * const artist = await ArtistService.create({
-   *   name: "Hoạ Sĩ Mới",
-   *   biography: "Tiểu sử hoạ sĩ",
-   *   specialization: "illustrator"
-   * });
-   * ```
    */
   static async create(data: CreateArtistRequest): Promise<Artist> {
     try {
       await mockDelay();
 
       const url = `${API_BASE_URL}/artists`;
-      const res = await fetch(url, {
+      const res = await fetchWithErrorHandling(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -144,42 +127,33 @@ export class ArtistService {
         body: JSON.stringify(data),
       });
 
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-      }
-
       const response: StandardResponse<Artist> = await res.json();
 
       if (!isSuccessResponse(response)) {
-        throw new Error(response.message || "Failed to create artist");
+        throw new ApiError(
+          response.message || "Failed to create artist",
+          res.status
+        );
       }
 
       return ApiParser.parse(ArtistSchema, response);
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Lỗi khi tạo hoạ sĩ: ${error.message}`);
+      if (error instanceof ApiError) {
+        throw error;
       }
-      throw new Error("Không thể kết nối đến server");
+      throw new ApiError("Lỗi khi tạo hoạ sĩ");
     }
   }
 
   /**
    * Update artist
-   *
-   * @example
-   * ```ts
-   * const artist = await ArtistService.update("550e8400-e29b-41d4-a716-446655440000", {
-   *   name: "Updated Name",
-   *   specialization: "character_designer"
-   * });
-   * ```
    */
   static async update(id: string, data: UpdateArtistRequest): Promise<Artist> {
     try {
       await mockDelay();
 
       const url = `${API_BASE_URL}/artists/${id}`;
-      const res = await fetch(url, {
+      const res = await fetchWithErrorHandling(url, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -187,56 +161,49 @@ export class ArtistService {
         body: JSON.stringify(data),
       });
 
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-      }
-
       const response: StandardResponse<Artist> = await res.json();
 
       if (!isSuccessResponse(response)) {
-        throw new Error(response.message || "Failed to update artist");
+        throw new ApiError(
+          response.message || "Failed to update artist",
+          res.status
+        );
       }
 
       return ApiParser.parse(ArtistSchema, response);
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Lỗi khi cập nhật hoạ sĩ: ${error.message}`);
+      if (error instanceof ApiError) {
+        throw error;
       }
-      throw new Error("Không thể kết nối đến server");
+      throw new ApiError("Lỗi khi cập nhật hoạ sĩ");
     }
   }
 
   /**
    * Delete artist
-   *
-   * @example
-   * ```ts
-   * await ArtistService.delete("550e8400-e29b-41d4-a716-446655440000");
-   * ```
    */
   static async delete(id: string): Promise<void> {
     try {
       await mockDelay();
 
       const url = `${API_BASE_URL}/artists/${id}`;
-      const res = await fetch(url, {
+      const res = await fetchWithErrorHandling(url, {
         method: "DELETE",
       });
-
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-      }
 
       const response: StandardResponse = await res.json();
 
       if (!isSuccessResponse(response)) {
-        throw new Error(response.message || "Failed to delete artist");
+        throw new ApiError(
+          response.message || "Failed to delete artist",
+          res.status
+        );
       }
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Lỗi khi xóa hoạ sĩ: ${error.message}`);
+      if (error instanceof ApiError) {
+        throw error;
       }
-      throw new Error("Không thể kết nối đến server");
+      throw new ApiError("Lỗi khi xóa hoạ sĩ");
     }
   }
 }
