@@ -1,0 +1,95 @@
+"use server";
+
+/**
+ * Artist Actions - Server Actions for mutations
+ * Use these from Client Components
+ */
+
+import { updateTag } from "next/cache";
+import { serverApi } from "@/lib/api/server";
+import { endpoint } from "@/lib/api/utils/endpoint";
+import { ArtistSchema, type Artist } from "@/lib/api/models/admin/artist";
+import { ApiParser } from "@/lib/api/utils/parsers";
+import { isSuccessResponse, type StandardResponse } from "@/lib/api/types";
+
+/**
+ * Create data for artist
+ */
+export interface CreateArtistData {
+  name: string;
+  bio?: string;
+}
+
+/**
+ * Update data for artist
+ */
+export interface UpdateArtistData {
+  name?: string;
+  bio?: string;
+}
+
+/**
+ * Create a new artist
+ *
+ * @example
+ * const artist = await createArtist({ name: "Jane Smith", bio: "Manga artist" })
+ */
+export async function createArtist(data: CreateArtistData): Promise<Artist> {
+  const url = endpoint("artists");
+
+  const response = await serverApi.post<StandardResponse<unknown>>(url, data);
+
+  if (!isSuccessResponse(response)) {
+    throw new Error(response.message || "Failed to create artist");
+  }
+
+  // Revalidate artists cache
+  updateTag("artists");
+
+  return ApiParser.parse(ArtistSchema, response);
+}
+
+/**
+ * Update an artist
+ *
+ * @example
+ * const updated = await updateArtist("123", { name: "Jane Doe" })
+ */
+export async function updateArtist(
+  id: string,
+  data: UpdateArtistData
+): Promise<Artist> {
+  const url = endpoint("artists", id);
+
+  const response = await serverApi.put<StandardResponse<unknown>>(url, data);
+
+  if (!isSuccessResponse(response)) {
+    throw new Error(response.message || "Failed to update artist");
+  }
+
+  // Revalidate artists cache
+  updateTag("artists");
+  updateTag(`artist-${id}`);
+
+  return ApiParser.parse(ArtistSchema, response);
+}
+
+/**
+ * Delete an artist
+ *
+ * @example
+ * await deleteArtist("123")
+ */
+export async function deleteArtist(id: string): Promise<void> {
+  const url = endpoint("artists", id);
+
+  const response = await serverApi.delete<StandardResponse<unknown>>(url);
+
+  if (!isSuccessResponse(response)) {
+    throw new Error(response.message || "Failed to delete artist");
+  }
+
+  // Revalidate artists cache
+  updateTag("artists");
+  updateTag(`artist-${id}`);
+}

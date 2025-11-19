@@ -108,17 +108,6 @@ export class ContentService {
       .sort((a, b) => b.views - a.views)
       .slice(0, limit);
 
-    // Debug: Log returned data
-    console.log("🎯 [ContentService.getTrending] Returning plain objects:", {
-      totalItems: trending.length,
-      firstItem: {
-        title: trending[0]?.title,
-        cover_url: trending[0]?.cover_url,
-        type: trending[0]?.type,
-        has_cover: !!trending[0]?.cover_url,
-      },
-    });
-
     const response: StandardResponse<MediaSeries[]> = {
       success: true,
       message: "Trending series retrieved successfully",

@@ -2,16 +2,17 @@
  * User Settings Service - API integration for user preferences
  */
 
+import { API_CONFIG } from "@/lib/api/config";
 import type { UserSettings } from "@/lib/api/models/user/user-settings";
 import {
   UserSettingsSchema,
   UserSettingsUtils,
 } from "@/lib/api/models/user/user-settings";
-import { apiClient } from "@/lib/api/client";
 import {
   isSuccessResponse,
   type StandardResponse,
 } from "@/lib/api/types";
+import { api } from "@/lib/api/utils/fetch";
 import { ApiParser } from "@/lib/api/utils/parsers";
 
 // Mock delay for development
@@ -20,16 +21,13 @@ const mockDelay = async (min = 100, max = 300) => {
   await new Promise((resolve) => setTimeout(resolve, delay));
 };
 
-// Toggle between mock and real API
-const USE_MOCK = true; // Set to false when backend is ready
-
 export class UserSettingsService {
   /**
    * Get user settings from API
    * Falls back to default settings if not found
    */
   static async getSettings(): Promise<UserSettings> {
-    if (USE_MOCK) {
+    if (API_CONFIG.useMock) {
       await mockDelay();
 
       // Return mock default settings
@@ -47,8 +45,8 @@ export class UserSettingsService {
     }
 
     // Real API call (when backend ready)
-    const response = await apiClient.get<StandardResponse<UserSettings>>(
-      "/user/settings"
+    const response = await api.get<StandardResponse<UserSettings>>(
+      "/users/me/settings"
     );
 
     if (!isSuccessResponse(response)) {
@@ -66,7 +64,7 @@ export class UserSettingsService {
   static async updateSettings(
     settings: Partial<UserSettings>
   ): Promise<UserSettings> {
-    if (USE_MOCK) {
+    if (API_CONFIG.useMock) {
       await mockDelay();
 
       // Simulate API update
@@ -88,8 +86,8 @@ export class UserSettingsService {
     }
 
     // Real API call (when backend ready)
-    const response = await apiClient.patch<StandardResponse<UserSettings>>(
-      "/user/settings",
+    const response = await api.patch<StandardResponse<UserSettings>>(
+      "/users/me/settings",
       settings
     );
 

@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import { deleteSession, getSession } from "@/lib/auth/session";
+import { NextResponse } from "next/server";
 
 export async function POST() {
   const session = await getSession();
@@ -35,7 +35,8 @@ export async function GET() {
 
   // Redirect to OAuth server logout to clear session_id cookie
   const logoutUrl = new URL(`${process.env.OAUTH_ISSUER}/oauth2/logout`);
-  logoutUrl.searchParams.set("post_logout_redirect_uri", process.env.NEXT_PUBLIC_APP_URL!);
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  logoutUrl.searchParams.set("post_logout_redirect_uri", appUrl);
 
   // Add state for security
   const state = crypto.randomUUID();

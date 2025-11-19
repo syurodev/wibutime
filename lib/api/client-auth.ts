@@ -5,90 +5,64 @@
 
 "use client";
 
-import { apiClient, type ApiRequestOptions } from "./client";
-import type { StandardResponse } from "./types";
+import { getClientAuthToken } from "./auth";
+import { api } from "./utils/fetch";
+import type { FetchOptions } from "./utils/fetch";
 
 /**
  * Create authenticated API client for client-side use
- * @param accessToken - Access token from useAuth hook
+ * @param accessToken - Access token from useAuth hook or auto-detect from storage
  */
-export function createAuthenticatedClient(accessToken: string | null) {
+export function createAuthenticatedClient(accessToken?: string | null) {
+  // Auto-detect token if not provided
+  const token = accessToken ?? getClientAuthToken();
+
   return {
     /**
      * GET request with authentication
      */
-    get<T>(endpoint: string, options?: ApiRequestOptions): Promise<StandardResponse<T>> {
-      return apiClient.get<T>(endpoint, {
-        ...options,
-        headers: {
-          ...options?.headers,
-          ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-        },
-      });
+    get<T = unknown>(endpoint: string, options?: Omit<FetchOptions, "method" | "body" | "token">) {
+      return api.get<T>(endpoint, { ...options, token: token || undefined });
     },
 
     /**
      * POST request with authentication
      */
-    post<T>(
+    post<T = unknown>(
       endpoint: string,
       body?: unknown,
-      options?: ApiRequestOptions
-    ): Promise<StandardResponse<T>> {
-      return apiClient.post<T>(endpoint, body, {
-        ...options,
-        headers: {
-          ...options?.headers,
-          ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-        },
-      });
+      options?: Omit<FetchOptions, "method" | "body" | "token">
+    ) {
+      return api.post<T>(endpoint, body, { ...options, token: token || undefined });
     },
 
     /**
      * PUT request with authentication
      */
-    put<T>(
+    put<T = unknown>(
       endpoint: string,
       body?: unknown,
-      options?: ApiRequestOptions
-    ): Promise<StandardResponse<T>> {
-      return apiClient.put<T>(endpoint, body, {
-        ...options,
-        headers: {
-          ...options?.headers,
-          ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-        },
-      });
+      options?: Omit<FetchOptions, "method" | "body" | "token">
+    ) {
+      return api.put<T>(endpoint, body, { ...options, token: token || undefined });
     },
 
     /**
      * PATCH request with authentication
      */
-    patch<T>(
+    patch<T = unknown>(
       endpoint: string,
       body?: unknown,
-      options?: ApiRequestOptions
-    ): Promise<StandardResponse<T>> {
-      return apiClient.patch<T>(endpoint, body, {
-        ...options,
-        headers: {
-          ...options?.headers,
-          ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-        },
-      });
+      options?: Omit<FetchOptions, "method" | "body" | "token">
+    ) {
+      return api.patch<T>(endpoint, body, { ...options, token: token || undefined });
     },
 
     /**
      * DELETE request with authentication
      */
-    delete<T>(endpoint: string, options?: ApiRequestOptions): Promise<StandardResponse<T>> {
-      return apiClient.delete<T>(endpoint, {
-        ...options,
-        headers: {
-          ...options?.headers,
-          ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-        },
-      });
+    delete<T = unknown>(endpoint: string, options?: Omit<FetchOptions, "method" | "body" | "token">) {
+      return api.delete<T>(endpoint, { ...options, token: token || undefined });
     },
   };
 }

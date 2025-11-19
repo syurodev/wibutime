@@ -1,10 +1,12 @@
-import { Geist, Geist_Mono } from "next/font/google";
-import { notFound } from "next/navigation";
+
+import { SessionHydrator } from "@/components/providers/SessionHydrator";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { type Locale, locales } from "@/i18n/routing";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
+import { Geist, Geist_Mono } from "next/font/google";
+import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { type Locale, locales } from "@/i18n/routing";
-import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import "../globals.css";
 
 const geistSans = Geist({
@@ -64,6 +66,9 @@ export default async function LocaleLayout({
 				className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground min-h-screen`}
 			>
 				<ThemeProvider>
+					<Suspense fallback={null}>
+						<SessionHydrator />
+					</Suspense>
 					<Suspense fallback={null}>
 						<I18nProvider>{children}</I18nProvider>
 					</Suspense>

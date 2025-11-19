@@ -1,11 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { createSession } from "@/lib/auth/session";
+import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get("code");
   const state = searchParams.get("state");
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
   // Get stored values from cookies
   const cookieStore = await cookies();
@@ -27,20 +28,20 @@ export async function GET(request: NextRequest) {
   if (!state || state !== storedState) {
     cleanupOAuthCookies();
     return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/login?error=invalid_state`
+      `${appUrl}/${locale}/login?error=invalid_state`
     );
   }
 
   if (!code || !codeVerifier) {
     cleanupOAuthCookies();
     return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/login?error=missing_parameters`
+      `${appUrl}/${locale}/login?error=missing_parameters`
     );
   }
 
   try {
     const tokenEndpoint = `${process.env.OAUTH_ISSUER}/oauth2/token`;
-    const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback`;
+    const redirectUri = `${appUrl}/api/auth/callback`;
 
     console.log("🔐 Token exchange request:", {
       endpoint: tokenEndpoint,
@@ -74,7 +75,7 @@ export async function GET(request: NextRequest) {
       });
       cleanupOAuthCookies();
       return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/login?error=token_exchange_failed`
+        `${appUrl}/${locale}/login?error=token_exchange_failed`
       );
     }
 
@@ -106,7 +107,7 @@ export async function GET(request: NextRequest) {
       });
       cleanupOAuthCookies();
       return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/login?error=userinfo_failed`
+        `${appUrl}/${locale}/login?error=userinfo_failed`
       );
     }
 
@@ -147,13 +148,13 @@ export async function GET(request: NextRequest) {
 
     // Redirect to callback URL
     return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_APP_URL}${callbackUrl}`
+      `${appUrl}${callbackUrl}`
     );
   } catch (error) {
     console.error("❌ OAuth callback error:", error);
     cleanupOAuthCookies();
     return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/login?error=unexpected_error`
+      `${appUrl}/${locale}/login?error=unexpected_error`
     );
   }
 }

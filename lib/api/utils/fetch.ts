@@ -3,6 +3,8 @@
  * Tập trung xử lý tất cả API calls với logging, error handling, và caching
  */
 
+import { getClientAuthToken } from "../auth-client";
+import { API_CONFIG } from "../config";
 import { ApiError, logError, logRequest, logResponse } from "./error-handler";
 
 /**
@@ -57,10 +59,16 @@ export interface FetchOptions extends Omit<RequestInit, "body"> {
 
 /**
  * Get auth token from storage
+ * Uses unified auth utility
  */
-function getAuthToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("auth_token") || sessionStorage.getItem("auth_token");
+async function getAuthToken(): Promise<string | null> {
+  // 1. Try client-side token
+  if (typeof window !== "undefined") {
+    const token = getClientAuthToken();
+    console.log("[apiFetch] Client-side token check:", token ? "Found" : "Missing");
+    if (token) return token;
+  }
+  return null;
 }
 
 /**
@@ -79,7 +87,7 @@ function buildHeaders(options?: FetchOptions): Headers {
   }
 
   // Auto attach Authorization token
-  const token = options?.token || getAuthToken();
+  const token = options?.token || (options?.headers as Record<string, string>)?.["Authorization"]?.replace("Bearer ", "") || null;
 
   // Debug logging for token
   if (process.env.NODE_ENV === "development") {
@@ -106,8 +114,8 @@ function buildURL(url: string, baseURL?: string): string {
     return url;
   }
 
-  // Use provided baseURL or environment variable or default fallback
-  const base = baseURL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+  // Use provided baseURL or global config
+  const base = baseURL || API_CONFIG.baseURL;
   return `${base}${url.startsWith("/") ? url : `/${url}`}`;
 }
 
@@ -141,7 +149,15 @@ export async function apiFetch<T = unknown>(
 ): Promise<T> {
   const method = options?.method || "GET";
   const fullURL = buildURL(url, options?.baseURL);
-  const headers = buildHeaders(options);
+  
+  // Get token asynchronously if not provided
+  let token = options?.token;
+  if (!token) {
+    const authToken = await getAuthToken();
+    token = authToken || undefined;
+  }
+  
+  const headers = buildHeaders({ ...options, token });
 
   // Build request body
   let body: BodyInit | undefined;

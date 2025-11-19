@@ -2,11 +2,12 @@
  * User Settings Store - Zustand with localStorage persistence & API sync
  */
 
-import { create } from "zustand";
-import { persist, createJSONStorage, devtools } from "zustand/middleware";
-import type { UserSettings, UiPreferences } from "@/lib/api/models/user/user-settings";
+import { isAuthenticated } from "@/lib/api/auth-client";
+import type { UiPreferences, UserSettings } from "@/lib/api/models/user/user-settings";
 import { UserSettingsUtils } from "@/lib/api/models/user/user-settings";
 import { UserSettingsService } from "@/lib/api/services/user/user-settings.service";
+import { create } from "zustand";
+import { createJSONStorage, devtools, persist } from "zustand/middleware";
 
 /**
  * Store State Interface
@@ -155,6 +156,17 @@ export const useUserSettingsStore = create<UserSettingsState>()(
         loadFromApi: async () => {
           // Skip if already loading
           if (get().isLoading) return;
+
+          // Skip if not authenticated
+          if (!isAuthenticated()) {
+            console.log("Skipping settings load - user not authenticated");
+            set({ 
+              isLoading: false, 
+              isInitialized: true, // Mark as initialized even if skipped
+              error: null 
+            });
+            return;
+          }
 
           set({ isLoading: true, error: null });
 
@@ -307,6 +319,7 @@ export const useUserSettingsStore = create<UserSettingsState>()(
           ui_preferences: state.ui_preferences,
           created_at: state.created_at,
           updated_at: state.updated_at,
+          lastSyncedAt: state.lastSyncedAt, // Persist để detect data từ session trước
         }),
         // Handle hydration completion
         onRehydrateStorage: () => {
@@ -388,10 +401,9 @@ export async function initializeUserSettings() {
   // Get fresh state after hydration
   const hydratedStore = useUserSettingsStore.getState();
 
-  // Check if we have persisted data by looking for lastSyncedAt or user_id
-  // These indicate data from a previous session
-  const hasPersistedData =
-    hydratedStore.lastSyncedAt !== null || hydratedStore.user_id !== null;
+  // Check if we have persisted data from a previous session
+  // lastSyncedAt indicates we successfully synced with API before
+  const hasPersistedData = hydratedStore.lastSyncedAt !== null;
 
   if (hasPersistedData) {
     // We have localStorage data from previous session

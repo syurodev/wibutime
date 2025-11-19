@@ -98,99 +98,129 @@ lib/
 #### Step 1: Cập nhật `.env.local`
 
 ```env
+# API Base URL
 NEXT_PUBLIC_API_URL=https://api.example.com/v1
+
+# Use mock API (development)
+NEXT_PUBLIC_USE_MOCK_API=true
+
+# Enable API debug logging
+NEXT_PUBLIC_API_DEBUG=true
 ```
 
-#### Step 2: Implement Authentication trong `lib/api/config.ts`
+#### Step 2: Authentication
 
+Authentication được xử lý tự động qua `lib/api/auth.ts`:
+
+**Client-side** (trong Client Components):
 ```typescript
-export async function getAuthToken(): Promise<string | null> {
-  // Example: Read from cookies
-  const { cookies } = await import("next/headers");
-  const token = (await cookies()).get("auth_token")?.value;
-  return token || null;
+import { createAuthenticatedClient } from "@/lib/api/client-auth";
 
-  // Example: Use NextAuth
-  // const session = await getServerSession();
-  // return session?.accessToken || null;
-}
+// Auto-detect token from localStorage
+const client = createAuthenticatedClient();
+const data = await client.get("/users");
+
+// Or pass token explicitly
+const client = createAuthenticatedClient(token);
+```
+
+**Server-side** (trong Server Components):
+```typescript
+import { serverApi } from "@/lib/api/server";
+
+// Auto-detect session token
+const data = await serverApi.get("/users");
 ```
 
 ---
 
 ### 2. Tạo Model
 
-Models map dữ liệu từ API response sang domain objects với computed properties.
+Models sử dụng **Zod schemas** cho runtime validation và type-safety.
 
 #### Example: `lib/api/models/post.ts`
 
 ```typescript
-import { BaseModel } from "./base";
+import { z } from "zod";
 
-// Raw data từ API
-export interface PostRaw {
-  id: string;
-  title: string;
-  content: string;
-  author_id: string;
-  created_at: string;
-  updated_at: string;
-  view_count: number;
-  is_published: boolean;
-}
+/**
+ * Post Zod Schema
+ * Auto-validates API responses và provides default values
+ */
+export const PostSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  content: z.string(),
+  author_id: z.string(),
+  created_at: z.string(),
+  updated_at: z.string(),
+  view_count: z.number().default(0),
+  is_published: z.boolean().default(false),
+});
 
-// Domain model
-export class Post extends BaseModel<PostRaw> {
-  readonly id: string;
-  readonly title: string;
-  readonly content: string;
-  readonly authorId: string;
-  readonly createdAt: Date;
-  readonly updatedAt: Date;
-  readonly viewCount: number;
-  readonly isPublished: boolean;
+/**
+ * TypeScript type tự động generate từ schema
+ */
+export type Post = z.infer<typeof PostSchema>;
 
-  constructor(raw: PostRaw) {
-    super(raw);
+/**
+ * Utilities for Post model
+ */
+export const PostUtils = {
+  /**
+   * Safe parse post data từ API
+   */
+  parse(data: unknown): Post {
+    return PostSchema.parse(data);
+  },
 
-    // Map properties (snake_case → camelCase)
-    this.id = raw.id;
-    this.title = raw.title;
-    this.content = raw.content;
-    this.authorId = raw.author_id;
-    this.viewCount = raw.view_count;
-    this.isPublished = raw.is_published;
+  /**
+   * Safe parse với fallback
+   */
+  safeParse(data: unknown): Post | null {
+    const result = PostSchema.safeParse(data);
+    return result.success ? result.data : null;
+  },
 
-    // Parse dates
-    this.createdAt = new Date(raw.created_at);
-    this.updatedAt = new Date(raw.updated_at);
-  }
+  /**
+   * Computed: Get excerpt from content
+   */
+  getExcerpt(post: Post, maxLength = 150): string {
+    return post.content.substring(0, maxLength) + "...";
+  },
 
-  // Computed properties
-  get excerpt(): string {
-    return this.content.substring(0, 150) + "...";
-  }
-
-  get readingTime(): number {
+  /**
+   * Computed: Calculate reading time
+   */
+  getReadingTime(post: Post): number {
     const wordsPerMinute = 200;
-    const words = this.content.split(/\s+/).length;
+    const words = post.content.split(/\s+/).length;
     return Math.ceil(words / wordsPerMinute);
-  }
-}
+  },
+};
 ```
+
+**Benefits của Zod approach:**
+- ✅ Runtime validation tự động
+- ✅ Default values cho missing fields
+- ✅ Type inference (không cần viết interface riêng)
+- ✅ Composable schemas (dễ reuse)
+- ✅ Built-in error messages
 
 ---
 
 ### 3. Tạo Service
 
-Services organize API calls theo domain.
+Services organize API calls theo domain và sử dụng `ApiParser` cho validation.
 
 #### Example: `lib/api/services/posts.ts`
 
 ```typescript
+import { API_CONFIG } from "../config";
 import { apiClient } from "../client";
-import { Post, type PostRaw } from "../models/post";
-import { isSuccessResponse, type PaginatedResponse } from "../types";
+import { Post, PostSchema } from "../models/post";
+import { ApiParser } from "../utils/parsers";
+import { isSuccessResponse, type StandardResponse } from "../types";
 
 export interface ListPostsParams {
   page?: number;
@@ -203,7 +233,13 @@ export class PostsService {
   /**
    * Get all posts with pagination
    */
-  static async list(params?: ListPostsParams): Promise<PaginatedResponse<Post>> {
+  static async list(params?: ListPostsParams): Promise<{
+    items: Post[];
+    totalItems: number;
+    totalPages: number;
+    currentPage: number;
+  }> {
+    // Build query params
     const searchParams = new URLSearchParams();
     if (params?.page) searchParams.set("page", params.page.toString());
     if (params?.limit) searchParams.set("limit", params.limit.toString());
@@ -214,27 +250,27 @@ export class PostsService {
     const query = searchParams.toString();
     const endpoint = query ? `/posts?${query}` : "/posts";
 
-    const response = await apiClient.get<PostRaw[]>(endpoint, {
+    // Fetch với caching
+    const response = await apiClient.get<Post[]>(endpoint, {
       next: {
         revalidate: 60, // Cache 60s
         tags: ["posts"],
       },
     });
 
+    // Validate response
     if (!isSuccessResponse(response)) {
       throw new Error(response.message);
     }
 
-    const posts = Post.fromApiArray(response.data);
+    // Parse và validate data với Zod schema
+    const posts = ApiParser.parseResponseArray(PostSchema, response);
 
     return {
       items: posts,
-      meta: response.meta || {
-        page: 1,
-        limit: 10,
-        total_items: posts.length,
-        total_pages: 1,
-      },
+      totalItems: response.meta?.total_items || posts.length,
+      totalPages: response.meta?.total_pages || 1,
+      currentPage: response.meta?.page || 1,
     };
   }
 
@@ -242,7 +278,7 @@ export class PostsService {
    * Get post by ID
    */
   static async getById(id: string): Promise<Post> {
-    const response = await apiClient.get<PostRaw>(`/posts/${id}`, {
+    const response = await apiClient.get<Post>(`/posts/${id}`, {
       next: {
         revalidate: 30,
         tags: [`post-${id}`],
@@ -253,7 +289,8 @@ export class PostsService {
       throw new Error(response.message);
     }
 
-    return Post.fromApi(response.data);
+    // Parse và validate single item
+    return ApiParser.parse(PostSchema, response);
   }
 }
 ```
@@ -266,6 +303,7 @@ export class PostsService {
 
 ```tsx
 import { PostsService } from "@/lib/api/services/posts";
+import { PostUtils } from "@/lib/api/models/post";
 
 export default async function PostsPage({
   searchParams,
@@ -277,7 +315,7 @@ export default async function PostsPage({
   const page = parseInt(params.page || "1");
 
   // Fetch data (với caching tự động)
-  const { items: posts, meta } = await PostsService.list({
+  const { items: posts, totalPages, currentPage } = await PostsService.list({
     page,
     limit: 20,
     is_published: true,
@@ -290,14 +328,14 @@ export default async function PostsPage({
       {posts.map((post) => (
         <article key={post.id}>
           <h2>{post.title}</h2>
-          <p>{post.excerpt}</p>
+          <p>{PostUtils.getExcerpt(post)}</p>
           <small>
-            {post.readingTime} min read • {post.viewCount} views
+            {PostUtils.getReadingTime(post)} min read • {post.view_count} views
           </small>
         </article>
       ))}
 
-      <Pagination currentPage={meta.page} totalPages={meta.total_pages} />
+      <Pagination currentPage={currentPage} totalPages={totalPages} />
     </div>
   );
 }
