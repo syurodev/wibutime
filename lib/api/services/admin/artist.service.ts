@@ -1,6 +1,6 @@
 /**
  * Artist Service - API service for artist management
- * Following the same pattern as content.service.ts
+ * Sử dụng centralized fetch utility với logging tập trung
  */
 
 import type {
@@ -11,13 +11,9 @@ import type {
 } from "../../models/admin/artist";
 import { ArtistArraySchema, ArtistSchema } from "../../models/admin/artist";
 import { isSuccessResponse, type StandardResponse } from "../../types";
-import {
-  ApiError,
-  fetchWithErrorHandling,
-} from "../../utils/error-handler";
+import { ApiError } from "../../utils/error-handler";
+import { api } from "../../utils/fetch";
 import { ApiParser } from "../../utils/parsers";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
 
 /**
  * Simulate API delay for development
@@ -54,15 +50,12 @@ export class ArtistService {
       if (query?.is_verified !== undefined)
         params.append("is_verified", query.is_verified.toString());
 
-      const url = `${API_BASE_URL}/artists?${params.toString()}`;
-      const res = await fetchWithErrorHandling(url);
-
-      const response: StandardResponse<Artist[]> = await res.json();
+      const url = `/artists?${params.toString()}`;
+      const response = await api.get<StandardResponse<Artist[]>>(url);
 
       if (!isSuccessResponse(response)) {
         throw new ApiError(
-          response.message || "Failed to fetch artists",
-          res.status
+          response.message || "Failed to fetch artists"
         );
       }
 
@@ -90,15 +83,11 @@ export class ArtistService {
     try {
       await mockDelay();
 
-      const url = `${API_BASE_URL}/artists/${id}`;
-      const res = await fetchWithErrorHandling(url);
-
-      const response: StandardResponse<Artist> = await res.json();
+      const response = await api.get<StandardResponse<Artist>>(`/artists/${id}`);
 
       if (!isSuccessResponse(response)) {
         throw new ApiError(
-          response.message || "Failed to fetch artist",
-          res.status
+          response.message || "Failed to fetch artist"
         );
       }
 
@@ -118,21 +107,11 @@ export class ArtistService {
     try {
       await mockDelay();
 
-      const url = `${API_BASE_URL}/artists`;
-      const res = await fetchWithErrorHandling(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      const response: StandardResponse<Artist> = await res.json();
+      const response = await api.post<StandardResponse<Artist>>("/artists", data);
 
       if (!isSuccessResponse(response)) {
         throw new ApiError(
-          response.message || "Failed to create artist",
-          res.status
+          response.message || "Failed to create artist"
         );
       }
 
@@ -152,21 +131,14 @@ export class ArtistService {
     try {
       await mockDelay();
 
-      const url = `${API_BASE_URL}/artists/${id}`;
-      const res = await fetchWithErrorHandling(url, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      const response: StandardResponse<Artist> = await res.json();
+      const response = await api.put<StandardResponse<Artist>>(
+        `/artists/${id}`,
+        data
+      );
 
       if (!isSuccessResponse(response)) {
         throw new ApiError(
-          response.message || "Failed to update artist",
-          res.status
+          response.message || "Failed to update artist"
         );
       }
 
@@ -186,17 +158,11 @@ export class ArtistService {
     try {
       await mockDelay();
 
-      const url = `${API_BASE_URL}/artists/${id}`;
-      const res = await fetchWithErrorHandling(url, {
-        method: "DELETE",
-      });
-
-      const response: StandardResponse = await res.json();
+      const response = await api.delete<StandardResponse>(`/artists/${id}`);
 
       if (!isSuccessResponse(response)) {
         throw new ApiError(
-          response.message || "Failed to delete artist",
-          res.status
+          response.message || "Failed to delete artist"
         );
       }
     } catch (error) {

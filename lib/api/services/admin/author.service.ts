@@ -1,6 +1,6 @@
 /**
  * Author Service - API service for author management
- * Following the same pattern as content.service.ts
+ * Sử dụng centralized fetch utility với logging tập trung
  */
 
 import type {
@@ -11,13 +11,9 @@ import type {
 } from "../../models/admin/author";
 import { AuthorArraySchema, AuthorSchema } from "../../models/admin/author";
 import { isSuccessResponse, type StandardResponse } from "../../types";
-import {
-  ApiError,
-  fetchWithErrorHandling,
-} from "../../utils/error-handler";
+import { ApiError } from "../../utils/error-handler";
+import { api } from "../../utils/fetch";
 import { ApiParser } from "../../utils/parsers";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
 
 /**
  * Simulate API delay for development
@@ -53,15 +49,12 @@ export class AuthorService {
       if (query?.is_verified !== undefined)
         params.append("is_verified", query.is_verified.toString());
 
-      const url = `${API_BASE_URL}/authors?${params.toString()}`;
-      const res = await fetchWithErrorHandling(url);
-
-      const response: StandardResponse<Author[]> = await res.json();
+      const url = `/authors?${params.toString()}`;
+      const response = await api.get<StandardResponse<Author[]>>(url);
 
       if (!isSuccessResponse(response)) {
         throw new ApiError(
-          response.message || "Failed to fetch authors",
-          res.status
+          response.message || "Failed to fetch authors"
         );
       }
 
@@ -89,15 +82,11 @@ export class AuthorService {
     try {
       await mockDelay();
 
-      const url = `${API_BASE_URL}/authors/${id}`;
-      const res = await fetchWithErrorHandling(url);
-
-      const response: StandardResponse<Author> = await res.json();
+      const response = await api.get<StandardResponse<Author>>(`/authors/${id}`);
 
       if (!isSuccessResponse(response)) {
         throw new ApiError(
-          response.message || "Failed to fetch author",
-          res.status
+          response.message || "Failed to fetch author"
         );
       }
 
@@ -117,21 +106,11 @@ export class AuthorService {
     try {
       await mockDelay();
 
-      const url = `${API_BASE_URL}/authors`;
-      const res = await fetchWithErrorHandling(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      const response: StandardResponse<Author> = await res.json();
+      const response = await api.post<StandardResponse<Author>>("/authors", data);
 
       if (!isSuccessResponse(response)) {
         throw new ApiError(
-          response.message || "Failed to create author",
-          res.status
+          response.message || "Failed to create author"
         );
       }
 
@@ -151,21 +130,14 @@ export class AuthorService {
     try {
       await mockDelay();
 
-      const url = `${API_BASE_URL}/authors/${id}`;
-      const res = await fetchWithErrorHandling(url, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      const response: StandardResponse<Author> = await res.json();
+      const response = await api.put<StandardResponse<Author>>(
+        `/authors/${id}`,
+        data
+      );
 
       if (!isSuccessResponse(response)) {
         throw new ApiError(
-          response.message || "Failed to update author",
-          res.status
+          response.message || "Failed to update author"
         );
       }
 
@@ -185,17 +157,11 @@ export class AuthorService {
     try {
       await mockDelay();
 
-      const url = `${API_BASE_URL}/authors/${id}`;
-      const res = await fetchWithErrorHandling(url, {
-        method: "DELETE",
-      });
-
-      const response: StandardResponse = await res.json();
+      const response = await api.delete<StandardResponse>(`/authors/${id}`);
 
       if (!isSuccessResponse(response)) {
         throw new ApiError(
-          response.message || "Failed to delete author",
-          res.status
+          response.message || "Failed to delete author"
         );
       }
     } catch (error) {

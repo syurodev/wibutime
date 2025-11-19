@@ -1,6 +1,6 @@
 /**
  * Genre Service - API service for genre management
- * Following the same pattern as content.service.ts
+ * Sử dụng centralized fetch utility với logging tập trung
  */
 
 import type {
@@ -11,13 +11,9 @@ import type {
 } from "../../models/admin/genre";
 import { GenreArraySchema, GenreSchema } from "../../models/admin/genre";
 import { isSuccessResponse, type StandardResponse } from "../../types";
-import {
-  ApiError,
-  fetchWithErrorHandling,
-} from "../../utils/error-handler";
+import { ApiError } from "../../utils/error-handler";
+import { api } from "../../utils/fetch";
 import { ApiParser } from "../../utils/parsers";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
 
 /**
  * Simulate API delay for development
@@ -57,15 +53,12 @@ export class GenreService {
       if (query?.sort_order) params.append("sort_order", query.sort_order);
       if (query?.active_only) params.append("active_only", "true");
 
-      const url = `${API_BASE_URL}/genres?${params.toString()}`;
-      const res = await fetchWithErrorHandling(url);
-
-      const response: StandardResponse<Genre[]> = await res.json();
+      const url = `/genres?${params.toString()}`;
+      const response = await api.get<StandardResponse<Genre[]>>(url);
 
       if (!isSuccessResponse(response)) {
         throw new ApiError(
-          response.message || "Failed to fetch genres",
-          res.status
+          response.message || "Failed to fetch genres"
         );
       }
 
@@ -98,15 +91,11 @@ export class GenreService {
     try {
       await mockDelay();
 
-      const url = `${API_BASE_URL}/genres/${id}`;
-      const res = await fetchWithErrorHandling(url);
-
-      const response: StandardResponse<Genre> = await res.json();
+      const response = await api.get<StandardResponse<Genre>>(`/genres/${id}`);
 
       if (!isSuccessResponse(response)) {
         throw new ApiError(
-          response.message || "Failed to fetch genre",
-          res.status
+          response.message || "Failed to fetch genre"
         );
       }
 
@@ -134,21 +123,11 @@ export class GenreService {
     try {
       await mockDelay();
 
-      const url = `${API_BASE_URL}/genres`;
-      const res = await fetchWithErrorHandling(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      const response: StandardResponse<Genre> = await res.json();
+      const response = await api.post<StandardResponse<Genre>>("/genres", data);
 
       if (!isSuccessResponse(response)) {
         throw new ApiError(
-          response.message || "Failed to create genre",
-          res.status
+          response.message || "Failed to create genre"
         );
       }
 
@@ -176,21 +155,14 @@ export class GenreService {
     try {
       await mockDelay();
 
-      const url = `${API_BASE_URL}/genres/${id}`;
-      const res = await fetchWithErrorHandling(url, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      const response: StandardResponse<Genre> = await res.json();
+      const response = await api.put<StandardResponse<Genre>>(
+        `/genres/${id}`,
+        data
+      );
 
       if (!isSuccessResponse(response)) {
         throw new ApiError(
-          response.message || "Failed to update genre",
-          res.status
+          response.message || "Failed to update genre"
         );
       }
 
@@ -215,17 +187,11 @@ export class GenreService {
     try {
       await mockDelay();
 
-      const url = `${API_BASE_URL}/genres/${id}`;
-      const res = await fetchWithErrorHandling(url, {
-        method: "DELETE",
-      });
-
-      const response: StandardResponse = await res.json();
+      const response = await api.delete<StandardResponse>(`/genres/${id}`);
 
       if (!isSuccessResponse(response)) {
         throw new ApiError(
-          response.message || "Failed to delete genre",
-          res.status
+          response.message || "Failed to delete genre"
         );
       }
     } catch (error) {
