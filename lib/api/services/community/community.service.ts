@@ -3,14 +3,14 @@
  * Business logic for community features (creators, genres, milestones)
  */
 
-import type { CreatorStats } from "../../models/community/creator-stats";
-import type { GenreStats } from "../../models/community/genre-stats";
-import type { Milestone } from "../../models/community/milestone";
+import type { GenreStats } from "@/features/genre/types/genre-stats";
 import {
   getMockCreators,
   getMockGenreStats,
   getMockMilestones,
 } from "../../mock/mock-community";
+import type { CreatorStats } from "../../models/community/creator-stats";
+import type { Milestone } from "../../models/community/milestone";
 
 /**
  * Community Service
@@ -27,9 +27,7 @@ export const CommunityService = {
     const creators = getMockCreators(50);
 
     // Sort by follower count (descending)
-    const sorted = creators.sort(
-      (a, b) => b.follower_count - a.follower_count
-    );
+    const sorted = creators.sort((a, b) => b.follower_count - a.follower_count);
 
     return sorted.slice(0, limit);
   },

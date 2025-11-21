@@ -25,13 +25,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type {
-  CreateGenreRequest,
-  Genre,
-  UpdateGenreRequest,
-} from "@/lib/api/models/admin/genre";
-import { GenreUtils } from "@/lib/api/models/admin/genre";
-import { GenreService } from "@/lib/api/services/admin/genre.service";
+import { GenreService } from "@/features/genre/services/admin-genre.service";
+import {
+  GenreUtils,
+  type CreateGenreRequest,
+  type Genre,
+  type UpdateGenreRequest,
+} from "@/features/genre/types/admin-genre";
 import { ApiError } from "@/lib/api/utils/error-handler";
 import { DEFAULT_LIMIT, DEFAULT_PAGE } from "@/lib/constants/default";
 import {
@@ -102,7 +102,9 @@ export function GenresManagement() {
 
     const queryString = params.toString();
     startTransition(() => {
-      router.push(queryString ? `?${queryString}` : globalThis.window.location.pathname);
+      router.push(
+        queryString ? `?${queryString}` : globalThis.window.location.pathname
+      );
     });
   };
 
@@ -121,7 +123,10 @@ export function GenresManagement() {
       setTotalPages(result.total_pages);
       setTotalItems(result.total_items);
     } catch (error) {
-      const message = error instanceof ApiError ? error.message : "Không thể tải danh sách thể loại";
+      const message =
+        error instanceof ApiError
+          ? error.message
+          : "Không thể tải danh sách thể loại";
       toast.error(message);
       setGenres([]);
       setTotalPages(1);
@@ -163,7 +168,8 @@ export function GenresManagement() {
       setFormData({ name: "", description: "" });
       fetchGenres();
     } catch (error) {
-      const message = error instanceof ApiError ? error.message : "Không thể tạo thể loại";
+      const message =
+        error instanceof ApiError ? error.message : "Không thể tạo thể loại";
       toast.error(message);
     } finally {
       setSubmitting(false);
@@ -184,7 +190,10 @@ export function GenresManagement() {
       setFormData({ name: "", description: "" });
       fetchGenres();
     } catch (error) {
-      const message = error instanceof ApiError ? error.message : "Không thể cập nhật thể loại";
+      const message =
+        error instanceof ApiError
+          ? error.message
+          : "Không thể cập nhật thể loại";
       toast.error(message);
     } finally {
       setSubmitting(false);
@@ -201,7 +210,8 @@ export function GenresManagement() {
       setSelectedGenre(null);
       fetchGenres();
     } catch (error) {
-      const message = error instanceof ApiError ? error.message : "Không thể xóa thể loại";
+      const message =
+        error instanceof ApiError ? error.message : "Không thể xóa thể loại";
       toast.error(message);
     } finally {
       setSubmitting(false);
@@ -245,11 +255,7 @@ export function GenresManagement() {
       );
     }
 
-    return (
-      <Badge variant="secondary">
-        {trendInfo.label}
-      </Badge>
-    );
+    return <Badge variant="secondary">{trendInfo.label}</Badge>;
   };
 
   // Helper function to render table content based on state
@@ -289,9 +295,7 @@ export function GenresManagement() {
           <TableBody>
             {genres.map((genre) => (
               <TableRow key={genre.id}>
-                <TableCell className="font-medium">
-                  {genre.name}
-                </TableCell>
+                <TableCell className="font-medium">{genre.name}</TableCell>
                 <TableCell className="text-muted-foreground">
                   {genre.slug}
                 </TableCell>
@@ -308,9 +312,7 @@ export function GenresManagement() {
                     </Badge>
                   )}
                 </TableCell>
-                <TableCell>
-                  {renderTrendBadge(genre.trend)}
-                </TableCell>
+                <TableCell>{renderTrendBadge(genre.trend)}</TableCell>
                 <TableCell className="text-right">
                   {genre.series_count}
                 </TableCell>
@@ -400,9 +402,7 @@ export function GenresManagement() {
 
       {/* Table */}
       <Card>
-        <CardContent className="p-0">
-          {renderTableContent()}
-        </CardContent>
+        <CardContent className="p-0">{renderTableContent()}</CardContent>
       </Card>
 
       {/* Create Dialog */}
@@ -410,9 +410,7 @@ export function GenresManagement() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Thêm thể loại mới</DialogTitle>
-            <DialogDescription>
-              Tạo một thể loại truyện mới
-            </DialogDescription>
+            <DialogDescription>Tạo một thể loại truyện mới</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
@@ -457,9 +455,7 @@ export function GenresManagement() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Chỉnh sửa thể loại</DialogTitle>
-            <DialogDescription>
-              Cập nhật thông tin thể loại
-            </DialogDescription>
+            <DialogDescription>Cập nhật thông tin thể loại</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>

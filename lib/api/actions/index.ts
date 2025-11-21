@@ -3,9 +3,9 @@
  * Use these in Client Components for mutations
  */
 
-export * from "./user";
-export * from "./content";
-export * from "./genre";
-export * from "./author";
+export * from "@/features/genre/api/actions";
+export * from "@/features/history/api/actions";
 export * from "./artist";
-export * from "./history";
+export * from "./author";
+export * from "./content";
+export * from "./user";

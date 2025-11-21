@@ -3,15 +3,16 @@
  * Main landing page with featured content and sections
  */
 
-import { CommunityMilestonesSection } from "@/components/home/CommunityMilestonesSection";
-import { ContinueSection } from "@/components/home/ContinueSection";
-import { GenreHubSection } from "@/components/home/GenreHubSection";
-import { HeroSection } from "@/components/home/HeroSection";
-import { HomeNavigation } from "@/components/home/HomeNavigation";
-import { LatestUpdatesSection } from "@/components/home/LatestUpdatesSection";
-import { NewSeriesSection } from "@/components/home/NewSeriesSection";
-import { TopCreatorsSection } from "@/components/home/TopCreatorsSection";
-import { TrendingSection } from "@/components/home/TrendingSection";
+import { getCachedHistory } from "@/features/history/services/history.cached";
+import { CommunityMilestonesSection } from "@/features/home/components/CommunityMilestonesSection";
+import { ContinueSection } from "@/features/home/components/ContinueSection";
+import { GenreHubSection } from "@/features/home/components/GenreHubSection";
+import { HeroSection } from "@/features/home/components/HeroSection";
+import { HomeNavigation } from "@/features/home/components/HomeNavigation";
+import { LatestUpdatesSection } from "@/features/home/components/LatestUpdatesSection";
+import { NewSeriesSection } from "@/features/home/components/NewSeriesSection";
+import { TopCreatorsSection } from "@/features/home/components/TopCreatorsSection";
+import { TrendingSection } from "@/features/home/components/TrendingSection";
 import {
   getCachedFeaturedList,
   getCachedLatest,
@@ -23,7 +24,6 @@ import {
   getCachedMilestones,
   getCachedTopCreators,
 } from "@/lib/api/services/community/community.cached";
-import { getCachedHistory } from "@/lib/api/services/history/history.cached";
 import type { Metadata } from "next";
 
 /**

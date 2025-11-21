@@ -9,7 +9,7 @@ import type {
   CreateAuthorRequest,
   UpdateAuthorRequest,
 } from "../../models/admin/author";
-import { AuthorArraySchema, AuthorSchema } from "../../models/admin/author";
+import { AuthorSchema } from "../../models/admin/author";
 import { isSuccessResponse, type StandardResponse } from "../../types";
 import { ApiError } from "../../utils/error-handler";
 import { api } from "../../utils/fetch";
@@ -53,12 +53,10 @@ export class AuthorService {
       const response = await api.get<StandardResponse<Author[]>>(url);
 
       if (!isSuccessResponse(response)) {
-        throw new ApiError(
-          response.message || "Failed to fetch authors"
-        );
+        throw new ApiError(response.message || "Failed to fetch authors");
       }
 
-      const items = ApiParser.parseResponseArray(AuthorArraySchema, response);
+      const items = ApiParser.parseResponseArray(AuthorSchema, response);
 
       return {
         items,
@@ -82,12 +80,12 @@ export class AuthorService {
     try {
       await mockDelay();
 
-      const response = await api.get<StandardResponse<Author>>(`/authors/${id}`);
+      const response = await api.get<StandardResponse<Author>>(
+        `/authors/${id}`
+      );
 
       if (!isSuccessResponse(response)) {
-        throw new ApiError(
-          response.message || "Failed to fetch author"
-        );
+        throw new ApiError(response.message || "Failed to fetch author");
       }
 
       return ApiParser.parse(AuthorSchema, response);
@@ -106,12 +104,13 @@ export class AuthorService {
     try {
       await mockDelay();
 
-      const response = await api.post<StandardResponse<Author>>("/authors", data);
+      const response = await api.post<StandardResponse<Author>>(
+        "/authors",
+        data
+      );
 
       if (!isSuccessResponse(response)) {
-        throw new ApiError(
-          response.message || "Failed to create author"
-        );
+        throw new ApiError(response.message || "Failed to create author");
       }
 
       return ApiParser.parse(AuthorSchema, response);
@@ -136,9 +135,7 @@ export class AuthorService {
       );
 
       if (!isSuccessResponse(response)) {
-        throw new ApiError(
-          response.message || "Failed to update author"
-        );
+        throw new ApiError(response.message || "Failed to update author");
       }
 
       return ApiParser.parse(AuthorSchema, response);
@@ -160,9 +157,7 @@ export class AuthorService {
       const response = await api.delete<StandardResponse>(`/authors/${id}`);
 
       if (!isSuccessResponse(response)) {
-        throw new ApiError(
-          response.message || "Failed to delete author"
-        );
+        throw new ApiError(response.message || "Failed to delete author");
       }
     } catch (error) {
       if (error instanceof ApiError) {

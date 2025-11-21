@@ -8,9 +8,9 @@
  * - Milestones: 5min stale, 15min revalidate, 1hr expire
  */
 
+import type { GenreStats } from "@/features/genre/types/genre-stats";
 import { cacheLife, cacheTag } from "next/cache";
 import type { CreatorStats } from "../../models/community/creator-stats";
-import type { GenreStats } from "../../models/community/genre-stats";
 import type { Milestone } from "../../models/community/milestone";
 import { CommunityService } from "./community.service";
 

@@ -4,11 +4,14 @@
  */
 
 import { Container } from "@/components/layout/Container";
-import { HistoryEmpty } from "@/components/history/HistoryEmpty";
-import { HistoryFilters, type HistorySortOption } from "@/components/history/HistoryFilters";
-import { HistoryGrid } from "@/components/history/HistoryGrid";
-import { HistoryGridSkeleton } from "@/components/history/HistoryGridSkeleton";
-import { HistoryService } from "@/lib/api/services/history/history.service";
+import { HistoryEmpty } from "@/features/history/components/HistoryEmpty";
+import {
+  HistoryFilters,
+  type HistorySortOption,
+} from "@/features/history/components/HistoryFilters";
+import { HistoryGrid } from "@/features/history/components/HistoryGrid";
+import { HistoryGridSkeleton } from "@/features/history/components/HistoryGridSkeleton";
+import { HistoryService } from "@/features/history/services/history.service";
 import type { CONTENT_TYPE } from "@/lib/constants/default";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -19,119 +22,123 @@ import { HistoryNavigation } from "./HistoryNavigation";
  * Page metadata (SEO)
  */
 export const metadata: Metadata = {
-	title: "History - WibuTime",
-	description:
-		"View your watching and reading history on WibuTime. Pick up where you left off.",
-	keywords: ["history", "continue watching", "continue reading", "wibutime"],
+  title: "History - WibuTime",
+  description:
+    "View your watching and reading history on WibuTime. Pick up where you left off.",
+  keywords: ["history", "continue watching", "continue reading", "wibutime"],
 };
 
 interface HistoryPageProps {
-	searchParams: Promise<{
-		type?: string;
-		page?: string;
-		sort?: string;
-	}>;
+  searchParams: Promise<{
+    type?: string;
+    page?: string;
+    sort?: string;
+  }>;
 }
 
 /**
  * History Content Component (Async - for Suspense)
  */
 async function HistoryContent({
-	type,
-	page,
-	sort,
+  type,
+  page,
+  sort,
 }: {
-	type: CONTENT_TYPE | "all";
-	page: number;
-	sort: HistorySortOption;
+  type: CONTENT_TYPE | "all";
+  page: number;
+  sort: HistorySortOption;
 }) {
-	// Fetch paginated history
-	const { items } = await HistoryService.getHistoryPaginated({
-		type,
-		page,
-		limit: 15,
-		sort,
-	});
+  // Fetch paginated history
+  const { items } = await HistoryService.getHistoryPaginated({
+    type,
+    page,
+    limit: 15,
+    sort,
+  });
 
-	return <HistoryGrid history={items} />;
+  return <HistoryGrid history={items} />;
 }
 
 /**
  * History Page Server Component
  */
 export default async function HistoryPage({ searchParams }: HistoryPageProps) {
-	const t = await getTranslations("history");
+  const t = await getTranslations("history");
 
-	// Await searchParams
-	const params = await searchParams;
+  // Await searchParams
+  const params = await searchParams;
 
-	// Parse URL parameters
-	const type = (params.type || "all") as CONTENT_TYPE | "all";
-	const page = Number(params.page) || 1;
-	const sort = (params.sort || "recent") as HistorySortOption;
+  // Parse URL parameters
+  const type = (params.type || "all") as CONTENT_TYPE | "all";
+  const page = Number(params.page) || 1;
+  const sort = (params.sort || "recent") as HistorySortOption;
 
-	// Validate type
-	const validTypes = ["all", "anime", "manga", "novel"];
-	const selectedType = validTypes.includes(type) ? type : "all";
+  // Validate type
+  const validTypes = ["all", "anime", "manga", "novel"];
+  const selectedType = validTypes.includes(type) ? type : "all";
 
-	// Validate sort
-	const validSorts = ["recent", "title", "updated"];
-	const selectedSort = validSorts.includes(sort) ? sort : "recent";
+  // Validate sort
+  const validSorts = ["recent", "title", "updated"];
+  const selectedSort = validSorts.includes(sort) ? sort : "recent";
 
-	// Fetch pagination metadata for navigation
-	const { totalPages, currentPage, totalItems } =
-		await HistoryService.getHistoryPaginated({
-			type: selectedType,
-			page,
-			limit: 15,
-			sort: selectedSort as HistorySortOption,
-		});
+  // Fetch pagination metadata for navigation
+  const { totalPages, currentPage, totalItems } =
+    await HistoryService.getHistoryPaginated({
+      type: selectedType,
+      page,
+      limit: 15,
+      sort: selectedSort as HistorySortOption,
+    });
 
-	// Check if history is empty
-	const hasContent = totalItems > 0;
+  // Check if history is empty
+  const hasContent = totalItems > 0;
 
-	return (
-		<div className="min-h-screen py-8">
-			<Container maxWidth="xl" bottomSpacing>
-				{/* Page Header */}
-				<div className="mb-8 space-y-6">
-					<div className="space-y-3">
-						<h1 className="text-4xl font-bold tracking-tight md:text-5xl">
-							{t("title")}
-						</h1>
-						<p className="text-lg text-muted-foreground">{t("subtitle")}</p>
-					</div>
+  return (
+    <div className="min-h-screen py-8">
+      <Container maxWidth="xl" bottomSpacing>
+        {/* Page Header */}
+        <div className="mb-8 space-y-6">
+          <div className="space-y-3">
+            <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
+              {t("title")}
+            </h1>
+            <p className="text-lg text-muted-foreground">{t("subtitle")}</p>
+          </div>
 
-					{/* Filters */}
-					{hasContent && (
-						<HistoryFilters
-							currentType={selectedType}
-							currentSort={selectedSort}
-						/>
-					)}
-				</div>
+          {/* Filters */}
+          {hasContent && (
+            <HistoryFilters
+              currentType={selectedType}
+              currentSort={selectedSort}
+            />
+          )}
+        </div>
 
-				{/* Content Section */}
-				{hasContent ? (
-					<>
-						{/* Content with Suspense - Shows skeleton while loading */}
-						<Suspense
-							key={`${selectedType}-${page}-${selectedSort}`}
-							fallback={<HistoryGridSkeleton count={15} />}
-						>
-							<HistoryContent type={selectedType} page={page} sort={selectedSort} />
-						</Suspense>
+        {/* Content Section */}
+        {hasContent ? (
+          <>
+            {/* Content with Suspense - Shows skeleton while loading */}
+            <Suspense
+              key={`${selectedType}-${page}-${selectedSort}`}
+              fallback={<HistoryGridSkeleton count={15} />}
+            >
+              <HistoryContent
+                type={selectedType}
+                page={page}
+                sort={selectedSort}
+              />
+            </Suspense>
 
-						{/* Bottom Navigation with Pagination */}
-						<HistoryNavigation
-							currentPage={currentPage}
-							totalPages={totalPages}
-						/>
-					</>
-				) : (
-					<HistoryEmpty />
-				)}
-			</Container>
-		</div>
-	);
+            {/* Bottom Navigation with Pagination */}
+            <HistoryNavigation
+              currentPage={currentPage}
+              totalPages={totalPages}
+            />
+          </>
+        ) : (
+          <HistoryEmpty />
+        )}
+      </Container>
+    </div>
+  );
 }

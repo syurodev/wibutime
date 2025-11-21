@@ -3,10 +3,11 @@
  * Use these in Server Components for data fetching
  */
 
-export * from "./user";
-export * from "./content";
-export * from "./genre";
+export * from "@/features/artist/api/queries";
+export * from "@/features/genre/api/queries";
+export * from "@/features/history/api/queries";
+export * from "@/features/library/api/queries";
 export * from "./author";
-export * from "./artist";
-export * from "./history";
 export * from "./community";
+export * from "./content";
+export * from "./user";

@@ -3,6 +3,7 @@
  * Uses Zod schemas for type-safe mock data generation
  */
 
+import { generateMockParagraphs } from "@/features/editor/api/mock-editor";
 import { CONTENT_TYPE, type ContentStatus } from "@/lib/constants/default";
 import {
   GenreSchema,
@@ -12,7 +13,6 @@ import {
   type MediaSeries,
 } from "../models/content/base-content";
 import { BaseUserSchema, type BaseUser } from "../models/user/base-user";
-import { generateMockParagraphs } from "./mock-editor";
 
 /**
  * Mock Genres - parsed through Zod schema

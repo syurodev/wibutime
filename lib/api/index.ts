@@ -30,17 +30,17 @@ export { createAuthenticatedClient } from "./client-auth";
  * Client-side auth (safe for Client Components)
  */
 export {
-  getClientAuthToken,
-  getClientAuthHeaders,
-  setAuthToken,
   clearAuthToken,
+  getClientAuthHeaders,
+  getClientAuthToken,
   isAuthenticated,
+  setAuthToken,
 } from "./auth-client";
 
 /**
  * Server-side auth (Server Components/Actions only)
  */
-export { getServerAuthToken, getServerAuthHeaders } from "./auth-server";
+export { getServerAuthHeaders, getServerAuthToken } from "./auth-server";
 
 // ===== CONFIGURATION =====
 
@@ -48,21 +48,25 @@ export { API_CONFIG } from "./config";
 
 // ===== TYPES & ERROR HANDLING =====
 
-export type { StandardResponse, PaginationMeta, PaginatedResponse } from "./types/response";
-export { isSuccessResponse, isPaginatedResponse } from "./types/response";
 export {
   ApiError,
   AuthenticationError,
   AuthorizationError,
+  NetworkError,
   NotFoundError,
   ValidationError,
-  NetworkError,
 } from "./types/error";
+export { isPaginatedResponse, isSuccessResponse } from "./types/response";
+export type {
+  PaginatedResponse,
+  PaginationMeta,
+  StandardResponse,
+} from "./types/response";
 
 // ===== UTILITIES =====
 
-export { ApiParser } from "./utils/parsers";
 export { endpoint, endpoints } from "./utils/endpoint";
+export { ApiParser } from "./utils/parsers";
 
 // ===== MODELS =====
 
@@ -74,13 +78,14 @@ export * from "./models";
  * Use these in Server Components for data fetching
  * All queries use React cache for automatic deduplication
  */
-export * from "./queries/user";
-export * from "./queries/content";
-export * from "./queries/genre";
+export * from "@/features/artist/api/queries";
+export * from "@/features/genre/api/queries";
+export * from "@/features/history/api/queries";
+export * from "@/features/library/api/queries";
 export * from "./queries/author";
-export * from "./queries/artist";
-export * from "./queries/history";
 export * from "./queries/community";
+export * from "./queries/content";
+export * from "./queries/user";
 
 // ===== ACTIONS (Server Actions) =====
 
@@ -88,12 +93,12 @@ export * from "./queries/community";
  * Use these in Client Components for mutations
  * All actions use "use server" directive
  */
-export * from "./actions/user";
-export * from "./actions/content";
-export * from "./actions/genre";
+export * from "@/features/artist/api/actions";
+export * from "@/features/genre/api/actions";
+export * from "@/features/history/api/actions";
 export * from "./actions/author";
-export * from "./actions/artist";
-export * from "./actions/history";
+export * from "./actions/content";
+export * from "./actions/user";
 
 // ===== SERVICES (DEPRECATED - Use queries/actions instead) =====
 
@@ -102,4 +107,3 @@ export * from "./actions/history";
  * Services will be removed in a future version
  */
 export * from "./services";
-

@@ -5,14 +5,14 @@ import { Plate, usePlateEditor } from "platejs/react";
 import * as React from "react";
 
 // Import all feature kits
-import { AlignKit } from "@/components/editor/plugins/align-kit";
-import { BasicBlocksKit } from "@/components/editor/plugins/basic-blocks-kit";
-import { BasicMarksKit } from "@/components/editor/plugins/basic-marks-kit";
-import { DndKit } from "@/components/editor/plugins/dnd-kit";
-import { IndentKit } from "@/components/editor/plugins/indent-kit";
-import { LinkKit } from "@/components/editor/plugins/link-kit";
-import { MediaKit } from "@/components/editor/plugins/media-kit";
-import { SelectionKit } from "@/components/editor/plugins/selection-kit";
+import { AlignKit } from "@/features/editor/components/plugins/align-kit";
+import { BasicBlocksKit } from "@/features/editor/components/plugins/basic-blocks-kit";
+import { BasicMarksKit } from "@/features/editor/components/plugins/basic-marks-kit";
+import { DndKit } from "@/features/editor/components/plugins/dnd-kit";
+import { IndentKit } from "@/features/editor/components/plugins/indent-kit";
+import { LinkKit } from "@/features/editor/components/plugins/link-kit";
+import { MediaKit } from "@/features/editor/components/plugins/media-kit";
+import { SelectionKit } from "@/features/editor/components/plugins/selection-kit";
 
 // Import UI components
 import { Editor, EditorContainer } from "@/components/ui/editor";

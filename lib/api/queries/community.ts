@@ -3,23 +3,23 @@
  * Uses React cache for automatic deduplication
  */
 
-import { cache } from "react";
-import { serverApi } from "@/lib/api/server";
-import { endpoint } from "@/lib/api/utils/endpoint";
+import {
+  GenreStatsSchema,
+  type GenreStats,
+} from "@/features/genre/types/genre-stats";
 import {
   CreatorStatsSchema,
   type CreatorStats,
 } from "@/lib/api/models/community/creator-stats";
 import {
-  GenreStatsSchema,
-  type GenreStats,
-} from "@/lib/api/models/community/genre-stats";
-import {
   MilestoneSchema,
   type Milestone,
 } from "@/lib/api/models/community/milestone";
+import { serverApi } from "@/lib/api/server";
+import { isSuccessResponse, type StandardResponse } from "@/lib/api/types";
+import { endpoint } from "@/lib/api/utils/endpoint";
 import { ApiParser } from "@/lib/api/utils/parsers";
-import { isSuccessResponse } from "@/lib/api/types";
+import { cache } from "react";
 
 /**
  * Get top creators
@@ -31,7 +31,7 @@ export const getTopCreators = cache(
   async (params?: { limit?: number }): Promise<CreatorStats[]> => {
     const url = endpoint("community", "creators", "top", params || {});
 
-    const response = await serverApi.get(url, {
+    const response = await serverApi.get<StandardResponse<unknown>>(url, {
       next: {
         revalidate: 300, // Cache 5 minutes
         tags: ["community-creators"],
@@ -56,7 +56,7 @@ export const getGenreStats = cache(
   async (params?: { limit?: number }): Promise<GenreStats[]> => {
     const url = endpoint("community", "genres", "stats", params || {});
 
-    const response = await serverApi.get(url, {
+    const response = await serverApi.get<StandardResponse<unknown>>(url, {
       next: {
         revalidate: 300, // Cache 5 minutes
         tags: ["community-genre-stats"],
@@ -81,7 +81,7 @@ export const getRisingGenres = cache(
   async (params?: { limit?: number }): Promise<GenreStats[]> => {
     const url = endpoint("community", "genres", "rising", params || {});
 
-    const response = await serverApi.get(url, {
+    const response = await serverApi.get<StandardResponse<unknown>>(url, {
       next: {
         revalidate: 300, // Cache 5 minutes
         tags: ["community-genre-stats"],
@@ -106,7 +106,7 @@ export const getMilestones = cache(
   async (params?: { limit?: number }): Promise<Milestone[]> => {
     const url = endpoint("community", "milestones", params || {});
 
-    const response = await serverApi.get(url, {
+    const response = await serverApi.get<StandardResponse<unknown>>(url, {
       next: {
         revalidate: 300, // Cache 5 minutes
         tags: ["community-milestones"],

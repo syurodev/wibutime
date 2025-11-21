@@ -4,13 +4,13 @@
  */
 
 import {
+  GenreStatsSchema,
+  type GenreStats,
+} from "@/features/genre/types/genre-stats";
+import {
   CreatorStatsSchema,
   type CreatorStats,
 } from "../models/community/creator-stats";
-import {
-  GenreStatsSchema,
-  type GenreStats,
-} from "../models/community/genre-stats";
 import {
   MilestoneSchema,
   type Milestone,

@@ -3,17 +3,16 @@
  * Uses React cache for automatic deduplication
  */
 
-import { cache } from "react";
-import { serverApi } from "@/lib/api/server";
-import { endpoint } from "@/lib/api/utils/endpoint";
 import {
   AuthorSchema,
-  AuthorArraySchema,
   type Author,
   type AuthorQuery,
 } from "@/lib/api/models/admin/author";
-import { ApiParser } from "@/lib/api/utils/parsers";
+import { serverApi } from "@/lib/api/server";
 import { isSuccessResponse, type StandardResponse } from "@/lib/api/types";
+import { endpoint } from "@/lib/api/utils/endpoint";
+import { ApiParser } from "@/lib/api/utils/parsers";
+import { cache } from "react";
 
 /**
  * Get list of authors with pagination
@@ -22,7 +21,9 @@ import { isSuccessResponse, type StandardResponse } from "@/lib/api/types";
  * const authors = await getAuthors({ page: 1, limit: 20, search: "john" })
  */
 export const getAuthors = cache(
-  async (params?: Partial<AuthorQuery>): Promise<{
+  async (
+    params?: Partial<AuthorQuery>
+  ): Promise<{
     items: Author[];
     page: number;
     limit: number;
@@ -42,7 +43,7 @@ export const getAuthors = cache(
       throw new Error(response.message || "Failed to fetch authors");
     }
 
-    const items = ApiParser.parseResponseArray(AuthorArraySchema, response);
+    const items = ApiParser.parseResponseArray(AuthorSchema, response);
 
     return {
       items,

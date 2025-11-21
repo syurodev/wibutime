@@ -1,6 +1,6 @@
 "use client";
 
-import { CompactCommentEditor } from "@/components/editor/compact-comment-editor";
+import { CompactCommentEditor } from "@/features/editor/components/compact-comment-editor";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useUiPreferences } from "@/lib/hooks/use-user-settings";
 import { cn } from "@/lib/utils";
@@ -13,13 +13,13 @@ import {
   defaultItemsEnd,
   defaultItemsStart,
 } from "./defaultNavItems";
+import { NavAccountButton } from "./NavAccountButton";
 import { NavAccountMenuContent } from "./NavAccountMenu";
 import { NavActionItem } from "./NavActionItem";
 import { NavLinkItem } from "./NavLinkItem";
 import { NavPaginationButton } from "./NavPaginationButton";
 import { NavSearch } from "./NavSearch";
 import { NavSearchButton } from "./NavSearchButton";
-import { NavAccountButton } from "./NavAccountButton";
 import { NavTriggerItem } from "./NavTriggerItem";
 import { useNav } from "./useNav";
 

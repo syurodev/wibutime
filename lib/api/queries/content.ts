@@ -3,17 +3,16 @@
  * Uses React cache for automatic deduplication
  */
 
-import { cache } from "react";
-import { serverApi } from "@/lib/api/server";
-import { endpoint } from "@/lib/api/utils/endpoint";
 import {
   MediaSeriesSchema,
-  MediaSeriesArraySchema,
   type MediaSeries,
 } from "@/lib/api/models/content/base-content";
-import type { CONTENT_TYPE } from "@/lib/constants/default";
-import { ApiParser } from "@/lib/api/utils/parsers";
+import { serverApi } from "@/lib/api/server";
 import { isSuccessResponse, type StandardResponse } from "@/lib/api/types";
+import { endpoint } from "@/lib/api/utils/endpoint";
+import { ApiParser } from "@/lib/api/utils/parsers";
+import type { CONTENT_TYPE } from "@/lib/constants/default";
+import { cache } from "react";
 
 /**
  * Content query parameters
@@ -58,7 +57,7 @@ export const getFeaturedContentList = cache(
   async (): Promise<MediaSeries[]> => {
     const url = endpoint("content", "featured", "list");
 
-    const response = await serverApi.get(url, {
+    const response = await serverApi.get<StandardResponse<unknown>>(url, {
       next: {
         revalidate: 300, // Cache 5 minutes
         tags: ["content-featured"],
@@ -69,7 +68,7 @@ export const getFeaturedContentList = cache(
       throw new Error(response.message || "Failed to fetch featured list");
     }
 
-    return ApiParser.parseResponseArray(MediaSeriesArraySchema, response);
+    return ApiParser.parseResponseArray(MediaSeriesSchema, response);
   }
 );
 
@@ -80,7 +79,9 @@ export const getFeaturedContentList = cache(
  * const trending = await getTrendingContent({ limit: 10, type: "anime" })
  */
 export const getTrendingContent = cache(
-  async (params?: Partial<ContentQuery>): Promise<{
+  async (
+    params?: Partial<ContentQuery>
+  ): Promise<{
     items: MediaSeries[];
     page: number;
     limit: number;
@@ -89,7 +90,7 @@ export const getTrendingContent = cache(
   }> => {
     const url = endpoint("content", "trending", params || {});
 
-    const response = await serverApi.get(url, {
+    const response = await serverApi.get<StandardResponse<unknown>>(url, {
       next: {
         revalidate: 300, // Cache 5 minutes
         tags: ["content-trending"],
@@ -100,7 +101,7 @@ export const getTrendingContent = cache(
       throw new Error(response.message || "Failed to fetch trending content");
     }
 
-    const items = ApiParser.parseResponseArray(MediaSeriesArraySchema, response);
+    const items = ApiParser.parseResponseArray(MediaSeriesSchema, response);
 
     return {
       items,
@@ -119,7 +120,9 @@ export const getTrendingContent = cache(
  * const latest = await getLatestContent({ limit: 10, type: "manga" })
  */
 export const getLatestContent = cache(
-  async (params?: Partial<ContentQuery>): Promise<{
+  async (
+    params?: Partial<ContentQuery>
+  ): Promise<{
     items: MediaSeries[];
     page: number;
     limit: number;
@@ -128,7 +131,7 @@ export const getLatestContent = cache(
   }> => {
     const url = endpoint("content", "latest", params || {});
 
-    const response = await serverApi.get(url, {
+    const response = await serverApi.get<StandardResponse<unknown>>(url, {
       next: {
         revalidate: 300, // Cache 5 minutes
         tags: ["content-latest"],
@@ -139,7 +142,7 @@ export const getLatestContent = cache(
       throw new Error(response.message || "Failed to fetch latest content");
     }
 
-    const items = ApiParser.parseResponseArray(MediaSeriesArraySchema, response);
+    const items = ApiParser.parseResponseArray(MediaSeriesSchema, response);
 
     return {
       items,
@@ -158,7 +161,9 @@ export const getLatestContent = cache(
  * const newContent = await getNewContent({ limit: 10, type: "novel" })
  */
 export const getNewContent = cache(
-  async (params?: Partial<ContentQuery>): Promise<{
+  async (
+    params?: Partial<ContentQuery>
+  ): Promise<{
     items: MediaSeries[];
     page: number;
     limit: number;
@@ -167,7 +172,7 @@ export const getNewContent = cache(
   }> => {
     const url = endpoint("content", "new", params || {});
 
-    const response = await serverApi.get(url, {
+    const response = await serverApi.get<StandardResponse<unknown>>(url, {
       next: {
         revalidate: 300, // Cache 5 minutes
         tags: ["content-new"],
@@ -178,7 +183,7 @@ export const getNewContent = cache(
       throw new Error(response.message || "Failed to fetch new content");
     }
 
-    const items = ApiParser.parseResponseArray(MediaSeriesArraySchema, response);
+    const items = ApiParser.parseResponseArray(MediaSeriesSchema, response);
 
     return {
       items,
@@ -197,7 +202,9 @@ export const getNewContent = cache(
  * const popular = await getPopularContent({ limit: 10 })
  */
 export const getPopularContent = cache(
-  async (params?: Partial<ContentQuery>): Promise<{
+  async (
+    params?: Partial<ContentQuery>
+  ): Promise<{
     items: MediaSeries[];
     page: number;
     limit: number;
@@ -206,7 +213,7 @@ export const getPopularContent = cache(
   }> => {
     const url = endpoint("content", "popular", params || {});
 
-    const response = await serverApi.get(url, {
+    const response = await serverApi.get<StandardResponse<unknown>>(url, {
       next: {
         revalidate: 300, // Cache 5 minutes
         tags: ["content-popular"],
@@ -217,7 +224,7 @@ export const getPopularContent = cache(
       throw new Error(response.message || "Failed to fetch popular content");
     }
 
-    const items = ApiParser.parseResponseArray(MediaSeriesArraySchema, response);
+    const items = ApiParser.parseResponseArray(MediaSeriesSchema, response);
 
     return {
       items,
@@ -236,7 +243,9 @@ export const getPopularContent = cache(
  * const library = await getUserLibrary({ page: 1, sort: "title" })
  */
 export const getUserLibrary = cache(
-  async (params?: Partial<ContentQuery>): Promise<{
+  async (
+    params?: Partial<ContentQuery>
+  ): Promise<{
     items: MediaSeries[];
     page: number;
     limit: number;
@@ -245,7 +254,7 @@ export const getUserLibrary = cache(
   }> => {
     const url = endpoint("content", "library", params || {});
 
-    const response = await serverApi.get(url, {
+    const response = await serverApi.get<StandardResponse<unknown>>(url, {
       next: {
         revalidate: 60, // Cache 1 minute
         tags: ["user-library"],
@@ -256,7 +265,7 @@ export const getUserLibrary = cache(
       throw new Error(response.message || "Failed to fetch user library");
     }
 
-    const items = ApiParser.parseResponseArray(MediaSeriesArraySchema, response);
+    const items = ApiParser.parseResponseArray(MediaSeriesSchema, response);
 
     return {
       items,
@@ -274,19 +283,21 @@ export const getUserLibrary = cache(
  * @example
  * const content = await getContentById("550e8400-e29b-41d4-a716-446655440000")
  */
-export const getContentById = cache(async (id: string): Promise<MediaSeries> => {
-  const url = endpoint("content", id);
+export const getContentById = cache(
+  async (id: string): Promise<MediaSeries> => {
+    const url = endpoint("content", id);
 
-  const response = await serverApi.get(url, {
-    next: {
-      revalidate: 300, // Cache 5 minutes
-      tags: [`content-${id}`, "content"],
-    },
-  });
+    const response = await serverApi.get<StandardResponse<unknown>>(url, {
+      next: {
+        revalidate: 300, // Cache 5 minutes
+        tags: [`content-${id}`, "content"],
+      },
+    });
 
-  if (!isSuccessResponse(response)) {
-    throw new Error(response.message || "Failed to fetch content");
+    if (!isSuccessResponse(response)) {
+      throw new Error(response.message || "Failed to fetch content");
+    }
+
+    return ApiParser.parse(MediaSeriesSchema, response);
   }
-
-  return ApiParser.parse(MediaSeriesSchema, response);
-});
+);

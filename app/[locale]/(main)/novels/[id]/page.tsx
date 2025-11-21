@@ -1,31 +1,31 @@
 "use client";
 
-import { StaticEditorView } from "@/components/editor/static-editor-view";
 import { Container } from "@/components/layout/Container";
 import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { StaticEditorView } from "@/features/editor/components/static-editor-view";
 import { Link } from "@/i18n/routing";
 import { formatNumberAbbreviated } from "@/lib/api/utils/number";
 import { cn } from "@/lib/utils";
 import {
-    BookOpen,
-    ChevronRight,
-    Clock,
-    Eye,
-    Heart,
-    Lock,
-    Star,
-    TrendingUp,
-    User,
+  BookOpen,
+  ChevronRight,
+  Clock,
+  Eye,
+  Heart,
+  Lock,
+  Star,
+  TrendingUp,
+  User,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -85,7 +85,8 @@ const novelData = {
     {
       id: "vol-1",
       title: "Volume 1: The Mystery Begins",
-      description: "Harry's second year starts with strange warnings and mysterious attacks.",
+      description:
+        "Harry's second year starts with strange warnings and mysterious attacks.",
       coverUrl: "/images/image-1.jpg",
       totalChapters: 6,
       chapters: [
@@ -136,7 +137,8 @@ const novelData = {
     {
       id: "vol-2",
       title: "Volume 2: Dark Secrets",
-      description: "The Chamber of Secrets is opened and terror spreads through Hogwarts.",
+      description:
+        "The Chamber of Secrets is opened and terror spreads through Hogwarts.",
       coverUrl: "/images/image-2.jpg",
       totalChapters: 6,
       chapters: [
@@ -187,7 +189,8 @@ const novelData = {
     {
       id: "vol-3",
       title: "Volume 3: The Truth Revealed",
-      description: "Harry discovers the shocking truth behind the Chamber of Secrets.",
+      description:
+        "Harry discovers the shocking truth behind the Chamber of Secrets.",
       coverUrl: "/images/image-5.jpg",
       totalChapters: 6,
       chapters: [
@@ -370,12 +373,11 @@ export default function NovelDetailPage() {
                     <span className="text-3xl font-bold">
                       {novelData.rating}
                     </span>
-                    <span className="text-sm text-muted-foreground">
-                      / 5.0
-                    </span>
+                    <span className="text-sm text-muted-foreground">/ 5.0</span>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {formatNumberAbbreviated(novelData.ratingCount)} {t("ratings")}
+                    {formatNumberAbbreviated(novelData.ratingCount)}{" "}
+                    {t("ratings")}
                   </p>
                 </div>
 
@@ -464,9 +466,12 @@ export default function NovelDetailPage() {
             {/* Volumes & Chapters (3-Level Hierarchy) */}
             <section className="space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold">{t("volumesAndChapters")}</h2>
+                <h2 className="text-2xl font-bold">
+                  {t("volumesAndChapters")}
+                </h2>
                 <p className="text-sm text-muted-foreground">
-                  {novelData.volumes.length} {t("volumes")} • {totalChapters} {t("chapters")}
+                  {novelData.volumes.length} {t("volumes")} • {totalChapters}{" "}
+                  {t("chapters")}
                 </p>
               </div>
 
@@ -588,7 +593,8 @@ export default function NovelDetailPage() {
                       ))}
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {formatNumberAbbreviated(novelData.ratingCount)} {t("ratings")}
+                      {formatNumberAbbreviated(novelData.ratingCount)}{" "}
+                      {t("ratings")}
                     </p>
                   </div>
 
@@ -606,10 +612,10 @@ export default function NovelDetailPage() {
                                 stars === 5
                                   ? 70
                                   : stars === 4
-                                    ? 20
-                                    : stars === 3
-                                      ? 8
-                                      : 2
+                                  ? 20
+                                  : stars === 3
+                                  ? 8
+                                  : 2
                               }%`,
                             }}
                           />
@@ -618,10 +624,10 @@ export default function NovelDetailPage() {
                           {stars === 5
                             ? "70%"
                             : stars === 4
-                              ? "20%"
-                              : stars === 3
-                                ? "8%"
-                                : "2%"}
+                            ? "20%"
+                            : stars === 3
+                            ? "8%"
+                            : "2%"}
                         </span>
                       </div>
                     ))}
@@ -643,9 +649,7 @@ export default function NovelDetailPage() {
                       <div className="flex-1 space-y-3">
                         <div className="flex items-start justify-between gap-2">
                           <div>
-                            <p className="font-semibold">
-                              {review.user.name}
-                            </p>
+                            <p className="font-semibold">{review.user.name}</p>
                             <div className="flex items-center gap-2 mt-1">
                               <div className="flex items-center gap-0.5">
                                 {[1, 2, 3, 4, 5].map((star) => (
@@ -698,7 +702,9 @@ export default function NovelDetailPage() {
                   </span>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <span className="text-muted-foreground">{t("published")}</span>
+                  <span className="text-muted-foreground">
+                    {t("published")}
+                  </span>
                   <span className="font-medium">{novelData.releaseYear}</span>
                 </div>
                 <div className="flex justify-between gap-4">

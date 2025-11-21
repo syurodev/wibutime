@@ -5,6 +5,7 @@ This guide explains how to migrate from the old Services layer to the new Querie
 ## Architecture Overview
 
 ### Old Pattern (Services)
+
 ```
 app/
   └─ components/
@@ -12,6 +13,7 @@ app/
 ```
 
 ### New Pattern (Queries + Actions)
+
 ```
 app/
   ├─ Server Components  ──→  Queries  ──→  API
@@ -29,6 +31,7 @@ app/
 ### 1. Genre Management
 
 #### Before (Services)
+
 ```tsx
 // Server Component
 import { GenreService } from "@/lib/api/services/admin/genre.service";
@@ -52,6 +55,7 @@ export function CreateGenreForm() {
 ```
 
 #### After (Queries + Actions)
+
 ```tsx
 // Server Component
 import { getGenres } from "@/lib/api/queries/genre";
@@ -77,6 +81,7 @@ export function CreateGenreForm() {
 ### 2. Author Management
 
 #### Before
+
 ```tsx
 // Server Component
 import { AuthorService } from "@/lib/api/services/admin/author.service";
@@ -93,6 +98,7 @@ await AuthorService.updateAuthor(id, { name: "Updated" });
 ```
 
 #### After
+
 ```tsx
 // Server Component
 import { getAuthors } from "@/lib/api/queries/author";
@@ -111,6 +117,7 @@ await updateAuthor(id, { name: "Updated" });
 ### 3. Artist Management
 
 #### Before
+
 ```tsx
 import { ArtistService } from "@/lib/api/services/admin/artist.service";
 
@@ -119,13 +126,14 @@ await ArtistService.deleteArtist(id);
 ```
 
 #### After
+
 ```tsx
 // Server Component
 import { getArtists } from "@/lib/api/queries/artist";
 const artists = await getArtists({ page: 1 });
 
 // Client Component
-"use client";
+("use client");
 import { deleteArtist } from "@/lib/api/actions/artist";
 await deleteArtist(id);
 ```
@@ -133,15 +141,20 @@ await deleteArtist(id);
 ### 4. Content Management
 
 #### Before
+
 ```tsx
 import { ContentService } from "@/lib/api/services/base-content/content.service";
 
 const featured = await ContentService.getFeatured();
 const trending = await ContentService.getTrending(10);
-const latest = await ContentService.getLatestPaginated({ page: 1, type: "anime" });
+const latest = await ContentService.getLatestPaginated({
+  page: 1,
+  type: "anime",
+});
 ```
 
 #### After
+
 ```tsx
 // Server Component
 import {
@@ -158,6 +171,7 @@ const latest = await getLatestContent({ page: 1, type: "anime" });
 ### 5. User Settings
 
 #### Before
+
 ```tsx
 import { UserSettingsService } from "@/lib/api/services/user/user-settings.service";
 
@@ -166,13 +180,14 @@ await UserSettingsService.updateSettings({ theme: "dark" });
 ```
 
 #### After
+
 ```tsx
 // Server Component
 import { getUserSettings } from "@/lib/api/queries/user";
 const settings = await getUserSettings();
 
 // Client Component
-"use client";
+("use client");
 import { updateUserSettings } from "@/lib/api/actions/user";
 await updateUserSettings({ theme: "dark" });
 ```
@@ -180,8 +195,9 @@ await updateUserSettings({ theme: "dark" });
 ### 6. History
 
 #### Before
+
 ```tsx
-import { HistoryService } from "@/lib/api/services/history/history.service";
+import { HistoryService } from "@/features/history/services/history.service";
 
 const history = await HistoryService.getRecentHistory(12);
 const paginated = await HistoryService.getHistoryPaginated({
@@ -192,9 +208,10 @@ const paginated = await HistoryService.getHistoryPaginated({
 ```
 
 #### After
+
 ```tsx
 // Server Component
-import { getRecentHistory, getHistory } from "@/lib/api/queries/history";
+import { getRecentHistory, getHistory } from "@/features/history/api/queries";
 
 const history = await getRecentHistory({ limit: 12 });
 const paginated = await getHistory({
@@ -207,6 +224,7 @@ const paginated = await getHistory({
 ### 7. Community
 
 #### Before
+
 ```tsx
 import { CommunityService } from "@/lib/api/services/community/community.service";
 
@@ -216,6 +234,7 @@ const milestones = await CommunityService.getMilestones(6);
 ```
 
 #### After
+
 ```tsx
 // Server Component
 import {
@@ -232,16 +251,19 @@ const milestones = await getMilestones({ limit: 6 });
 ## Migration Checklist
 
 ### Step 1: Find all Service imports
+
 ```bash
 # Search for service imports
 grep -r "from.*services" app/
 ```
 
 ### Step 2: Identify component type
+
 - **Server Component** → Replace with query
 - **Client Component** → Replace with action
 
 ### Step 3: Update imports
+
 ```tsx
 // Before
 import { GenreService } from "@/lib/api/services/admin/genre.service";
@@ -254,11 +276,13 @@ import { createGenre, updateGenre, deleteGenre } from "@/lib/api/actions/genre";
 ```
 
 ### Step 4: Update function calls
+
 - Remove `.Service` class name
 - Update method names to new function names
 - Adjust parameters if needed (check TypeScript errors)
 
 ### Step 5: Test thoroughly
+
 - Check all pages still load correctly
 - Test all mutations (create, update, delete)
 - Verify caching is working (check Network tab)
@@ -268,9 +292,11 @@ import { createGenre, updateGenre, deleteGenre } from "@/lib/api/actions/genre";
 ### Available Queries
 
 #### User
+
 - `getUserSettings()` - Get user settings
 
 #### Content
+
 - `getFeaturedContent()` - Get featured content
 - `getFeaturedContentList()` - Get featured list for carousel
 - `getTrendingContent(params?)` - Get trending content
@@ -281,23 +307,28 @@ import { createGenre, updateGenre, deleteGenre } from "@/lib/api/actions/genre";
 - `getContentById(id)` - Get content by ID
 
 #### Genre
+
 - `getGenres(params?)` - Get genres with pagination
 - `getGenreById(id)` - Get genre by ID
 
 #### Author
+
 - `getAuthors(params?)` - Get authors with pagination
 - `getAuthorById(id)` - Get author by ID
 
 #### Artist
+
 - `getArtists(params?)` - Get artists with pagination
 - `getArtistById(id)` - Get artist by ID
 
 #### History
+
 - `getRecentHistory(params?)` - Get recent history
 - `getHistory(params?)` - Get paginated history
 - `getHistoryById(id)` - Get history item by ID
 
 #### Community
+
 - `getTopCreators(params?)` - Get top creators
 - `getGenreStats(params?)` - Get genre statistics
 - `getRisingGenres(params?)` - Get rising genres
@@ -306,10 +337,12 @@ import { createGenre, updateGenre, deleteGenre } from "@/lib/api/actions/genre";
 ### Available Actions
 
 #### User
+
 - `updateUserSettings(data)` - Update settings
 - `resetUserSettings()` - Reset to defaults
 
 #### Content
+
 - `createContent(data)` - Create content
 - `updateContent(id, data)` - Update content
 - `deleteContent(id)` - Delete content
@@ -317,21 +350,25 @@ import { createGenre, updateGenre, deleteGenre } from "@/lib/api/actions/genre";
 - `removeFromFavorites(contentId)` - Remove from favorites
 
 #### Genre
+
 - `createGenre(data)` - Create genre
 - `updateGenre(id, data)` - Update genre
 - `deleteGenre(id)` - Delete genre
 
 #### Author
+
 - `createAuthor(data)` - Create author
 - `updateAuthor(id, data)` - Update author
 - `deleteAuthor(id)` - Delete author
 
 #### Artist
+
 - `createArtist(data)` - Create artist
 - `updateArtist(id, data)` - Update artist
 - `deleteArtist(id)` - Delete artist
 
 #### History
+
 - `updateHistory(data)` - Add/update history entry
 - `deleteHistory(id)` - Delete history entry
 - `clearHistory()` - Clear all history
@@ -348,15 +385,19 @@ import { createGenre, updateGenre, deleteGenre } from "@/lib/api/actions/genre";
 ## Troubleshooting
 
 ### "Cannot call Server Action from Server Component"
+
 **Solution**: Use queries for Server Components, actions for Client Components
 
 ### "Cannot access session in Client Component"
+
 **Solution**: Use Server Actions which run on server and have session access
 
 ### "Cache not invalidating"
+
 **Solution**: Check that action calls `revalidateTag()` with correct tag
 
 ### "TypeScript errors after migration"
+
 **Solution**: Check parameter types - some function signatures changed slightly
 
 ## Next Steps
