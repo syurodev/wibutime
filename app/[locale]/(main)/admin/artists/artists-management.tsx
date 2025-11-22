@@ -25,16 +25,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type {
-  Artist,
-  CreateArtistRequest,
-  UpdateArtistRequest,
-} from "@/lib/api/models/admin/artist";
+import { ArtistService } from "@/features/artist/services/artist.service";
 import {
+  Artist,
   ARTIST_SPECIALIZATION_LABELS,
   ArtistUtils,
-} from "@/lib/api/models/admin/artist";
-import { ArtistService } from "@/lib/api/services/admin/artist.service";
+  CreateArtistRequest,
+  UpdateArtistRequest,
+} from "@/features/artist/types/artist";
 import { ApiError } from "@/lib/api/utils/error-handler";
 import { DEFAULT_LIMIT, DEFAULT_PAGE } from "@/lib/constants/default";
 import {
@@ -123,7 +121,10 @@ export function ArtistsManagement() {
       setTotalPages(result.total_pages);
       setTotalItems(result.total_items);
     } catch (error) {
-      const message = error instanceof ApiError ? error.message : "Không thể tải danh sách hoạ sĩ";
+      const message =
+        error instanceof ApiError
+          ? error.message
+          : "Không thể tải danh sách hoạ sĩ";
       toast.error(message);
       setArtists([]);
       setTotalPages(1);
@@ -165,7 +166,8 @@ export function ArtistsManagement() {
       setFormData({ name: "", biography: "", specialization: "" });
       fetchArtists();
     } catch (error) {
-      const message = error instanceof ApiError ? error.message : "Không thể tạo hoạ sĩ";
+      const message =
+        error instanceof ApiError ? error.message : "Không thể tạo hoạ sĩ";
       toast.error(message);
     } finally {
       setSubmitting(false);
@@ -186,7 +188,8 @@ export function ArtistsManagement() {
       setFormData({ name: "", biography: "", specialization: "" });
       fetchArtists();
     } catch (error) {
-      const message = error instanceof ApiError ? error.message : "Không thể cập nhật hoạ sĩ";
+      const message =
+        error instanceof ApiError ? error.message : "Không thể cập nhật hoạ sĩ";
       toast.error(message);
     } finally {
       setSubmitting(false);
@@ -203,7 +206,8 @@ export function ArtistsManagement() {
       setSelectedArtist(null);
       fetchArtists();
     } catch (error) {
-      const message = error instanceof ApiError ? error.message : "Không thể xóa hoạ sĩ";
+      const message =
+        error instanceof ApiError ? error.message : "Không thể xóa hoạ sĩ";
       toast.error(message);
     } finally {
       setSubmitting(false);
@@ -264,17 +268,13 @@ export function ArtistsManagement() {
           <TableBody>
             {artists.map((artist) => (
               <TableRow key={artist.id}>
-                <TableCell className="font-medium">
-                  {artist.name}
-                </TableCell>
+                <TableCell className="font-medium">{artist.name}</TableCell>
                 <TableCell className="text-muted-foreground">
                   {artist.slug}
                 </TableCell>
                 <TableCell>
                   <Badge variant="outline">
-                    {ArtistUtils.getSpecializationLabel(
-                      artist.specialization
-                    )}
+                    {ArtistUtils.getSpecializationLabel(artist.specialization)}
                   </Badge>
                 </TableCell>
                 <TableCell>
@@ -382,9 +382,7 @@ export function ArtistsManagement() {
 
       {/* Table */}
       <Card>
-        <CardContent className="p-0">
-          {renderTableContent()}
-        </CardContent>
+        <CardContent className="p-0">{renderTableContent()}</CardContent>
       </Card>
 
       {/* Create Dialog */}

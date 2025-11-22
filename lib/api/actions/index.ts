@@ -5,7 +5,6 @@
 
 export * from "@/features/genre/api/actions";
 export * from "@/features/history/api/actions";
-export * from "./artist";
 export * from "./author";
 export * from "./content";
 export * from "./user";
