@@ -13,6 +13,7 @@ import { HistoryGrid } from "@/features/history/components/HistoryGrid";
 import { HistoryGridSkeleton } from "@/features/history/components/HistoryGridSkeleton";
 import { HistoryService } from "@/features/history/services/history.service";
 import type { CONTENT_TYPE } from "@/lib/constants/default";
+import { getCurrentTime } from "@/lib/utils/time-cache";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
@@ -55,8 +56,9 @@ async function HistoryContent({
     limit: 15,
     sort,
   });
+  const currentTime = await getCurrentTime();
 
-  return <HistoryGrid history={items} />;
+  return <HistoryGrid history={items} currentTime={currentTime} />;
 }
 
 /**

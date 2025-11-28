@@ -1,0 +1,57 @@
+{
+  "title": "Team Workspace",
+  "description": "Overview of team publishing activities",
+  "teamContent": "Team content",
+  "stats": {
+    "totalNovels": "Total Novels",
+    "totalChapters": "Total Chapters",
+    "totalViews": "Total Views",
+    "averageRating": "Avg Rating"
+  },
+  "novels": {
+    "title": "Team Novels",
+    "description": "Manage novels owned by the team",
+    "createNew": "Create New Novel",
+    "empty": {
+      "title": "No novels yet",
+      "description": "Start your team's creative journey by creating the first novel"
+    }
+  },
+  "createNovel": {
+    "title": "Create New Novel",
+    "description": "Create novel for team",
+    "backToList": "Go back",
+    "form": {
+      "owner": "Owner:",
+      "ownerTeam": "Team",
+      "ownerHint": "This novel will be created under team ownership"
+    }
+  },
+  "volumes": {
+    "title": "Manage Volumes",
+    "backToList": "Back to list",
+    "createNew": "Create New Volume"
+  },
+  "createVolume": {
+    "title": "Create New Volume",
+    "description": "Add new volume to novel"
+  },
+  "createChapter": {
+    "title": "Write New Chapter",
+    "backToList": "Back to list"
+  },
+  "sidebar": {
+    "overview": "Overview",
+    "teamNovels": "Team Novels",
+    "members": "Members",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "quickActions": "Quick Actions"
+  },
+  "quickActions": {
+    "createNovel": "Create New Novel",
+    "createNovelDesc": "Start a new novel for the team",
+    "manageNovels": "Manage Novels",
+    "manageNovelsDesc": "View and edit team novels"
+  }
+}

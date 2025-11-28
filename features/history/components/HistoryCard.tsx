@@ -11,7 +11,7 @@ import { getContentBadgeVariant } from "@/lib/utils/get-content-bg";
 import { getImageUrlWithDefault } from "@/lib/utils/get-image-url-with-default";
 import { getInitials } from "@/lib/utils/get-initials";
 import { getMediaResumePath } from "@/lib/utils/get-media-resume-path";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistance } from "date-fns";
 import { vi } from "date-fns/locale";
 import {
   BookOpen,
@@ -30,6 +30,7 @@ export interface HistoryCardProps {
   readonly className?: string;
   readonly resumeHref?: string;
   readonly onRemove?: (item: HistoryMedia) => void;
+  readonly currentTime?: number;
 }
 
 type ResumeMeta = {
@@ -67,19 +68,23 @@ export const HistoryCard = ({
   className,
   resumeHref,
   onRemove,
+  currentTime,
 }: HistoryCardProps) => {
   const { resumeMeta, href, relativeTime } = useMemo(() => {
     const meta = getResumeMeta(item);
     const path = resumeHref ?? getMediaResumePath(item);
     let timeStr = null;
-    if (item.content_updated_at) {
+    if (item.content_updated_at && currentTime) {
       const date = new Date(item.content_updated_at);
       if (!Number.isNaN(date.getTime())) {
-        timeStr = formatDistanceToNow(date, { addSuffix: true, locale: vi });
+        timeStr = formatDistance(date, currentTime, {
+          addSuffix: true,
+          locale: vi,
+        });
       }
     }
     return { resumeMeta: meta, href: path, relativeTime: timeStr };
-  }, [item, resumeHref]);
+  }, [item, resumeHref, currentTime]);
 
   return (
     <div

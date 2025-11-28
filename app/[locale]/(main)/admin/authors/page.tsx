@@ -4,6 +4,7 @@
  */
 
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { AuthorsManagement } from "./authors-management";
 
 export const metadata: Metadata = {
@@ -20,7 +21,9 @@ export default function AdminAuthorsPage() {
           Thêm, sửa và xóa các tác giả truyện
         </p>
       </div>
-      <AuthorsManagement />
+      <Suspense fallback={<div>Loading...</div>}>
+        <AuthorsManagement />
+      </Suspense>
     </div>
   );
 }

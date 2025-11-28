@@ -1,0 +1,187 @@
+{
+  "title": "Dashboard",
+  "description": "Overview of your publishing activities",
+  "stats": {
+    "totalNovels": "Total Novels",
+    "totalChapters": "Total Chapters",
+    "totalViews": "Total Views",
+    "averageRating": "Avg Rating",
+    "activeNovels": "Active Novels",
+    "trends": {
+      "vsLastMonth": "vs last month",
+      "favorites": "favorites"
+    }
+  },
+  "charts": {
+    "viewsAndChapters": {
+      "title": "Views & New Chapters",
+      "description": "Track growth trends over time"
+    },
+    "statusBreakdown": {
+      "title": "Status Distribution",
+      "noData": "No data available"
+    },
+    "topNovels": {
+      "title": "Top Novels",
+      "viewAll": "View All",
+      "noNovels": "No novels yet",
+      "headers": {
+        "title": "Title",
+        "status": "Status",
+        "views": "Views",
+        "favorites": "Favorites",
+        "rating": "Rating",
+        "chapters": "Chapters"
+      }
+    },
+    "publishingActivity": {
+      "title": "Publishing Activity",
+      "description": "Chapters published per week",
+      "totalChapters": "Total Chapters",
+      "totalWords": "Total Words"
+    },
+    "engagement": {
+      "title": "User Engagement",
+      "description": "Analyze content engagement levels",
+      "totalInteractions": "Total Interactions",
+      "metrics": {
+        "views": "Views",
+        "favorites": "Favorites",
+        "ratings": "Ratings",
+        "comments": "Comments"
+      }
+    },
+    "dateRanges": {
+      "7d": "7 days",
+      "30d": "30 days",
+      "90d": "90 days",
+      "1y": "1 year"
+    }
+  },
+  "novels": {
+    "title": "My Novels",
+    "description": "Manage personal novels (owner: you)",
+    "createNew": "Create New Novel",
+    "empty": {
+      "title": "No novels yet",
+      "description": "Start your creative journey by creating your first novel"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    }
+  },
+  "createNovel": {
+    "title": "Create New Novel",
+    "description": "Create personal novel (Owner: You)",
+    "backToList": "Go back",
+    "form": {
+      "basicInfo": "Basic Information",
+      "title": "Title",
+      "titlePlaceholder": "Enter novel title...",
+      "originalLanguage": "Original Language",
+      "languagePlaceholder": "Select language",
+      "languages": {
+        "vi": "Vietnamese",
+        "en": "English",
+        "ja": "Japanese",
+        "ko": "Korean",
+        "zh": "Chinese"
+      },
+      "synopsis": "Synopsis",
+      "synopsisPlaceholder": "Enter synopsis...",
+      "synopsisHint": "Brief summary of the novel content",
+      "owner": "Owner:",
+      "ownerPersonal": "You (Personal)",
+      "ownerHint": "This novel will be created under your personal ownership",
+      "required": "*"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "create": "Create Novel",
+      "creating": "Creating..."
+    },
+    "messages": {
+      "success": "Novel created successfully!",
+      "error": "An error occurred while creating the novel"
+    }
+  },
+  "volumes": {
+    "title": "Manage Volumes",
+    "backToList": "Back to list",
+    "createNew": "Create New Volume",
+    "empty": {
+      "title": "No volumes yet",
+      "description": "Create the first volume for this novel"
+    },
+    "stats": {
+      "chapters": "chapters",
+      "words": "words"
+    }
+  },
+  "createVolume": {
+    "title": "Create New Volume",
+    "description": "Add new volume to novel",
+    "backToList": "Go back",
+    "form": {
+      "info": "Volume Information",
+      "volumeNumber": "Volume Number",
+      "volumeNumberPlaceholder": "1",
+      "volumeNumberHint": "Volume sequence number (e.g., 1, 2, 3...)",
+      "title": "Title",
+      "titlePlaceholder": "Enter volume title...",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter volume description (optional)...",
+      "required": "*"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "create": "Create Volume",
+      "creating": "Creating..."
+    },
+    "messages": {
+      "success": "Volume created successfully!",
+      "error": "An error occurred while creating the volume"
+    }
+  },
+  "createChapter": {
+    "title": "Write New Chapter",
+    "backToList": "Back to list",
+    "placeholder": "Start writing your content...",
+    "wordCount": "words",
+    "autosave": {
+      "saving": "Saving...",
+      "saved": "Saved",
+      "error": "Save error"
+    }
+  },
+  "status": {
+    "draft": "Draft",
+    "ongoing": "Ongoing",
+    "completed": "Completed",
+    "hiatus": "Hiatus",
+    "dropped": "Dropped"
+  },
+  "common": {
+    "chapters": "chapters",
+    "words": "words",
+    "ago": "ago",
+    "viewCount": "views"
+  },
+  "quickActions": {
+    "title": "Quick Actions",
+    "createNovel": "Create New Novel",
+    "createNovelDesc": "Start writing your own novel",
+    "manageNovels": "Manage Novels",
+    "manageNovelsDesc": "View and edit your novels"
+  },
+  "sidebar": {
+    "overview": "Overview",
+    "myNovels": "My Novels",
+    "analytics": "Analytics",
+    "profile": "Profile",
+    "settings": "Settings",
+    "quickActions": "Quick Actions",
+    "personalContent": "Personal content"
+  }
+}

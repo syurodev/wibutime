@@ -9,9 +9,14 @@ import { EnhancedHistoryCard } from "./EnhancedHistoryCard";
 export interface HistoryGridProps {
   readonly history: HistoryMedia[];
   readonly className?: string;
+  readonly currentTime?: number;
 }
 
-export function HistoryGrid({ history, className }: HistoryGridProps) {
+export function HistoryGrid({
+  history,
+  className,
+  currentTime,
+}: HistoryGridProps) {
   if (!history || history.length === 0) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
@@ -27,7 +32,11 @@ export function HistoryGrid({ history, className }: HistoryGridProps) {
       }`}
     >
       {history.map((item) => (
-        <EnhancedHistoryCard key={item.id} item={item} />
+        <EnhancedHistoryCard
+          key={item.id}
+          item={item}
+          currentTime={currentTime}
+        />
       ))}
     </div>
   );

@@ -1,0 +1,187 @@
+{
+  "title": "Dashboard",
+  "description": "Tổng quan hoạt động xuất bản của bạn",
+  "stats": {
+    "totalNovels": "Tổng Novels",
+    "totalChapters": "Tổng Chapters",
+    "totalViews": "Tổng lượt xem",
+    "averageRating": "Đánh giá TB",
+    "activeNovels": "Novels đang ra",
+    "trends": {
+      "vsLastMonth": "so với tháng trước",
+      "favorites": "yêu thích"
+    }
+  },
+  "charts": {
+    "viewsAndChapters": {
+      "title": "Lượt xem & Chương mới",
+      "description": "Theo dõi xu hướng tăng trưởng theo thời gian"
+    },
+    "statusBreakdown": {
+      "title": "Phân bố trạng thái",
+      "noData": "Chưa có dữ liệu"
+    },
+    "topNovels": {
+      "title": "Novel nổi bật",
+      "viewAll": "Xem tất cả",
+      "noNovels": "Chưa có novel nào",
+      "headers": {
+        "title": "Tiêu đề",
+        "status": "Trạng thái",
+        "views": "Lượt xem",
+        "favorites": "Yêu thích",
+        "rating": "Đánh giá",
+        "chapters": "Chương"
+      }
+    },
+    "publishingActivity": {
+      "title": "Hoạt động xuất bản",
+      "description": "Số chương xuất bản theo tuần",
+      "totalChapters": "Tổng chương",
+      "totalWords": "Tổng từ"
+    },
+    "engagement": {
+      "title": "Tương tác người dùng",
+      "description": "Phân tích mức độ tương tác với nội dung",
+      "totalInteractions": "Tổng tương tác",
+      "metrics": {
+        "views": "Lượt xem",
+        "favorites": "Yêu thích",
+        "ratings": "Đánh giá",
+        "comments": "Bình luận"
+      }
+    },
+    "dateRanges": {
+      "7d": "7 ngày",
+      "30d": "30 ngày",
+      "90d": "90 ngày",
+      "1y": "1 năm"
+    }
+  },
+  "novels": {
+    "title": "Novels của tôi",
+    "description": "Quản lý novels cá nhân (owner: bạn)",
+    "createNew": "Tạo Novel mới",
+    "empty": {
+      "title": "Chưa có novel nào",
+      "description": "Bắt đầu hành trình sáng tạo của bạn bằng cách tạo novel đầu tiên"
+    },
+    "actions": {
+      "edit": "Chỉnh sửa",
+      "delete": "Xóa"
+    }
+  },
+  "createNovel": {
+    "title": "Tạo Novel mới",
+    "description": "Tạo novel cá nhân (Chủ sở hữu: Bạn)",
+    "backToList": "Quay lại",
+    "form": {
+      "basicInfo": "Thông tin cơ bản",
+      "title": "Tiêu đề",
+      "titlePlaceholder": "Nhập tiêu đề novel...",
+      "originalLanguage": "Ngôn ngữ gốc",
+      "languagePlaceholder": "Chọn ngôn ngữ",
+      "languages": {
+        "vi": "Tiếng Việt",
+        "en": "English",
+        "ja": "日本語 (Japanese)",
+        "ko": "한국어 (Korean)",
+        "zh": "中文 (Chinese)"
+      },
+      "synopsis": "Tóm tắt",
+      "synopsisPlaceholder": "Nhập tóm tắt nội dung...",
+      "synopsisHint": "Tóm tắt ngắn gọn về nội dung novel",
+      "owner": "Chủ sở hữu:",
+      "ownerPersonal": "Bạn (Personal)",
+      "ownerHint": "Novel này sẽ được tạo dưới quyền sở hữu cá nhân của bạn",
+      "required": "*"
+    },
+    "actions": {
+      "cancel": "Hủy",
+      "create": "Tạo Novel",
+      "creating": "Đang tạo..."
+    },
+    "messages": {
+      "success": "Novel đã được tạo thành công!",
+      "error": "Có lỗi xảy ra khi tạo novel"
+    }
+  },
+  "volumes": {
+    "title": "Quản lý Volumes",
+    "backToList": "Quay lại danh sách",
+    "createNew": "Tạo Volume mới",
+    "empty": {
+      "title": "Chưa có volume nào",
+      "description": "Tạo volume đầu tiên cho novel này"
+    },
+    "stats": {
+      "chapters": "chương",
+      "words": "từ"
+    }
+  },
+  "createVolume": {
+    "title": "Tạo Volume mới",
+    "description": "Thêm volume mới cho novel",
+    "backToList": "Quay lại",
+    "form": {
+      "info": "Thông tin Volume",
+      "volumeNumber": "Số thứ tự Volume",
+      "volumeNumberPlaceholder": "1",
+      "volumeNumberHint": "Số thứ tự của volume (VD: 1, 2, 3...)",
+      "title": "Tiêu đề",
+      "titlePlaceholder": "Nhập tiêu đề volume...",
+      "description": "Mô tả",
+      "descriptionPlaceholder": "Nhập mô tả volume (tùy chọn)...",
+      "required": "*"
+    },
+    "actions": {
+      "cancel": "Hủy",
+      "create": "Tạo Volume",
+      "creating": "Đang tạo..."
+    },
+    "messages": {
+      "success": "Volume đã được tạo thành công!",
+      "error": "Có lỗi xảy ra khi tạo volume"
+    }
+  },
+  "createChapter": {
+    "title": "Viết Chapter mới",
+    "backToList": "Quay lại danh sách",
+    "placeholder": "Bắt đầu viết nội dung của bạn...",
+    "wordCount": "từ",
+    "autosave": {
+      "saving": "Đang lưu...",
+      "saved": "Đã lưu",
+      "error": "Lỗi khi lưu"
+    }
+  },
+  "status": {
+    "draft": "Nháp",
+    "ongoing": "Đang ra",
+    "completed": "Hoàn thành",
+    "hiatus": "Tạm ngưng",
+    "dropped": "Đã bỏ"
+  },
+  "common": {
+    "chapters": "chương",
+    "words": "từ",
+    "ago": "trước",
+    "viewCount": "lượt xem"
+  },
+  "quickActions": {
+    "title": "Hành động nhanh",
+    "createNovel": "Tạo Novel mới",
+    "createNovelDesc": "Bắt đầu viết novel của riêng bạn",
+    "manageNovels": "Quản lý Novels",
+    "manageNovelsDesc": "Xem và chỉnh sửa novels của bạn"
+  },
+  "sidebar": {
+    "overview": "Tổng quan",
+    "myNovels": "Novels của tôi",
+    "analytics": "Thống kê",
+    "profile": "Hồ sơ",
+    "settings": "Cài đặt",
+    "quickActions": "Hành động nhanh",
+    "personalContent": "Nội dung cá nhân"
+  }
+}

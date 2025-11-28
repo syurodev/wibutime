@@ -15,7 +15,7 @@ import {
 import { getImageUrlWithDefault } from "@/lib/utils/get-image-url-with-default";
 import { getInitials } from "@/lib/utils/get-initials";
 import { getMediaResumePath } from "@/lib/utils/get-media-resume-path";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistance } from "date-fns";
 import { vi } from "date-fns/locale";
 import {
   BookOpen,
@@ -38,6 +38,7 @@ export interface EnhancedHistoryCardProps {
   readonly className?: string;
   readonly resumeHref?: string;
   readonly onRemove?: (item: HistoryMedia) => void;
+  readonly currentTime?: number;
 }
 
 type ResumeMeta = {
@@ -113,6 +114,7 @@ export const EnhancedHistoryCard = ({
   className,
   resumeHref,
   onRemove,
+  currentTime,
 }: EnhancedHistoryCardProps) => {
   const t = useTranslations("history");
 
@@ -122,10 +124,13 @@ export const EnhancedHistoryCard = ({
       const path = resumeHref ?? getMediaResumePath(item);
 
       let timeStr = null;
-      if (item.last_viewed_at) {
+      if (item.last_viewed_at && currentTime) {
         const date = new Date(item.last_viewed_at);
         if (!Number.isNaN(date.getTime())) {
-          timeStr = formatDistanceToNow(date, { addSuffix: true, locale: vi });
+          timeStr = formatDistance(date, currentTime, {
+            addSuffix: true,
+            locale: vi,
+          });
         }
       }
 
@@ -155,7 +160,7 @@ export const EnhancedHistoryCard = ({
         hasNewUpdate: hasUpdate,
         progressPercentage: progress,
       };
-    }, [item, resumeHref]);
+    }, [item, resumeHref, currentTime]);
 
   return (
     <div

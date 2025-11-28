@@ -8,8 +8,9 @@
 import { useAuth } from "@/lib/hooks/use-auth";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { User, Settings, LogOut, LogIn } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { User, Settings, LogOut, LogIn, LayoutDashboard, Users } from "lucide-react";
+import { useRouter } from "@/i18n/routing";
+import { Separator } from "@/components/ui/separator";
 
 interface UserSectionProps {
   /**
@@ -40,6 +41,18 @@ export function UserSection({ onActionClick }: UserSectionProps) {
 
   const handleSettings = () => {
     router.push("/settings");
+    onActionClick?.();
+  };
+
+  const handleDashboard = () => {
+    router.push("/dashboard");
+    onActionClick?.();
+  };
+
+  const handleWorkspace = () => {
+    // TODO: If user has multiple tenants, show a selector
+    // For now, navigate to a tenant selector or first tenant
+    router.push("/workspace/demo-tenant"); // Replace with actual tenant selection
     onActionClick?.();
   };
 
@@ -92,6 +105,29 @@ export function UserSection({ onActionClick }: UserSectionProps) {
           </div>
         </div>
       </div>
+
+      {/* Workspace Links */}
+      <div className="px-1">
+        <Button
+          variant="ghost"
+          className="w-full justify-start h-9 px-2"
+          onClick={handleDashboard}
+        >
+          <LayoutDashboard className="h-4 w-4 mr-2" />
+          <span className="text-sm">My Dashboard</span>
+        </Button>
+
+        <Button
+          variant="ghost"
+          className="w-full justify-start h-9 px-2"
+          onClick={handleWorkspace}
+        >
+          <Users className="h-4 w-4 mr-2" />
+          <span className="text-sm">Team Workspace</span>
+        </Button>
+      </div>
+
+      <Separator className="my-1" />
 
       {/* Action Buttons */}
       <div className="px-1">

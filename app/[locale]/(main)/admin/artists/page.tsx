@@ -4,6 +4,7 @@
  */
 
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { ArtistsManagement } from "./artists-management";
 
 export const metadata: Metadata = {
@@ -20,7 +21,9 @@ export default function AdminArtistsPage() {
           Thêm, sửa và xóa các hoạ sĩ minh họa
         </p>
       </div>
-      <ArtistsManagement />
+      <Suspense fallback={<div>Loading...</div>}>
+        <ArtistsManagement />
+      </Suspense>
     </div>
   );
 }

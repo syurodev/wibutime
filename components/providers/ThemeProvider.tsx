@@ -9,9 +9,9 @@
 
 "use client";
 
+import { useUserSettingsStore } from "@/lib/stores/user-settings.store";
 import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes";
 import { useEffect } from "react";
-import { useUserSettingsStore } from "@/lib/stores/user-settings.store";
 
 interface ThemeProviderProps {
   readonly children: React.ReactNode;
@@ -37,13 +37,16 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 function ThemeSync() {
   // Subscribe to theme changes from UserSettings store
   const userTheme = useUserSettingsStore((state) => state.theme);
+  const isHydrated = useUserSettingsStore((state) => state.isHydrated);
   // Get next-themes setTheme function
   const { setTheme } = useTheme();
 
   useEffect(() => {
-    // Sync UserSettings theme to next-themes
-    setTheme(userTheme);
-  }, [userTheme, setTheme]);
+    // Sync UserSettings theme to next-themes only when hydrated
+    if (isHydrated) {
+      setTheme(userTheme);
+    }
+  }, [userTheme, setTheme, isHydrated]);
 
   return null;
 }

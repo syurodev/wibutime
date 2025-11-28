@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import type { HistoryMedia } from "@/features/history/types/history-content";
 import { ContinueCarousel } from "@/features/home/components/ContinueCarousel";
 import { Link } from "@/i18n/routing";
+import { getCurrentTime } from "@/lib/utils/time-cache";
 import { ArrowRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
@@ -12,6 +13,7 @@ export interface ContinueSectionProps {
 
 export async function ContinueSection({ history }: ContinueSectionProps) {
   const t = await getTranslations("home");
+  const currentTime = await getCurrentTime();
 
   return (
     <section className="w-full py-10">
@@ -34,7 +36,7 @@ export async function ContinueSection({ history }: ContinueSectionProps) {
         </div>
 
         {history && history.length > 0 ? (
-          <ContinueCarousel history={history} />
+          <ContinueCarousel history={history} currentTime={currentTime} />
         ) : (
           <div className="rounded-2xl border border-dashed border-muted-foreground/40 p-10 text-center text-sm text-muted-foreground">
             {t("continue.empty")}

@@ -12,9 +12,13 @@ import type { HistoryMedia } from "@/features/history/types/history-content";
 
 export interface ContinueCarouselProps {
   readonly history: HistoryMedia[];
+  readonly currentTime: number;
 }
 
-export function ContinueCarousel({ history }: ContinueCarouselProps) {
+export function ContinueCarousel({
+  history,
+  currentTime,
+}: ContinueCarouselProps) {
   if (!history || history.length === 0) {
     return null;
   }
@@ -33,7 +37,11 @@ export function ContinueCarousel({ history }: ContinueCarouselProps) {
             key={item.id}
             className="basis-full pl-4 sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
           >
-            <HistoryCard item={item} className="h-full" />
+            <HistoryCard
+              item={item}
+              className="h-full"
+              currentTime={currentTime}
+            />
           </CarouselItem>
         ))}
       </CarouselContent>
