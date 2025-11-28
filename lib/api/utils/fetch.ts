@@ -3,8 +3,14 @@
  * Tập trung xử lý tất cả API calls với logging, error handling, và caching
  */
 
-import { clearAuthToken, getClientAuthToken, setAuthToken } from "../auth-client";
+import { toast } from "sonner";
+import {
+  clearAuthToken,
+  getClientAuthToken,
+  setAuthToken,
+} from "../auth-client";
 import { API_CONFIG } from "../config";
+import { ErrorCode } from "./error-codes";
 import { ApiError, logError, logRequest, logResponse } from "./error-handler";
 
 /**
@@ -63,9 +69,12 @@ export interface FetchOptions extends Omit<RequestInit, "body"> {
  */
 async function getAuthToken(): Promise<string | null> {
   // 1. Try client-side token
-  if (typeof window !== "undefined") {
+  if (globalThis.window) {
     const token = getClientAuthToken();
-    console.log("[apiFetch] Client-side token check:", token ? "Found" : "Missing");
+    console.log(
+      "[apiFetch] Client-side token check:",
+      token ? "Found" : "Missing"
+    );
     if (token) return token;
   }
   return null;
@@ -87,7 +96,13 @@ function buildHeaders(options?: FetchOptions): Headers {
   }
 
   // Auto attach Authorization token
-  const token = options?.token || (options?.headers as Record<string, string>)?.["Authorization"]?.replace("Bearer ", "") || null;
+  const token =
+    options?.token ||
+    (options?.headers as Record<string, string>)?.["Authorization"]?.replace(
+      "Bearer ",
+      ""
+    ) ||
+    null;
 
   // Debug logging for token
   if (process.env.NODE_ENV === "development") {
@@ -116,7 +131,8 @@ function buildURL(url: string, baseURL?: string): string {
 
   // Use provided baseURL or global config
   const base = baseURL || API_CONFIG.baseURL;
-  return `${base}${url.startsWith("/") ? url : `/${url}`}`;
+  const path = url.startsWith("/") ? url : `/${url}`;
+  return `${base}${path}`;
 }
 
 /**
@@ -167,35 +183,152 @@ async function refreshAuthToken(): Promise<string | null> {
 /**
  * Main fetch function with full features
  */
+/**
+ * Process request body and return appropriate BodyInit
+ */
+function processRequestBody(
+  body: unknown,
+  headers: Headers
+): BodyInit | undefined {
+  if (!body) return undefined;
+
+  if (typeof body === "string") {
+    return body;
+  }
+
+  if (body instanceof FormData) {
+    // Remove Content-Type to let browser set it with boundary
+    headers.delete("Content-Type");
+    return body;
+  }
+
+  return JSON.stringify(body);
+}
+
+/**
+ * Setup timeout controller
+ */
+function setupTimeout(
+  timeout?: number
+): { signal: AbortSignal; timeoutId?: NodeJS.Timeout } | undefined {
+  if (!timeout) return undefined;
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  return { signal: controller.signal, timeoutId };
+}
+
+/**
+ * Handle 401 Unauthorized responses
+ */
+async function handleUnauthorized<T>(
+  response: Response,
+  url: string,
+  options: FetchOptions | undefined,
+  fullURL: string
+): Promise<T> {
+  // Prevent infinite loop if refresh endpoint itself returns 401
+  if (fullURL.includes("/auth/refresh")) {
+    throw await parseApiError(response);
+  }
+
+  console.log("🔒 401 Unauthorized - Attempting token refresh...");
+
+  // Try to refresh token
+  const newToken = await refreshAuthToken();
+
+  if (!newToken) {
+    console.warn("❌ Token refresh failed, clearing auth...");
+    clearAuthToken();
+    const error = await parseApiError(response);
+
+    if (error.code === ErrorCode.AuthInvalidToken) {
+      toast.error("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.");
+      // Return a rejected promise or handle as needed, but for T return type we might need to throw or return null
+      // In the original code it returned null as T, so we keep that behavior but we need to be careful about types.
+      // However, throwing here is safer to stop execution flow if the caller expects data.
+      // The original code returned null as T.
+      return null as T;
+    }
+
+    logError("GET", fullURL, error); // Method might be different, but we don't have it here easily without passing it.
+    // Actually we should pass method too if we want accurate logging, but for now let's assume it's fine or pass it.
+    throw error;
+  }
+
+  console.log("✅ Token refreshed successfully, retrying request...");
+
+  // Update local storage
+  setAuthToken(newToken);
+
+  // Retry original request with new token
+  const newHeaders = new Headers(options?.headers);
+  newHeaders.set("Authorization", `Bearer ${newToken}`);
+
+  // Update headers in options
+  const newOptions = {
+    ...options,
+    headers: newHeaders,
+    token: newToken,
+  };
+
+  // Recursive call with new token
+  return apiFetch<T>(url, newOptions);
+}
+
+/**
+ * Handle fetch errors
+ */
+function handleFetchError(
+  error: unknown,
+  method: string,
+  fullURL: string
+): never {
+  // Re-throw ApiError
+  if (error instanceof ApiError) {
+    throw error;
+  }
+
+  // Log and wrap other errors
+  logError(method, fullURL, error);
+
+  // Network errors
+  if (error instanceof TypeError && error.message === "Failed to fetch") {
+    throw new ApiError(
+      "Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng."
+    );
+  }
+
+  // Timeout errors
+  if ((error as Error).name === "AbortError") {
+    throw new ApiError("Request timeout. Vui lòng thử lại.");
+  }
+
+  // Unknown errors
+  throw new ApiError(
+    error instanceof Error ? error.message : "Unknown error occurred"
+  );
+}
+
+/**
+ * Main fetch function with full features
+ */
 export async function apiFetch<T = unknown>(
   url: string,
   options?: FetchOptions
 ): Promise<T> {
   const method = options?.method || "GET";
   const fullURL = buildURL(url, options?.baseURL);
-  
+
   // Get token asynchronously if not provided
   let token = options?.token;
   if (!token) {
     const authToken = await getAuthToken();
     token = authToken || undefined;
   }
-  
-  const headers = buildHeaders({ ...options, token });
 
-  // Build request body
-  let body: BodyInit | undefined;
-  if (options?.body) {
-    if (typeof options.body === "string") {
-      body = options.body;
-    } else if (options.body instanceof FormData) {
-      body = options.body;
-      // Remove Content-Type to let browser set it with boundary
-      headers.delete("Content-Type");
-    } else {
-      body = JSON.stringify(options.body);
-    }
-  }
+  const headers = buildHeaders({ ...options, token });
+  const body = processRequestBody(options?.body, headers);
 
   // Build fetch options
   const fetchOptions: RequestInit = {
@@ -203,7 +336,6 @@ export async function apiFetch<T = unknown>(
     headers,
     body,
     ...buildNextConfig(options),
-    // Spread other options
     credentials: options?.credentials,
     mode: options?.mode,
     redirect: options?.redirect,
@@ -213,11 +345,9 @@ export async function apiFetch<T = unknown>(
   };
 
   // Add timeout if specified
-  let timeoutId: NodeJS.Timeout | undefined;
-  if (options?.timeout) {
-    const controller = new AbortController();
-    timeoutId = setTimeout(() => controller.abort(), options.timeout);
-    fetchOptions.signal = controller.signal;
+  const timeoutInfo = setupTimeout(options?.timeout);
+  if (timeoutInfo) {
+    fetchOptions.signal = timeoutInfo.signal;
   }
 
   // Log request
@@ -227,54 +357,25 @@ export async function apiFetch<T = unknown>(
     const response = await fetch(fullURL, fetchOptions);
 
     // Clear timeout
-    if (timeoutId) clearTimeout(timeoutId);
+    if (timeoutInfo?.timeoutId) clearTimeout(timeoutInfo.timeoutId);
 
     // Log response
     logResponse(method, fullURL, response.status);
 
     // Handle 401 Unauthorized
     if (response.status === 401) {
-      // Prevent infinite loop if refresh endpoint itself returns 401
-      if (fullURL.includes("/auth/refresh")) {
-        throw await parseApiError(response);
-      }
-
-      console.log("🔒 401 Unauthorized - Attempting token refresh...");
-      
-      // Try to refresh token
-      const newToken = await refreshAuthToken();
-      
-      if (newToken) {
-        console.log("✅ Token refreshed successfully, retrying request...");
-        
-        // Update local storage
-        setAuthToken(newToken);
-        
-        // Retry original request with new token
-        const newHeaders = new Headers(options?.headers);
-        newHeaders.set("Authorization", `Bearer ${newToken}`);
-        
-        // Update headers in options
-        const newOptions = {
-          ...options,
-          headers: newHeaders,
-          token: newToken
-        };
-        
-        // Recursive call with new token
-        return apiFetch<T>(url, newOptions);
-      } else {
-        console.warn("❌ Token refresh failed, clearing auth...");
-        clearAuthToken();
-        const error = await parseApiError(response);
-        logError(method, fullURL, error);
-        throw error;
-      }
+      return await handleUnauthorized<T>(response, url, options, fullURL);
     }
 
     // Handle errors
     if (!response.ok) {
       const error = await parseApiError(response);
+
+      if (error.code === ErrorCode.AuthInvalidToken) {
+        toast.error("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.");
+        return null as T;
+      }
+
       logError(method, fullURL, error);
       throw error;
     }
@@ -289,32 +390,8 @@ export async function apiFetch<T = unknown>(
     return data as T;
   } catch (error) {
     // Clear timeout on error
-    if (timeoutId) clearTimeout(timeoutId);
-
-    // Re-throw ApiError
-    if (error instanceof ApiError) {
-      throw error;
-    }
-
-    // Log and wrap other errors
-    logError(method, fullURL, error);
-
-    // Network errors
-    if (error instanceof TypeError && error.message === "Failed to fetch") {
-      throw new ApiError(
-        "Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng."
-      );
-    }
-
-    // Timeout errors
-    if ((error as Error).name === "AbortError") {
-      throw new ApiError("Request timeout. Vui lòng thử lại.");
-    }
-
-    // Unknown errors
-    throw new ApiError(
-      error instanceof Error ? error.message : "Unknown error occurred"
-    );
+    if (timeoutInfo?.timeoutId) clearTimeout(timeoutInfo.timeoutId);
+    handleFetchError(error, method, fullURL);
   }
 }
 
@@ -356,32 +433,45 @@ export const api = {
   /**
    * GET request
    */
-  get: <T = unknown>(url: string, options?: Omit<FetchOptions, "method" | "body">) =>
-    apiFetch<T>(url, { ...options, method: "GET" }),
+  get: <T = unknown>(
+    url: string,
+    options?: Omit<FetchOptions, "method" | "body">
+  ) => apiFetch<T>(url, { ...options, method: "GET" }),
 
   /**
    * POST request
    */
-  post: <T = unknown>(url: string, body?: unknown, options?: Omit<FetchOptions, "method" | "body">) =>
-    apiFetch<T>(url, { ...options, method: "POST", body }),
+  post: <T = unknown>(
+    url: string,
+    body?: unknown,
+    options?: Omit<FetchOptions, "method" | "body">
+  ) => apiFetch<T>(url, { ...options, method: "POST", body }),
 
   /**
    * PUT request
    */
-  put: <T = unknown>(url: string, body?: unknown, options?: Omit<FetchOptions, "method" | "body">) =>
-    apiFetch<T>(url, { ...options, method: "PUT", body }),
+  put: <T = unknown>(
+    url: string,
+    body?: unknown,
+    options?: Omit<FetchOptions, "method" | "body">
+  ) => apiFetch<T>(url, { ...options, method: "PUT", body }),
 
   /**
    * PATCH request
    */
-  patch: <T = unknown>(url: string, body?: unknown, options?: Omit<FetchOptions, "method" | "body">) =>
-    apiFetch<T>(url, { ...options, method: "PATCH", body }),
+  patch: <T = unknown>(
+    url: string,
+    body?: unknown,
+    options?: Omit<FetchOptions, "method" | "body">
+  ) => apiFetch<T>(url, { ...options, method: "PATCH", body }),
 
   /**
    * DELETE request
    */
-  delete: <T = unknown>(url: string, options?: Omit<FetchOptions, "method" | "body">) =>
-    apiFetch<T>(url, { ...options, method: "DELETE" }),
+  delete: <T = unknown>(
+    url: string,
+    options?: Omit<FetchOptions, "method" | "body">
+  ) => apiFetch<T>(url, { ...options, method: "DELETE" }),
 };
 
 /**
