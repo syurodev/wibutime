@@ -5,12 +5,20 @@
 
 "use client";
 
-import { useAuth } from "@/lib/hooks/use-auth";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { User, Settings, LogOut, LogIn, LayoutDashboard, Users } from "lucide-react";
-import { useRouter } from "@/i18n/routing";
 import { Separator } from "@/components/ui/separator";
+import { useRouter } from "@/i18n/routing";
+import { useAuth } from "@/lib/hooks/use-auth";
+import {
+  LayoutDashboard,
+  LogIn,
+  LogOut,
+  Settings,
+  ShieldCheck,
+  User,
+  Users,
+} from "lucide-react";
 
 interface UserSectionProps {
   /**
@@ -53,6 +61,11 @@ export function UserSection({ onActionClick }: UserSectionProps) {
     // TODO: If user has multiple tenants, show a selector
     // For now, navigate to a tenant selector or first tenant
     router.push("/workspace/demo-tenant"); // Replace with actual tenant selection
+    onActionClick?.();
+  };
+
+  const handleAdmin = () => {
+    router.push("/admin");
     onActionClick?.();
   };
 
@@ -124,6 +137,15 @@ export function UserSection({ onActionClick }: UserSectionProps) {
         >
           <Users className="h-4 w-4 mr-2" />
           <span className="text-sm">Team Workspace</span>
+        </Button>
+
+        <Button
+          variant="ghost"
+          className="w-full justify-start h-9 px-2"
+          onClick={handleAdmin}
+        >
+          <ShieldCheck className="h-4 w-4 mr-2" />
+          <span className="text-sm">Admin Panel</span>
         </Button>
       </div>
 

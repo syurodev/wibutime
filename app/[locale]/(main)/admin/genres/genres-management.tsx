@@ -162,11 +162,23 @@ export function GenresManagement() {
   const handleCreate = async () => {
     try {
       setSubmitting(true);
-      await GenreService.create(formData as CreateGenreRequest);
+      const newGenre = await GenreService.create(
+        formData as CreateGenreRequest
+      );
       toast.success("Đã tạo thể loại thành công");
       setCreateDialogOpen(false);
       setFormData({ name: "", description: "" });
-      fetchGenres();
+
+      // Optimistic update if on first page
+      if (currentPage === 1 && !currentSearch) {
+        // Add to top of list, keep only DEFAULT_LIMIT items
+        setGenres([newGenre, ...genres.slice(0, DEFAULT_LIMIT - 1)]);
+        setTotalItems(totalItems + 1);
+        setTotalPages(Math.ceil((totalItems + 1) / DEFAULT_LIMIT));
+      } else {
+        // Refetch if not on first page or has search filter
+        await fetchGenres();
+      }
     } catch (error) {
       const message =
         error instanceof ApiError ? error.message : "Không thể tạo thể loại";
@@ -180,7 +192,7 @@ export function GenresManagement() {
     if (!selectedGenre) return;
     try {
       setSubmitting(true);
-      await GenreService.update(
+      const updatedGenre = await GenreService.update(
         selectedGenre.id,
         formData as UpdateGenreRequest
       );
@@ -188,7 +200,13 @@ export function GenresManagement() {
       setEditDialogOpen(false);
       setSelectedGenre(null);
       setFormData({ name: "", description: "" });
-      fetchGenres();
+
+      // Optimistic update: replace item in current list
+      setGenres(
+        genres.map((genre) =>
+          genre.id === selectedGenre.id ? updatedGenre : genre
+        )
+      );
     } catch (error) {
       const message =
         error instanceof ApiError
@@ -208,7 +226,17 @@ export function GenresManagement() {
       toast.success("Đã xóa thể loại thành công");
       setDeleteDialogOpen(false);
       setSelectedGenre(null);
-      fetchGenres();
+
+      // Optimistic update: remove from list
+      const newGenres = genres.filter((genre) => genre.id !== selectedGenre.id);
+      setGenres(newGenres);
+      setTotalItems(totalItems - 1);
+      setTotalPages(Math.ceil((totalItems - 1) / DEFAULT_LIMIT));
+
+      // If current page becomes empty and not first page, go to previous page
+      if (newGenres.length === 0 && currentPage > 1) {
+        updateURL({ page: currentPage - 1 });
+      }
     } catch (error) {
       const message =
         error instanceof ApiError ? error.message : "Không thể xóa thể loại";

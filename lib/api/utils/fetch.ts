@@ -229,7 +229,11 @@ async function handleUnauthorized<T>(
 ): Promise<T> {
   // Prevent infinite loop if refresh endpoint itself returns 401
   if (fullURL.includes("/auth/refresh")) {
-    throw await parseApiError(response);
+    console.warn("🔒 Refresh endpoint returned 401, clearing auth...");
+    toast.error("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.");
+    clearAuthToken();
+    // Don't throw to prevent runtime errors
+    return null as T;
   }
 
   console.log("🔒 401 Unauthorized - Attempting token refresh...");
@@ -240,20 +244,9 @@ async function handleUnauthorized<T>(
   if (!newToken) {
     console.warn("❌ Token refresh failed, clearing auth...");
     clearAuthToken();
-    const error = await parseApiError(response);
-
-    if (error.code === ErrorCode.AuthInvalidToken) {
-      toast.error("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.");
-      // Return a rejected promise or handle as needed, but for T return type we might need to throw or return null
-      // In the original code it returned null as T, so we keep that behavior but we need to be careful about types.
-      // However, throwing here is safer to stop execution flow if the caller expects data.
-      // The original code returned null as T.
-      return null as T;
-    }
-
-    logError("GET", fullURL, error); // Method might be different, but we don't have it here easily without passing it.
-    // Actually we should pass method too if we want accurate logging, but for now let's assume it's fine or pass it.
-    throw error;
+    toast.error("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.");
+    // Don't throw to prevent runtime errors
+    return null as T;
   }
 
   console.log("✅ Token refreshed successfully, retrying request...");
@@ -371,11 +364,20 @@ export async function apiFetch<T = unknown>(
     if (!response.ok) {
       const error = await parseApiError(response);
 
-      if (error.code === ErrorCode.AuthInvalidToken) {
+      // Handle token errors gracefully
+      if (
+        error.code === ErrorCode.AuthInvalidToken ||
+        error.message?.includes("Invalid or expired token") ||
+        error.message?.includes("token")
+      ) {
+        console.warn("🔒 Token error detected:", error.message);
         toast.error("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.");
+        clearAuthToken();
+        // Don't throw, return null to prevent runtime errors
         return null as T;
       }
 
+      // Log and throw other errors
       logError(method, fullURL, error);
       throw error;
     }
@@ -402,8 +404,27 @@ async function parseApiError(response: Response): Promise<ApiError> {
   try {
     const data = await response.json();
 
-    // Backend error format
+    // Debug: Log toàn bộ error response từ server
+    console.log("🔴 Error Response từ Server:", {
+      status: response.status,
+      statusText: response.statusText,
+      data: data,
+    });
+
+    // Backend StandardResponse format: {success: false, code: "...", message: "..."}
+    if (data.message) {
+      console.log("✅ Lấy message từ data.message:", data.message);
+      return new ApiError(
+        data.message, // Message đã được dịch từ server
+        response.status,
+        data.code,
+        data.data // Details nếu có
+      );
+    }
+
+    // Legacy backend error format (nếu có)
     if (data.error) {
+      console.log("✅ Lấy message từ data.error.message:", data.error.message);
       return new ApiError(
         data.error.message || `Request failed with status ${response.status}`,
         response.status,
@@ -413,12 +434,14 @@ async function parseApiError(response: Response): Promise<ApiError> {
     }
 
     // Fallback
+    console.warn("⚠️ Không tìm thấy message trong response, dùng fallback");
     return new ApiError(
-      data.message || `Request failed with status ${response.status}`,
+      `Request failed with status ${response.status}`,
       response.status
     );
-  } catch {
+  } catch (err) {
     // Cannot parse JSON
+    console.error("❌ Không thể parse JSON response:", err);
     return new ApiError(
       `HTTP ${response.status}: ${response.statusText}`,
       response.status

@@ -2,104 +2,124 @@
 
 /**
  * Admin Sidebar Component - Client Component
- * Sidebar navigation cho admin pages
+ * Sidebar navigation cho admin pages using shadcn/ui sidebar
  */
 
-import { Link } from "@/i18n/routing";
-import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 import {
-    BookOpen,
-    ChevronRight,
-    LayoutDashboard,
-    Palette,
-    Settings,
-    Tags,
-    Users,
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
+import { Link, usePathname } from "@/i18n/routing";
+import {
+  BookOpen,
+  LayoutDashboard,
+  Palette,
+  Settings,
+  Shield,
+  Tags,
+  Users,
 } from "lucide-react";
-import { usePathname } from "next/navigation";
-
-const navigation = [
-  {
-    name: "Tổng quan",
-    href: "/admin",
-    icon: LayoutDashboard,
-  },
-  {
-    name: "Thể loại",
-    href: "/admin/genres",
-    icon: Tags,
-  },
-  {
-    name: "Tác giả",
-    href: "/admin/authors",
-    icon: Users,
-  },
-  {
-    name: "Hoạ sĩ",
-    href: "/admin/artists",
-    icon: Palette,
-  },
-  {
-    name: "Truyện",
-    href: "/admin/novels",
-    icon: BookOpen,
-    disabled: true,
-  },
-  {
-    name: "Cài đặt",
-    href: "/admin/settings",
-    icon: Settings,
-    disabled: true,
-  },
-];
 
 export function AdminSidebar() {
   const pathname = usePathname();
 
+  const navigation = [
+    {
+      name: "Tổng quan",
+      href: "/admin",
+      icon: LayoutDashboard,
+    },
+    {
+      name: "Thể loại",
+      href: "/admin/genres",
+      icon: Tags,
+    },
+    {
+      name: "Tác giả",
+      href: "/admin/authors",
+      icon: Users,
+    },
+    {
+      name: "Hoạ sĩ",
+      href: "/admin/artists",
+      icon: Palette,
+    },
+    {
+      name: "Truyện",
+      href: "/admin/novels",
+      icon: BookOpen,
+      disabled: true,
+    },
+    {
+      name: "Cài đặt",
+      href: "/admin/settings",
+      icon: Settings,
+      disabled: true,
+    },
+  ];
+
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-card border-r">
+    <Sidebar>
       {/* Header */}
-      <div className="h-16 flex items-center px-6 border-b">
-        <h1 className="text-xl font-bold">Admin Panel</h1>
-      </div>
+      <SidebarHeader className="p-4 md:p-6">
+        <div className="flex items-center gap-3 px-2">
+          <Shield className="size-6" />
+          <h1 className="text-xl md:text-2xl font-bold">Admin Panel</h1>
+          <Badge variant="destructive" className="text-xs">
+            Admin
+          </Badge>
+        </div>
+      </SidebarHeader>
 
       {/* Navigation */}
-      <nav className="p-4 space-y-1">
-        {navigation.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.href;
-          const isDisabled = item.disabled;
+      <SidebarContent>
+        <SidebarGroup className="px-3">
+          <SidebarGroupContent>
+            <SidebarMenu className="gap-1.5">
+              {navigation.map((item) => {
+                const Icon = item.icon;
+                const isActive =
+                  pathname === item.href ||
+                  pathname?.startsWith(item.href + "/");
+                const isDisabled = item.disabled;
 
-          return (
-            <Link
-              key={item.href}
-              href={isDisabled ? "#" : item.href}
-              className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all",
-                isActive
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : isDisabled
-                    ? "text-muted-foreground cursor-not-allowed opacity-50"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-              onClick={(e) => {
-                if (isDisabled) e.preventDefault();
-              }}
-            >
-              <Icon className="size-5 shrink-0" />
-              <span className="flex-1">{item.name}</span>
-              {isActive && <ChevronRight className="size-4" />}
-            </Link>
-          );
-        })}
-      </nav>
+                return (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive}
+                      disabled={isDisabled}
+                      tooltip={item.name}
+                      size="lg"
+                      className="h-11 px-4 rounded-xl text-base md:text-sm"
+                    >
+                      <Link href={isDisabled ? "#" : item.href}>
+                        <Icon className="size-5" />
+                        <span>{item.name}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
 
       {/* Footer Info */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 border-t bg-muted/50">
-        <p className="text-xs text-muted-foreground text-center">
+      <SidebarFooter className="p-4 md:p-6">
+        <p className="text-xs text-muted-foreground text-center px-2">
           WibuTime Admin v1.0
         </p>
-      </div>
-    </aside>
+      </SidebarFooter>
+    </Sidebar>
   );
 }
