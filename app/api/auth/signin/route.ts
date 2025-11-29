@@ -22,18 +22,7 @@ async function generatePKCE() {
  * Base64 URL encode (RFC 4648)
  */
 function base64UrlEncode(buffer: Uint8Array): string {
-  // Convert to base64
-  let binary = "";
-  for (let i = 0; i < buffer.length; i++) {
-    binary += String.fromCharCode(buffer[i]);
-  }
-  const base64 = btoa(binary);
-
-  // Convert to base64url
-  return base64
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
+  return Buffer.from(buffer).toString("base64url");
 }
 
 export async function GET(request: NextRequest) {
@@ -74,14 +63,9 @@ export async function GET(request: NextRequest) {
   });
 
   // Build authorization URL
-  const authorizationUrl = new URL(
-    `${process.env.OAUTH_ISSUER}/oauth2/auth`
-  );
+  const authorizationUrl = new URL(`${process.env.OAUTH_ISSUER}/oauth2/auth`);
 
-  authorizationUrl.searchParams.set(
-    "client_id",
-    process.env.OAUTH_CLIENT_ID!
-  );
+  authorizationUrl.searchParams.set("client_id", process.env.OAUTH_CLIENT_ID!);
   authorizationUrl.searchParams.set(
     "redirect_uri",
     `${appUrl}/api/auth/callback`
@@ -89,7 +73,7 @@ export async function GET(request: NextRequest) {
   authorizationUrl.searchParams.set("response_type", "code");
   authorizationUrl.searchParams.set(
     "scope",
-    "openid profile email offline_access"
+    "openid profile email offline_access internal"
   );
   authorizationUrl.searchParams.set("state", state);
   authorizationUrl.searchParams.set("code_challenge", codeChallenge);

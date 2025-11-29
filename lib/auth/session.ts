@@ -11,6 +11,8 @@ export type SessionData = {
     name: string;
     email: string;
     image?: string;
+    roles?: string[];
+    permissions?: string[];
   };
   accessToken: string;
   refreshToken?: string;

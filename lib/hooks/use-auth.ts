@@ -17,6 +17,8 @@ export type AuthUser = {
   name: string;
   email: string;
   image?: string;
+  roles?: string[];
+  permissions?: string[];
 };
 
 type SessionResponse = {
@@ -57,7 +59,7 @@ export function useAuth() {
       if (data.user && data.isExpired && !isRefreshingRef.current) {
         await refreshToken();
       }
-    } catch (error) {
+    } catch {
       // Silent fail - session fetch error
       setUser(null);
       setAccessToken(null);
@@ -95,7 +97,7 @@ export function useAuth() {
       isRefreshingRef.current = false;
       isInitialMountRef.current = false;
       return true;
-    } catch (error) {
+    } catch {
       // Clear session on error to prevent infinite loop
       // Only show toast if not initial mount
       if (!isInitialMountRef.current) {
@@ -110,11 +112,11 @@ export function useAuth() {
   };
 
   const login = (callbackUrl?: string) => {
-    const url = new URL("/api/auth/signin", window.location.origin);
+    const url = new URL("/api/auth/signin", globalThis.window.location.origin);
     if (callbackUrl) {
       url.searchParams.set("callbackUrl", callbackUrl);
     }
-    window.location.href = url.toString();
+    globalThis.window.location.href = url.toString();
   };
 
   const logout = async () => {
@@ -126,17 +128,22 @@ export function useAuth() {
 
       // Redirect to OAuth server logout (GET endpoint)
       // This will clear session_id cookie and redirect back to app
-      window.location.href = "/api/auth/signout";
-    } catch (error) {
+      globalThis.window.location.href = "/api/auth/signout";
+    } catch {
       // Fallback to home page on error
-      window.location.href = "/";
+      globalThis.window.location.href = "/";
     }
   };
+
+  const isAdmin =
+    user?.roles?.some((role) => ["SUPER_ADMIN", "ADMIN"].includes(role)) ??
+    false;
 
   return {
     user,
     accessToken,
     isLoggedIn: !!user,
+    isAdmin,
     isLoading,
     login,
     logout,

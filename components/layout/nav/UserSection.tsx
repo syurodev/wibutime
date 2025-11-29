@@ -28,7 +28,7 @@ interface UserSectionProps {
 }
 
 export function UserSection({ onActionClick }: UserSectionProps) {
-  const { user, isLoggedIn, login, logout } = useAuth();
+  const { user, isLoggedIn, login, logout, isAdmin } = useAuth();
   const router = useRouter();
 
   const handleLogin = () => {
@@ -139,14 +139,16 @@ export function UserSection({ onActionClick }: UserSectionProps) {
           <span className="text-sm">Team Workspace</span>
         </Button>
 
-        <Button
-          variant="ghost"
-          className="w-full justify-start h-9 px-2"
-          onClick={handleAdmin}
-        >
-          <ShieldCheck className="h-4 w-4 mr-2" />
-          <span className="text-sm">Admin Panel</span>
-        </Button>
+        {isAdmin && (
+          <Button
+            variant="ghost"
+            className="w-full justify-start h-9 px-2"
+            onClick={handleAdmin}
+          >
+            <ShieldCheck className="h-4 w-4 mr-2" />
+            <span className="text-sm">Admin Panel</span>
+          </Button>
+        )}
       </div>
 
       <Separator className="my-1" />

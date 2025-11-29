@@ -117,7 +117,10 @@ export async function GET(request: NextRequest) {
 
     // Parse JSON - OIDC standard format
     const userInfo = JSON.parse(userInfoText);
-    console.log("👤 Parsed userinfo (OIDC standard):", JSON.stringify(userInfo, null, 2));
+    console.log(
+      "👤 Parsed userinfo (OIDC standard):",
+      JSON.stringify(userInfo, null, 2)
+    );
 
     // Create session
     const sessionData = {
@@ -126,6 +129,8 @@ export async function GET(request: NextRequest) {
         name: userInfo.name || userInfo.preferred_username || "User",
         email: userInfo.email || "",
         image: userInfo.picture,
+        roles: userInfo.roles || [],
+        permissions: userInfo.permissions || [],
       },
       accessToken: tokens.access_token,
       refreshToken: tokens.refresh_token,
@@ -141,15 +146,16 @@ export async function GET(request: NextRequest) {
 
     await createSession(sessionData);
 
-    console.log("✅ Session created successfully, redirecting to:", callbackUrl);
+    console.log(
+      "✅ Session created successfully, redirecting to:",
+      callbackUrl
+    );
 
     // Clean up OAuth cookies
     cleanupOAuthCookies();
 
     // Redirect to callback URL
-    return NextResponse.redirect(
-      `${appUrl}${callbackUrl}`
-    );
+    return NextResponse.redirect(`${appUrl}${callbackUrl}`);
   } catch (error) {
     console.error("❌ OAuth callback error:", error);
     cleanupOAuthCookies();
