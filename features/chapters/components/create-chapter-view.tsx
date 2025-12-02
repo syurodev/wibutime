@@ -8,6 +8,7 @@ import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/routing";
 import { createChapter } from "@/lib/api/chapters";
+import { calculateContentStatistics } from "@/lib/editor/utils/text-statistics";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -24,9 +25,16 @@ export function CreateChapterView({ novelId, volumeId }: Props) {
   async function onSubmit(values: ChapterFormValues) {
     setIsSubmitting(true);
     try {
+      // Calculate word count and character count from content
+      const { wordCount, characterCount } = calculateContentStatistics(
+        values.content
+      );
+
       await createChapter(volumeId, {
         ...values,
         content: values.content,
+        word_count: wordCount,
+        character_count: characterCount,
         price: values.price || 0,
         currency: values.currency || "VND",
       });

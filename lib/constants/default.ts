@@ -1,23 +1,28 @@
 /**
  * Content type definition
  */
-export type CONTENT_TYPE = "anime" | "manga" | "novel";
+export type MEDIA_TYPE = "anime" | "manga" | "novel";
 
-export const CONTENT_TYPE = {
-  ANIME: "anime" as CONTENT_TYPE,
-  MANGA: "manga" as CONTENT_TYPE,
-  NOVEL: "novel" as CONTENT_TYPE,
+export const MEDIA_TYPE = {
+  ANIME: "anime" as MEDIA_TYPE,
+  MANGA: "manga" as MEDIA_TYPE,
+  NOVEL: "novel" as MEDIA_TYPE,
 };
 
 /**
  * Alias for API model usage
  */
-export type ContentType = CONTENT_TYPE;
+export type MediaType = MEDIA_TYPE;
 
 /**
  * Content status
  */
-export type ContentStatus = "ongoing" | "completed" | "hiatus";
+
+export const MEDIA_STATUS = {
+  ONGOING: "ongoing",
+  COMPLETED: "completed",
+  HIATUS: "hiatus",
+};
 
 /**
  * Latest chapter/episode info

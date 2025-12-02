@@ -3,12 +3,12 @@
  * Displays recently updated series with content type filters and pagination
  */
 
-import { ContentTypeTabs } from "@/components/content/ContentTypeTabs";
+import { MediaTypeTabs } from "@/components/content/MediaTypeTabs";
 import { SeriesGrid } from "@/components/content/SeriesGrid";
 import { SeriesGridSkeleton } from "@/components/content/SeriesGridSkeleton";
 import { Container } from "@/components/layout/Container";
 import { ContentService } from "@/lib/api/services/base-content/content.service";
-import { DEFAULT_LIMIT, type CONTENT_TYPE } from "@/lib/constants/default";
+import { DEFAULT_LIMIT, type MEDIA_TYPE } from "@/lib/constants/default";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
@@ -46,7 +46,7 @@ async function LatestContent({
   type,
   page,
 }: {
-  type: CONTENT_TYPE | "all";
+  type: MEDIA_TYPE | "all";
   page: number;
 }) {
   // Fetch paginated latest series
@@ -69,7 +69,7 @@ export default async function LatestPage({ searchParams }: LatestPageProps) {
   const params = await searchParams;
 
   // Parse URL parameters
-  const type = (params.type || "all") as CONTENT_TYPE | "all";
+  const type = (params.type || "all") as MEDIA_TYPE | "all";
   const page = Number(params.page) || 1;
 
   // Validate type
@@ -94,7 +94,7 @@ export default async function LatestPage({ searchParams }: LatestPageProps) {
           </div>
 
           {/* Content Type Filter */}
-          <ContentTypeTabs currentType={selectedType} />
+          <MediaTypeTabs currentType={selectedType} />
         </div>
 
         {/* Content with Suspense - Shows skeleton while loading */}

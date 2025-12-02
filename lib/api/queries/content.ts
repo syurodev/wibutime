@@ -11,7 +11,7 @@ import { serverApi } from "@/lib/api/server";
 import { isSuccessResponse, type StandardResponse } from "@/lib/api/types";
 import { endpoint } from "@/lib/api/utils/endpoint";
 import { ApiParser } from "@/lib/api/utils/parsers";
-import type { CONTENT_TYPE } from "@/lib/constants/default";
+import type { MEDIA_TYPE } from "@/lib/constants/default";
 import { cache } from "react";
 
 /**
@@ -20,7 +20,7 @@ import { cache } from "react";
 export interface ContentQuery {
   page?: number;
   limit?: number;
-  type?: CONTENT_TYPE | "all";
+  type?: MEDIA_TYPE | "all";
   sort?: "recent" | "title" | "updated" | "rating";
 }
 

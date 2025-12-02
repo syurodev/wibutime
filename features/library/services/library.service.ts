@@ -13,7 +13,7 @@ import {
   type StandardResponse,
 } from "@/lib/api/types";
 import { ApiParser } from "@/lib/api/utils/parsers";
-import type { CONTENT_TYPE } from "@/lib/constants/default";
+import type { MEDIA_TYPE } from "@/lib/constants/default";
 
 /**
  * Simulate API delay
@@ -34,7 +34,7 @@ export class LibraryService {
    * @param options.sort - Sort option: 'recent' | 'title' | 'updated' | 'rating' (default: 'recent')
    */
   static async getLibraryPaginated(options?: {
-    type?: CONTENT_TYPE | "all";
+    type?: MEDIA_TYPE | "all";
     page?: number;
     limit?: number;
     sort?: "recent" | "title" | "updated" | "rating";

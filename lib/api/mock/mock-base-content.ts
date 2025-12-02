@@ -4,7 +4,7 @@
  */
 
 import { generateMockParagraphs } from "@/features/editor/api/mock-editor";
-import { CONTENT_TYPE, type ContentStatus } from "@/lib/constants/default";
+import { MEDIA_TYPE, type ContentStatus } from "@/lib/constants/default";
 import {
   GenreSchema,
   MediaSeriesSchema,
@@ -32,11 +32,7 @@ const mockGenres: Genre[] = [
   { id: "12", name: "Sci-Fi" },
 ].map((g) => GenreSchema.parse(g));
 
-const contentTypes = [
-  CONTENT_TYPE.ANIME,
-  CONTENT_TYPE.MANGA,
-  CONTENT_TYPE.NOVEL,
-];
+const contentTypes = [MEDIA_TYPE.ANIME, MEDIA_TYPE.MANGA, MEDIA_TYPE.NOVEL];
 
 const statuses: ContentStatus[] = ["ongoing", "completed", "hiatus"];
 
@@ -245,7 +241,7 @@ export function generateIncompleteData() {
       id: crypto.randomUUID(),
       title: "Partial Series",
       slug: "partial-series",
-      type: CONTENT_TYPE.ANIME,
+      type: MEDIA_TYPE.ANIME,
       user: {
         id: crypto.randomUUID(),
         username: "testuser",

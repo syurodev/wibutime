@@ -3,7 +3,7 @@ import {
   MediaUnitSchema,
 } from "@/lib/api/models/content/base-content";
 import { BaseUserSchema } from "@/lib/api/models/user/base-user";
-import { CONTENT_TYPE } from "@/lib/constants/default";
+import { MEDIA_TYPE } from "@/lib/constants/default";
 import z from "zod";
 
 export const NovelBookmarkSchema = z.object({
@@ -24,8 +24,8 @@ export const HistoryMediaSchema = z.object({
 
   // Type và status với defaults
   type: z
-    .enum([CONTENT_TYPE.ANIME, CONTENT_TYPE.MANGA, CONTENT_TYPE.NOVEL])
-    .default(CONTENT_TYPE.NOVEL),
+    .enum([MEDIA_TYPE.ANIME, MEDIA_TYPE.MANGA, MEDIA_TYPE.NOVEL])
+    .default(MEDIA_TYPE.NOVEL),
   status: z
     .enum(["ongoing", "completed", "hiatus", "cancelled"])
     .default("ongoing"),
@@ -46,7 +46,7 @@ export const HistoryMediaSchema = z.object({
 
   // Optional fields
   latest_unit: MediaUnitSchema.optional(),
-  novel_last_read_info: NovelBookmarkSchema.optional(), // Có khả năng có với type CONTENT_TYPE.NOVEL và các type khác sẻ không có
+  novel_last_read_info: NovelBookmarkSchema.optional(), // Có khả năng có với type MEDIA_TYPE.NOVEL và các type khác sẻ không có
   anime_last_episode_time_viewed: z.string().optional(), // Thời gian xem của episode cuối cùng của tập anime ví dụ 10:00 của tập trong latest_unit
   manga_last_page_read: z.number().int().min(0).optional(), // Trang đã đọc của manga trong latest_unit
 

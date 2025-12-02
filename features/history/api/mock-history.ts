@@ -9,7 +9,7 @@ import {
 } from "@/features/history/types/history-content";
 import { getMockMediaSeries } from "@/lib/api/mock/mock-base-content";
 import { MediaUnitSchema } from "@/lib/api/models/content/base-content";
-import { CONTENT_TYPE } from "@/lib/constants/default";
+import { MEDIA_TYPE } from "@/lib/constants/default";
 
 const ONE_HOUR_MS = 1000 * 60 * 60;
 
@@ -87,14 +87,14 @@ export const getMockHistoryMedia = (count = 12): HistoryMedia[] => {
         content_updated_at: contentUpdatedAt,
       };
 
-      if (item.type === CONTENT_TYPE.ANIME) {
+      if (item.type === MEDIA_TYPE.ANIME) {
         return HistoryMediaSchema.parse({
           ...baseHistory,
           anime_last_episode_time_viewed: randomTimecode(),
         });
       }
 
-      if (item.type === CONTENT_TYPE.MANGA) {
+      if (item.type === MEDIA_TYPE.MANGA) {
         return HistoryMediaSchema.parse({
           ...baseHistory,
           manga_last_page_read: randomInt(5, 25),

@@ -4,7 +4,7 @@
  * Returns plain objects (BaseContentData) - no class instances
  */
 
-import type { CONTENT_TYPE } from "@/lib/constants/default";
+import type { MEDIA_TYPE } from "@/lib/constants/default";
 import { getMockMediaSeries } from "../../mock/mock-base-content";
 import {
   MediaSeries,
@@ -236,7 +236,7 @@ export class ContentService {
    * ```
    */
   static async getTrendingPaginated(options?: {
-    type?: CONTENT_TYPE | "all";
+    type?: MEDIA_TYPE | "all";
     page?: number;
     limit?: number;
   }): Promise<{
@@ -305,7 +305,7 @@ export class ContentService {
    * ```
    */
   static async getLatestPaginated(options?: {
-    type?: CONTENT_TYPE | "all";
+    type?: MEDIA_TYPE | "all";
     page?: number;
     limit?: number;
   }): Promise<{
@@ -375,7 +375,7 @@ export class ContentService {
    * ```
    */
   static async getNewPaginated(options?: {
-    type?: CONTENT_TYPE | "all";
+    type?: MEDIA_TYPE | "all";
     page?: number;
     limit?: number;
   }): Promise<{

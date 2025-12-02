@@ -13,7 +13,7 @@ import {
   type SortOption,
 } from "@/features/library/components/LibraryFilters";
 import { LibraryStats } from "@/features/library/components/LibraryStats";
-import type { CONTENT_TYPE } from "@/lib/constants/default";
+import type { MEDIA_TYPE } from "@/lib/constants/default";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
@@ -45,7 +45,7 @@ async function LibraryContent({
   page,
   sort,
 }: {
-  type: CONTENT_TYPE | "all";
+  type: MEDIA_TYPE | "all";
   page: number;
   sort: SortOption;
 }) {
@@ -70,7 +70,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
   const params = await searchParams;
 
   // Parse URL parameters
-  const type = (params.type || "all") as CONTENT_TYPE | "all";
+  const type = (params.type || "all") as MEDIA_TYPE | "all";
   const page = Number(params.page) || 1;
   const sort = (params.sort || "recent") as SortOption;
 

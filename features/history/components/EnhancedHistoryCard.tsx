@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import type { HistoryMedia } from "@/features/history/types/history-content";
 import { Link } from "@/i18n/routing";
 import { formatNumberAbbreviated } from "@/lib/api/utils/number";
-import { CONTENT_TYPE } from "@/lib/constants/default";
+import { MEDIA_TYPE } from "@/lib/constants/default";
 import { cn } from "@/lib/utils";
 import {
   getContentBadgeVariant,
@@ -50,7 +50,7 @@ type ResumeMeta = {
 
 const getResumeMeta = (item: HistoryMedia): ResumeMeta => {
   switch (item.type) {
-    case CONTENT_TYPE.ANIME: {
+    case MEDIA_TYPE.ANIME: {
       const title = item.latest_unit?.title ?? "Tập mới nhất";
       const time = item.anime_last_episode_time_viewed
         ? `${item.anime_last_episode_time_viewed}`
@@ -60,7 +60,7 @@ const getResumeMeta = (item: HistoryMedia): ResumeMeta => {
       const currentUnit = match ? parseInt(match[1], 10) : undefined;
       return { icon: Play, label: title, meta: time, currentUnit };
     }
-    case CONTENT_TYPE.MANGA: {
+    case MEDIA_TYPE.MANGA: {
       const title = item.latest_unit?.title ?? "Chương mới nhất";
       const page =
         typeof item.manga_last_page_read === "number"

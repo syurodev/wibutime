@@ -4,7 +4,7 @@
  * Safe type generation + runtime validation với flexible defaults
  */
 
-import { CONTENT_TYPE } from "@/lib/constants/default";
+import { MEDIA_TYPE } from "@/lib/constants/default";
 import { z } from "zod";
 import { BaseUserSchema } from "../user/base-user";
 
@@ -66,8 +66,8 @@ export const MediaSeriesSchema = z.object({
 
   // Type và status với defaults
   type: z
-    .enum([CONTENT_TYPE.ANIME, CONTENT_TYPE.MANGA, CONTENT_TYPE.NOVEL])
-    .default(CONTENT_TYPE.NOVEL),
+    .enum([MEDIA_TYPE.ANIME, MEDIA_TYPE.MANGA, MEDIA_TYPE.NOVEL])
+    .default(MEDIA_TYPE.NOVEL),
   status: z
     .enum(["ongoing", "completed", "hiatus", "cancelled"])
     .default("ongoing"),

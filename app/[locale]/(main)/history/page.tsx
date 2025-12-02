@@ -12,7 +12,7 @@ import {
 import { HistoryGrid } from "@/features/history/components/HistoryGrid";
 import { HistoryGridSkeleton } from "@/features/history/components/HistoryGridSkeleton";
 import { HistoryService } from "@/features/history/services/history.service";
-import type { CONTENT_TYPE } from "@/lib/constants/default";
+import type { MEDIA_TYPE } from "@/lib/constants/default";
 import { getCurrentTime } from "@/lib/utils/time-cache";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -45,7 +45,7 @@ async function HistoryContent({
   page,
   sort,
 }: {
-  type: CONTENT_TYPE | "all";
+  type: MEDIA_TYPE | "all";
   page: number;
   sort: HistorySortOption;
 }) {
@@ -71,7 +71,7 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
   const params = await searchParams;
 
   // Parse URL parameters
-  const type = (params.type || "all") as CONTENT_TYPE | "all";
+  const type = (params.type || "all") as MEDIA_TYPE | "all";
   const page = Number(params.page) || 1;
   const sort = (params.sort || "recent") as HistorySortOption;
 

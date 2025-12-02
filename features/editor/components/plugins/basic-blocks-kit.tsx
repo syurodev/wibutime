@@ -10,6 +10,7 @@ import {
   H6Plugin,
   HorizontalRulePlugin,
 } from "@platejs/basic-nodes/react";
+import { ExitBreakPlugin, TrailingBlockPlugin } from "@platejs/utils";
 import { ParagraphPlugin } from "platejs/react";
 
 import { BlockquoteElement } from "@/components/ui/blockquote-node";
@@ -85,4 +86,28 @@ export const BasicBlocksKit = [
     shortcuts: { toggle: { keys: "mod+shift+period" } },
   }),
   HorizontalRulePlugin.withComponent(HrElement),
+  ExitBreakPlugin.configure({
+    options: {
+      rules: [
+        {
+          hotkey: "mod+enter",
+        },
+        {
+          hotkey: "mod+shift+enter",
+          before: true,
+        },
+        {
+          hotkey: "enter",
+          query: {
+            start: true,
+            end: true,
+            allow: ["h1", "h2", "h3", "h4", "h5", "h6", "blockquote"],
+          },
+        },
+      ],
+    },
+  }),
+  TrailingBlockPlugin.configure({
+    options: { type: "p" },
+  }),
 ];

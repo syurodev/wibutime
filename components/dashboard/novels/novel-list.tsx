@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,13 +26,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { MEDIA_STATUS } from "@/lib/constants/default";
+import { formatFullDate } from "@/lib/utils/date-ranges";
+import { getInitials } from "@/lib/utils/get-initials";
+import { AvatarImage } from "@radix-ui/react-avatar";
 
 interface NovelListProps {
-  novels: MediaSeries[];
+  readonly novels: MediaSeries[];
 }
 
 export function NovelList({ novels }: NovelListProps) {
-  const [view, setView] = useState<"grid" | "table">("grid");
+  const [view, setView] = useState<"grid" | "table">("table");
+
+  console.log(novels);
 
   return (
     <div className="space-y-8">
@@ -168,42 +175,47 @@ export function NovelList({ novels }: NovelListProps) {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[80px]">Cover</TableHead>
+                    <TableHead className="w-[70px]">Cover</TableHead>
                     <TableHead>Info</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Stats</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead className="text-center">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {novels.map((novel) => (
                     <TableRow key={novel.id}>
                       <TableCell>
-                        {novel.cover_url ? (
-                          <img
-                            src={getImageUrl(novel.cover_url)}
-                            alt={novel.title}
-                            className="w-12 h-16 object-cover rounded"
-                          />
-                        ) : (
-                          <div className="w-12 h-16 bg-muted rounded flex items-center justify-center">
-                            <BookOpen className="h-6 w-6 text-muted-foreground" />
-                          </div>
-                        )}
+                        {/* Cover */}
+                        <Avatar className="w-[66px] h-[100px] rounded-lg border-3">
+                          <AvatarImage src={getImageUrl(novel.cover_url)} />
+                          <AvatarFallback className="w-[66px] h-[100px] rounded-lg font-semibold text-xl">
+                            {getInitials(novel.title)}
+                          </AvatarFallback>
+                        </Avatar>
                       </TableCell>
                       <TableCell>
-                        <div className="font-medium">{novel.title}</div>
+                        <div className="font-medium line-clamp-1">
+                          {novel.title}
+                        </div>
                         {novel.original_title && (
                           <div className="text-sm text-muted-foreground">
                             {novel.original_title}
                           </div>
                         )}
+                        <p className="text-sm text-muted-foreground">
+                          {formatFullDate(novel.updated_at)}
+                        </p>
+
+                        <Badge className="uppercase mt-1" variant={"outline"}>
+                          {novel.original_language}
+                        </Badge>
                       </TableCell>
                       <TableCell>
                         <Badge
                           variant={
-                            novel.status === "ongoing" ||
-                            novel.status === "completed"
+                            novel.status === MEDIA_STATUS.ONGOING ||
+                            novel.status === MEDIA_STATUS.COMPLETED
                               ? "default"
                               : "secondary"
                           }

@@ -3,20 +3,13 @@
  * Quản lý volumes của novel
  */
 
+import { DraggableVolumeList } from "@/components/dashboard/novels/draggable-volume-list";
 import { Container } from "@/components/layout/Container";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "@/i18n/routing";
 import { getVolumesByNovel } from "@/lib/api/volumes";
-import {
-  AlertCircle,
-  ArrowLeft,
-  BookText,
-  FileEdit,
-  Plus,
-  Trash2,
-} from "lucide-react";
+import { AlertCircle, ArrowLeft, BookText, Plus } from "lucide-react";
 
 interface Props {
   params: Promise<{
@@ -120,57 +113,7 @@ export default async function NovelVolumesPage({ params }: Props) {
       )}
 
       {!error && volumes.length > 0 && (
-        <div className="grid gap-4">
-          {volumes.map((volume) => (
-            <Card key={volume.id}>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <CardTitle className="text-lg">
-                        Volume {volume.volume_number}: {volume.title}
-                      </CardTitle>
-                      <Badge
-                        variant={volume.is_published ? "default" : "secondary"}
-                      >
-                        {volume.is_published ? "Published" : "Draft"}
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <div className="flex gap-4 text-sm text-muted-foreground">
-                    <span>{volume.chapter_count} chapters</span>
-                    <span>{volume.word_count.toLocaleString()} words</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button asChild variant="outline" size="sm">
-                      <Link
-                        href={`/dashboard/novels/${novelId}/volumes/${volume.id}/chapters`}
-                      >
-                        <BookText className="h-4 w-4 mr-2" />
-                        Chapters
-                      </Link>
-                    </Button>
-                    <Button asChild variant="outline" size="sm">
-                      <Link
-                        href={`/dashboard/novels/${novelId}/volumes/${volume.id}/edit`}
-                      >
-                        <FileEdit className="h-4 w-4 mr-2" />
-                        Sửa
-                      </Link>
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <DraggableVolumeList initialVolumes={volumes} novelId={novelId} />
       )}
     </Container>
   );

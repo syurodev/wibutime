@@ -6,19 +6,19 @@
 "use client";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { CONTENT_TYPE } from "@/lib/constants/default";
+import type { MEDIA_TYPE } from "@/lib/constants/default";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export interface ContentTypeTabsProps {
-  readonly currentType?: CONTENT_TYPE | "all";
+export interface MediaTypeTabsProps {
+  readonly currentType?: MEDIA_TYPE | "all";
   readonly className?: string;
 }
 
-export function ContentTypeTabs({
+export function MediaTypeTabs({
   currentType = "all",
   className,
-}: ContentTypeTabsProps) {
+}: MediaTypeTabsProps) {
   const t = useTranslations("home.popular.tabs");
   const router = useRouter();
   const searchParams = useSearchParams();

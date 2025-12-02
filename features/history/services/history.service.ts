@@ -7,7 +7,7 @@ import type { HistoryMedia } from "@/features/history/types/history-content";
 import { HistoryMediaSchema } from "@/features/history/types/history-content";
 import { isSuccessResponse, type StandardResponse } from "@/lib/api/types";
 import { ApiParser } from "@/lib/api/utils/parsers";
-import type { CONTENT_TYPE } from "@/lib/constants/default";
+import type { MEDIA_TYPE } from "@/lib/constants/default";
 
 const mockDelay = async (min = 200, max = 400) => {
   const delay = Math.random() * (max - min) + min;
@@ -17,7 +17,7 @@ const mockDelay = async (min = 200, max = 400) => {
 export type HistorySortOption = "recent" | "title" | "updated";
 
 interface GetHistoryPaginatedParams {
-  type?: CONTENT_TYPE | "all";
+  type?: MEDIA_TYPE | "all";
   page?: number;
   limit?: number;
   sort?: HistorySortOption;

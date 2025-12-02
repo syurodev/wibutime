@@ -1,6 +1,6 @@
-import type { CONTENT_TYPE } from "@/lib/constants/default";
+import type { MEDIA_TYPE } from "@/lib/constants/default";
 
-const MEDIA_TYPE_PATH: Record<CONTENT_TYPE, string> = {
+const MEDIA_TYPE_PATH: Record<MEDIA_TYPE, string> = {
   anime: "anime",
   manga: "manga",
   novel: "novels",
@@ -8,7 +8,7 @@ const MEDIA_TYPE_PATH: Record<CONTENT_TYPE, string> = {
 
 type MediaWithSlug = {
   slug: string;
-  type: CONTENT_TYPE;
+  type: MEDIA_TYPE;
 };
 
 export const getMediaResumePath = (media: MediaWithSlug) =>

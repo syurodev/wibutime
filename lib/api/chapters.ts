@@ -6,6 +6,8 @@ export interface CreateChapterRequest {
   chapter_number: number;
   title: string;
   content: any;
+  word_count?: number;
+  character_count?: number;
   author_notes?: any;
   is_free?: boolean;
   price?: number;

@@ -11,7 +11,7 @@ import { PlateContainer, PlateContent, PlateView } from "platejs/react";
 import { cn } from "@/lib/utils";
 
 const editorContainerVariants = cva(
-  "relative w-full cursor-text caret-primary select-text selection:bg-brand/25 focus-visible:outline-none [&_.slate-selection-area]:z-50 [&_.slate-selection-area]:border [&_.slate-selection-area]:border-brand/25 [&_.slate-selection-area]:bg-brand/15",
+  "relative w-full cursor-text caret-primary select-text selection:bg-primary/30 focus-visible:outline-none [&_.slate-selection-area]:z-50 [&_.slate-selection-area]:border [&_.slate-selection-area]:border-primary/30 [&_.slate-selection-area]:bg-primary/20",
   {
     defaultVariants: {
       variant: "default",
@@ -22,7 +22,7 @@ const editorContainerVariants = cva(
           "flex flex-wrap justify-between gap-1 px-1 py-0.5 text-sm",
           "rounded-md border-[1.5px] border-transparent bg-transparent",
           "overflow-visible",
-          "has-[[data-slate-editor]:focus]:border-brand/50 has-[[data-slate-editor]:focus]:ring-2 has-[[data-slate-editor]:focus]:ring-brand/30",
+          "has-[[data-slate-editor]:focus]:border-primary/50 has-[[data-slate-editor]:focus]:ring-2 has-[[data-slate-editor]:focus]:ring-primary/30",
           "has-aria-disabled:border-input has-aria-disabled:bg-muted"
         ),
         default: "h-full overflow-y-auto",

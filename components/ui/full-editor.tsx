@@ -13,7 +13,6 @@ import { BasicMarksKit } from "@/features/editor/components/plugins/basic-marks-
 import { IndentKit } from "@/features/editor/components/plugins/indent-kit";
 import { LinkKit } from "@/features/editor/components/plugins/link-kit";
 import { MediaKit } from "@/features/editor/components/plugins/media-kit";
-import { SelectionKit } from "@/features/editor/components/plugins/selection-kit";
 
 const PLUGINS = [
   ...BasicBlocksKit,
@@ -22,7 +21,6 @@ const PLUGINS = [
   ...IndentKit,
   ...LinkKit,
   ...MediaKit,
-  ...SelectionKit,
 ];
 
 interface FullEditorProps {
@@ -53,7 +51,14 @@ export function FullEditor({
     <Plate
       editor={editor}
       onValueChange={({ value }) => {
-        onChange?.(value);
+        // Ensure there's always at least one paragraph node
+        // This prevents editor from becoming locked when all content is deleted
+        const normalizedValue =
+          !value || value.length === 0
+            ? [{ type: "p", children: [{ text: "" }] }]
+            : value;
+
+        onChange?.(normalizedValue);
       }}
     >
       <div className="w-full border rounded-md bg-background overflow-hidden flex flex-col h-[600px]">
