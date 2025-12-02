@@ -1,17 +1,18 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { TriggerNavItem } from "./types";
 import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
-  TooltipTrigger,
   TooltipContent,
+  TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { motion } from "framer-motion";
+import { TriggerNavItem } from "./types";
 
 interface NavTriggerItemProps {
   readonly item: TriggerNavItem;
   readonly index?: number; // For stagger animation delay
+  readonly hasAnimated?: boolean; // To disable initial animation after first mount
 }
 
 /**
@@ -23,12 +24,16 @@ interface NavTriggerItemProps {
  * Label shown in tooltip on hover.
  * Animates in with slide-from-bottom effect.
  */
-export function NavTriggerItem({ item, index = 0 }: NavTriggerItemProps) {
+export function NavTriggerItem({
+  item,
+  index = 0,
+  hasAnimated = false,
+}: NavTriggerItemProps) {
   return (
     <motion.li
       layout
       className="relative"
-      initial={{ opacity: 0, y: 15 }}
+      initial={hasAnimated ? false : { opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -15 }}
       transition={{

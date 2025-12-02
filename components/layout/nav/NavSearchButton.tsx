@@ -12,6 +12,7 @@ import { useNav } from "./useNav";
 interface NavSearchButtonProps {
   readonly item: SearchNavItem;
   readonly index?: number; // For stagger animation delay
+  readonly hasAnimated?: boolean; // To disable initial animation after first mount
 }
 
 /**
@@ -21,14 +22,18 @@ interface NavSearchButtonProps {
  * Shows as a nav item with tooltip and slide-from-bottom animation.
  * This is separate from NavSearch to avoid dual-mode complexity.
  */
-export function NavSearchButton({ item, index = 0 }: NavSearchButtonProps) {
+export function NavSearchButton({
+  item,
+  index = 0,
+  hasAnimated = false,
+}: NavSearchButtonProps) {
   const { toggleSearch } = useNav();
 
   return (
     <motion.li
       layout
       className="relative"
-      initial={{ opacity: 0, y: 15 }}
+      initial={hasAnimated ? false : { opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -15 }}
       transition={{

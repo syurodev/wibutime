@@ -1,18 +1,19 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
-  TooltipTrigger,
   TooltipContent,
+  TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Link, usePathname } from "@/i18n/routing";
+import { motion } from "framer-motion";
 import { LinkNavItem } from "./types";
 
 interface NavLinkItemProps {
   readonly item: LinkNavItem;
   readonly index?: number; // For stagger animation delay
+  readonly hasAnimated?: boolean; // To disable initial animation after first mount
 }
 
 /**
@@ -24,7 +25,11 @@ interface NavLinkItemProps {
  * Label is shown in tooltip on hover.
  * Animates in with slide-from-bottom effect.
  */
-export function NavLinkItem({ item, index = 0 }: NavLinkItemProps) {
+export function NavLinkItem({
+  item,
+  index = 0,
+  hasAnimated = false,
+}: NavLinkItemProps) {
   // Get current pathname to determine active state
   const pathname = usePathname();
   const isActive = pathname === item.href;
@@ -33,7 +38,7 @@ export function NavLinkItem({ item, index = 0 }: NavLinkItemProps) {
     <motion.li
       layout
       className="relative"
-      initial={{ opacity: 0, y: 15 }}
+      initial={hasAnimated ? false : { opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -15 }}
       transition={{

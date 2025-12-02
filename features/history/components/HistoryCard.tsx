@@ -8,7 +8,7 @@ import { Link } from "@/i18n/routing";
 import { CONTENT_TYPE } from "@/lib/constants/default";
 import { cn } from "@/lib/utils";
 import { getContentBadgeVariant } from "@/lib/utils/get-content-bg";
-import { getImageUrlWithDefault } from "@/lib/utils/get-image-url-with-default";
+import { getImageUrl } from "@/lib/utils/get-image-url";
 import { getInitials } from "@/lib/utils/get-initials";
 import { getMediaResumePath } from "@/lib/utils/get-media-resume-path";
 import { formatDistance } from "date-fns";
@@ -107,7 +107,7 @@ export const HistoryCard = ({
         {/* --- LEFT: IMAGE --- */}
         <div className="relative w-28 shrink-0">
           <Image
-            src={getImageUrlWithDefault(item.cover_url, "content-cover")}
+            src={getImageUrl(item.cover_url)}
             alt={item.title}
             fill
             sizes="112px"
@@ -146,12 +146,7 @@ export const HistoryCard = ({
           {item.author && (
             <div className="flex items-center gap-2 py-1">
               <Avatar className="size-5 border border-border/50">
-                <AvatarImage
-                  src={getImageUrlWithDefault(
-                    item.author.avatar_url,
-                    "user-avatar"
-                  )}
-                />
+                <AvatarImage src={getImageUrl(item.author.avatar_url)} />
                 <AvatarFallback className="text-[8px]">
                   {getInitials(item.author.display_name)}
                 </AvatarFallback>

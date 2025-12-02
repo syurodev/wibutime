@@ -1,3 +1,4 @@
+import { ClientProviders } from "@/components/providers/ClientProviders";
 import { SessionHydrator } from "@/components/providers/SessionHydrator";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { type Locale, locales } from "@/i18n/routing";
@@ -55,7 +56,7 @@ async function I18nProvider({
   const messages = await getCachedMessages(locale);
   return (
     <NextIntlClientProvider messages={messages}>
-      {children}
+      <ClientProviders>{children}</ClientProviders>
     </NextIntlClientProvider>
   );
 }
@@ -87,6 +88,15 @@ export default async function LocaleLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground min-h-screen`}
       >
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+            window.addEventListener('beforeunload', () => {
+              console.log('Page unloading', new Error().stack);
+            });
+          `,
+          }}
+        />
         <ThemeProvider>
           <Suspense fallback={null}>
             <SessionHydrator />

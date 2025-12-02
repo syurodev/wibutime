@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, ReactNode, useCallback, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { NavContextType, NavItem } from "./types";
 
 /**
@@ -22,6 +29,14 @@ interface NavProviderProps {
  * Should be placed in the layout component.
  */
 export function NavProvider({ children }: NavProviderProps) {
+  // Debug: Track component mount/unmount
+  useEffect(() => {
+    console.log("[NavProvider Debug] 🟢 NavProvider MOUNTED");
+    return () => {
+      console.log("[NavProvider Debug] 🔴 NavProvider UNMOUNTED");
+    };
+  }, []);
+
   // Current navigation items (set by each page)
   const [items, setItems] = useState<NavItem[]>([]);
 
@@ -102,12 +117,39 @@ export function NavProvider({ children }: NavProviderProps) {
       toggleAccountMenu,
       setItemLoading,
     }),
-    [items, searchMode, commentMode, accountMenuOpen, loadingItems, setNavItems, toggleSearch, toggleComment, toggleAccountMenu, setItemLoading]
+    [
+      items,
+      searchMode,
+      commentMode,
+      accountMenuOpen,
+      loadingItems,
+      setNavItems,
+      toggleSearch,
+      toggleComment,
+      toggleAccountMenu,
+      setItemLoading,
+    ]
   );
 
+  // Debug: Track context value changes
+  useEffect(() => {
+    console.log("[NavContext Debug] contextValue changed!", {
+      itemsCount: items.length,
+      searchMode,
+      commentMode,
+      accountMenuOpen,
+      loadingItemsSize: loadingItems.size,
+    });
+  }, [
+    contextValue,
+    items.length,
+    searchMode,
+    commentMode,
+    accountMenuOpen,
+    loadingItems,
+  ]);
+
   return (
-    <NavContext.Provider value={contextValue}>
-      {children}
-    </NavContext.Provider>
+    <NavContext.Provider value={contextValue}>{children}</NavContext.Provider>
   );
 }

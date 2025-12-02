@@ -5,156 +5,97 @@
 
 "use client";
 
-import { Container } from "@/components/layout/Container";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Link, useRouter } from "@/i18n/routing";
-import { ArrowLeft, Save } from "lucide-react";
+  NovelForm,
+  NovelFormData,
+} from "@/components/features/novels/novel-form";
+import { Container } from "@/components/layout/Container";
+import { useRouter } from "@/i18n/routing";
+import { createNovel } from "@/lib/api/actions/novel";
+import { useAuth } from "@/lib/hooks/use-auth";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export default function CreateNovelPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user, isLoading } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (formData: NovelFormData) => {
+    console.log("CreateNovelPage (Dashboard): handleSubmit triggered");
+    console.log("CreateNovelPage (Dashboard): User state:", {
+      user,
+      isLoading,
+    });
+
     setIsSubmitting(true);
 
     try {
-      const formData = new FormData(e.currentTarget);
-      const data = {
-        title: formData.get("title"),
-        original_language: formData.get("original_language"),
-        synopsis: formData.get("synopsis"),
-        owner_type: "user", // Auto set to 'user' for personal dashboard
-        // owner_id will be set to current user ID by API
+      if (isLoading) {
+        throw new Error(
+          "Đang tải thông tin người dùng, vui lòng thử lại sau giây lát"
+        );
+      }
+
+      if (!user?.id) {
+        throw new Error(
+          "Không tìm thấy thông tin người dùng (User ID missing)"
+        );
+      }
+
+      const payload = {
+        title: formData.title,
+        original_title: formData.original_title || formData.title, // Fallback to title if empty
+        original_language: formData.original_language,
+        synopsis: formData.synopsis,
+        cover_image_url: formData.cover_url || undefined, // Send undefined if empty string
+        status: formData.status,
+        is_oneshot: formData.is_oneshot,
+        genre_ids: formData.genre_ids,
+        author_ids: formData.author_ids,
+        artist_ids: formData.artist_ids,
+        owner_type: "user",
+        owner_id: user.id,
       };
 
-      // TODO: Call API to create novel
-      console.log("Creating novel:", data);
+      // Call API to create novel
+      console.log("Calling createNovel action...", payload);
+      const novel = await createNovel(payload);
+      console.log("Novel created:", novel);
 
       toast.success("Novel đã được tạo thành công!");
       router.push("/dashboard/novels");
-    } catch (error) {
-      toast.error("Có lỗi xảy ra khi tạo novel");
-      console.error(error);
+    } catch (error: any) {
+      toast.error(error.message || "Có lỗi xảy ra khi tạo novel");
+      console.error("Create novel error:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <Container maxWidth="2xl" className=" py-8 max-w-4xl space-y-8">
-      {/* Header */}
-      <div>
-        <Button asChild variant="ghost" size="sm" className="mb-4">
-          <Link href="/dashboard/novels">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Quay lại
-          </Link>
-        </Button>
-        <h1 className="text-3xl font-bold">Tạo Novel mới</h1>
-        <p className="text-muted-foreground mt-1">
-          Tạo novel cá nhân (Chủ sở hữu: Bạn)
-        </p>
-      </div>
-
-      {/* Form */}
-      <form onSubmit={handleSubmit}>
-        <Card>
-          <CardHeader>
-            <CardTitle>Thông tin cơ bản</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Title */}
-            <div className="space-y-2">
-              <Label htmlFor="title">
-                Tiêu đề <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="title"
-                name="title"
-                placeholder="Nhập tiêu đề novel..."
-                required
-              />
+    <Container maxWidth="2xl" className="py-8 max-w-5xl">
+      <NovelForm
+        onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+        backUrl="/dashboard/novels"
+        title="Tạo Novel mới"
+        description="Tạo novel cá nhân (Chủ sở hữu: Bạn)"
+        submitLabel="Tạo Novel"
+        ownerInfo={
+          <>
+            <div className="flex items-center gap-2 mb-2">
+              <p className="text-sm font-medium">Chủ sở hữu:</p>
+              <span className="text-sm text-muted-foreground">
+                Bạn (Personal)
+              </span>
             </div>
-
-            {/* Original Language */}
-            <div className="space-y-2">
-              <Label htmlFor="original_language">
-                Ngôn ngữ gốc <span className="text-destructive">*</span>
-              </Label>
-              <Select name="original_language" defaultValue="vi" required>
-                <SelectTrigger>
-                  <SelectValue placeholder="Chọn ngôn ngữ" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="vi">Tiếng Việt</SelectItem>
-                  <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="ja">日本語 (Japanese)</SelectItem>
-                  <SelectItem value="ko">한국어 (Korean)</SelectItem>
-                  <SelectItem value="zh">中文 (Chinese)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Synopsis */}
-            <div className="space-y-2">
-              <Label htmlFor="synopsis">Tóm tắt</Label>
-              <Textarea
-                id="synopsis"
-                name="synopsis"
-                placeholder="Nhập tóm tắt nội dung..."
-                rows={6}
-              />
-              <p className="text-xs text-muted-foreground">
-                Tóm tắt ngắn gọn về nội dung novel
-              </p>
-            </div>
-
-            {/* Owner Info */}
-            <div className="rounded-lg bg-muted p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <p className="text-sm font-medium">Chủ sở hữu:</p>
-                <span className="text-sm text-muted-foreground">
-                  Bạn (Personal)
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Novel này sẽ được tạo dưới quyền sở hữu cá nhân của bạn
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Actions */}
-        <div className="flex justify-end gap-3 mt-6">
-          <Button type="button" variant="outline" asChild>
-            <Link href="/dashboard/novels">Hủy</Link>
-          </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? (
-              "Đang tạo..."
-            ) : (
-              <>
-                <Save className="h-4 w-4 mr-2" />
-                Tạo Novel
-              </>
-            )}
-          </Button>
-        </div>
-      </form>
+            <p className="text-xs text-muted-foreground">
+              Novel này sẽ được tạo dưới quyền sở hữu cá nhân của bạn
+            </p>
+          </>
+        }
+      />
     </Container>
   );
 }

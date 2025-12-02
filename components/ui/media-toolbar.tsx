@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 
+import { useUploadFile } from "@/hooks/use-upload-file";
 import { CaptionButton } from "./caption";
 
 const inputVariants = cva(
@@ -68,7 +69,32 @@ export function MediaToolbar({
   }, [open]);
 
   const element = useElement();
+  const { deleteFile } = useUploadFile();
   const { props: buttonProps } = useRemoveNodeButton({ element });
+
+  const handleRemove = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Delete file from R2 if it exists
+    if (element.url && typeof element.url === "string") {
+      try {
+        const urlObj = new URL(element.url);
+        // The key is the pathname without the leading slash
+        const key = urlObj.pathname.substring(1);
+        if (key) {
+          await deleteFile(key);
+        }
+      } catch (err) {
+        console.error("Failed to parse URL for deletion", err);
+      }
+    }
+
+    // Remove node
+    // We can use the handler from useRemoveNodeButton or just remove it manually
+    // buttonProps.onMouseDown(e) might expect a specific event type, so let's use transforms
+    editor.tf.removeNodes({ at: [], match: (n) => n.id === element.id });
+  };
 
   return (
     <Popover open={open} modal={false}>
@@ -106,7 +132,7 @@ export function MediaToolbar({
 
             <Separator orientation="vertical" className="mx-1 h-6" />
 
-            <Button size="sm" variant="ghost" {...buttonProps}>
+            <Button size="sm" variant="ghost" onClick={handleRemove}>
               <Trash2Icon />
             </Button>
           </div>

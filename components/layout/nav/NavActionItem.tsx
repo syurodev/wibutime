@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import {
@@ -8,6 +7,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { ActionNavItem } from "./types";
 import { useNav } from "./useNav";
@@ -15,6 +15,7 @@ import { useNav } from "./useNav";
 interface NavActionItemProps {
   readonly item: ActionNavItem;
   readonly index?: number; // For stagger animation delay
+  readonly hasAnimated?: boolean; // To disable initial animation after first mount
 }
 
 /**
@@ -29,7 +30,11 @@ interface NavActionItemProps {
  * - Label shown in tooltip on hover
  * - Animates in with slide-from-bottom effect
  */
-export function NavActionItem({ item, index = 0 }: NavActionItemProps) {
+export function NavActionItem({
+  item,
+  index = 0,
+  hasAnimated = false,
+}: NavActionItemProps) {
   // Get loading state from context
   const { loadingItems, setItemLoading } = useNav();
   const isLoading = loadingItems.has(item.id);
@@ -71,7 +76,7 @@ export function NavActionItem({ item, index = 0 }: NavActionItemProps) {
     <motion.li
       layout
       className="relative"
-      initial={{ opacity: 0, y: 15 }}
+      initial={hasAnimated ? false : { opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -15 }}
       transition={{

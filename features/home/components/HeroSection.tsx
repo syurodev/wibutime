@@ -22,7 +22,7 @@ import {
   getContentBadgeVariant,
   getContentBg,
 } from "@/lib/utils/get-content-bg";
-import { getImageUrlWithDefault } from "@/lib/utils/get-image-url-with-default";
+import { getImageUrl } from "@/lib/utils/get-image-url";
 import { getInitials } from "@/lib/utils/get-initials";
 import Autoplay from "embla-carousel-autoplay";
 import { Eye, Heart, Play, Plus, Star } from "lucide-react";
@@ -170,19 +170,16 @@ function HeroSlide({
               <div className="flex items-center gap-2 min-w-0 max-w-[60%]">
                 <Avatar className="size-8 shrink-0 ring-1 ring-white/30">
                   <AvatarImage
-                    src={getImageUrlWithDefault(
-                      featured.author.avatar_url,
-                      "user-avatar"
-                    )}
-                    alt={featured.author.username}
+                    src={getImageUrl(featured.owner.avatar_url)}
+                    alt={featured.owner.username}
                     loading="lazy"
                   />
                   <AvatarFallback className="text-[9px] text-foreground">
-                    {getInitials(featured.author.display_name)}
+                    {getInitials(featured.owner.display_name)}
                   </AvatarFallback>
                 </Avatar>
                 <span className="text-sm font-semibold truncate text-white/90 text-shadow-sm">
-                  {featured.author.display_name}
+                  {featured.owner.display_name}
                 </span>
               </div>
 

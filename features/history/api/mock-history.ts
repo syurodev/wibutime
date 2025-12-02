@@ -72,7 +72,7 @@ export const getMockHistoryMedia = (count = 12): HistoryMedia[] => {
           : null,
         type: item.type,
         status: item.status,
-        author: item.author,
+        author: item.owner,
         // New fields from MediaSeries
         genres: item.genres || [],
         rating: item.rating || randomInt(70, 95) / 10, // 7.0 - 9.5

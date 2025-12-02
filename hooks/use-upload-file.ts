@@ -1,97 +1,61 @@
-import * as React from 'react';
+import * as React from "react";
+import { useR2Upload, type UploadedFile } from "./use-r2-upload";
 
-import type { OurFileRouter } from '@/lib/uploadthing';
-import type {
-  ClientUploadedFileData,
-  UploadFilesOptions,
-} from 'uploadthing/types';
-
-import { generateReactHelpers } from '@uploadthing/react';
-import { toast } from 'sonner';
-import { z } from 'zod';
-
-export type UploadedFile<T = unknown> = ClientUploadedFileData<T>;
-
-interface UseUploadFileProps
-  extends Pick<
-    UploadFilesOptions<OurFileRouter['editorUploader']>,
-    'headers' | 'onUploadBegin' | 'onUploadProgress' | 'skipPolling'
-  > {
+interface UseUploadFileProps {
   onUploadComplete?: (file: UploadedFile) => void;
   onUploadError?: (error: unknown) => void;
+  onUploadProgress?: (progress: number) => void;
 }
 
 export function useUploadFile({
   onUploadComplete,
   onUploadError,
-  ...props
+  onUploadProgress,
 }: UseUploadFileProps = {}) {
+  console.log("useUploadFile hook called");
   const [uploadedFile, setUploadedFile] = React.useState<UploadedFile>();
   const [uploadingFile, setUploadingFile] = React.useState<File>();
-  const [progress, setProgress] = React.useState<number>(0);
-  const [isUploading, setIsUploading] = React.useState(false);
 
-  async function uploadThing(file: File) {
-    setIsUploading(true);
+  const {
+    uploadFile: r2Upload,
+    isUploading,
+    progress,
+  } = useR2Upload({
+    onUploadProgress,
+  });
+
+  async function uploadFile(
+    file: File,
+    type: "avatar" | "novel" | "chapter" | "general" = "general"
+  ) {
     setUploadingFile(file);
+    setUploadedFile(undefined);
 
     try {
-      const res = await uploadFiles('editorUploader', {
-        ...props,
-        files: [file],
-        onUploadProgress: ({ progress }) => {
-          setProgress(Math.min(progress, 100));
-        },
+      const result = await r2Upload(file, type);
+      setUploadedFile(result);
+      onUploadComplete?.(result);
+      return result;
+    } catch (error) {
+      onUploadError?.(error);
+      // Toast is already handled in useR2Upload but we can add more specific handling here if needed
+    } finally {
+      setUploadingFile(undefined);
+    }
+  }
+
+  async function deleteFile(key: string) {
+    try {
+      const res = await fetch("/api/upload/delete", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key }),
       });
 
-      setUploadedFile(res[0]);
-
-      onUploadComplete?.(res[0]);
-
-      return uploadedFile;
+      if (!res.ok) throw new Error("Failed to delete file");
     } catch (error) {
-      const errorMessage = getErrorMessage(error);
-
-      const message =
-        errorMessage.length > 0
-          ? errorMessage
-          : 'Something went wrong, please try again later.';
-
-      toast.error(message);
-
-      onUploadError?.(error);
-
-      // Mock upload for unauthenticated users
-      // toast.info('User not logged in. Mocking upload process.');
-      const mockUploadedFile = {
-        key: 'mock-key-0',
-        appUrl: `https://mock-app-url.com/${file.name}`,
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        url: URL.createObjectURL(file),
-      } as UploadedFile;
-
-      // Simulate upload progress
-      let progress = 0;
-
-      const simulateProgress = async () => {
-        while (progress < 100) {
-          await new Promise((resolve) => setTimeout(resolve, 50));
-          progress += 2;
-          setProgress(Math.min(progress, 100));
-        }
-      };
-
-      await simulateProgress();
-
-      setUploadedFile(mockUploadedFile);
-
-      return mockUploadedFile;
-    } finally {
-      setProgress(0);
-      setIsUploading(false);
-      setUploadingFile(undefined);
+      console.error("Delete error:", error);
+      // We don't necessarily want to show an error to the user if background cleanup fails
     }
   }
 
@@ -99,32 +63,8 @@ export function useUploadFile({
     isUploading,
     progress,
     uploadedFile,
-    uploadFile: uploadThing,
+    uploadFile,
     uploadingFile,
+    deleteFile,
   };
-}
-
-export const { uploadFiles, useUploadThing } =
-  generateReactHelpers<OurFileRouter>();
-
-export function getErrorMessage(err: unknown) {
-  const unknownError = 'Something went wrong, please try again later.';
-
-  if (err instanceof z.ZodError) {
-    const errors = err.issues.map((issue) => {
-      return issue.message;
-    });
-
-    return errors.join('\n');
-  } else if (err instanceof Error) {
-    return err.message;
-  } else {
-    return unknownError;
-  }
-}
-
-export function showErrorToast(err: unknown) {
-  const errorMessage = getErrorMessage(err);
-
-  return toast.error(errorMessage);
 }

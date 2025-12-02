@@ -154,6 +154,7 @@ export function getMockMediaSeries(count: number = 50): MediaSeries[] {
         id: crypto.randomUUID(),
         title,
         slug: title.toLowerCase().replace(/\s+/g, "-"),
+        original_language: "en", // Required field
         description: generateMockParagraphs(),
         cover_url: getRandom(mockCoverImages),
         type: getRandom(contentTypes),
@@ -167,7 +168,7 @@ export function getMockMediaSeries(count: number = 50): MediaSeries[] {
           title: `Chapter ${Math.floor(Math.random() * 100) + 1}`,
           published_at: updatedAt,
         }),
-        author: generateMockUser(i),
+        owner: generateMockUser(i), // Changed from 'author' to 'owner'
         created_at: createdAt,
         updated_at: updatedAt,
       };

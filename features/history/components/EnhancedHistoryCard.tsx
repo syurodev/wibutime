@@ -12,7 +12,7 @@ import {
   getContentBadgeVariant,
   getContentProgressGradient,
 } from "@/lib/utils/get-content-bg";
-import { getImageUrlWithDefault } from "@/lib/utils/get-image-url-with-default";
+import { getImageUrl } from "@/lib/utils/get-image-url";
 import { getInitials } from "@/lib/utils/get-initials";
 import { getMediaResumePath } from "@/lib/utils/get-media-resume-path";
 import { formatDistance } from "date-fns";
@@ -178,7 +178,7 @@ export const EnhancedHistoryCard = ({
         {/* IMAGE SECTION - Larger fixed width */}
         <div className="relative shrink-0 w-[170px] h-full">
           <Image
-            src={getImageUrlWithDefault(item.cover_url, "content-cover")}
+            src={getImageUrl(item.cover_url)}
             alt={item.title}
             fill
             sizes="170px"
@@ -305,12 +305,7 @@ export const EnhancedHistoryCard = ({
           {item.author && (
             <div className="flex items-center gap-2 mb-2">
               <Avatar className="size-5 md:size-6 border border-border/50">
-                <AvatarImage
-                  src={getImageUrlWithDefault(
-                    item.author.avatar_url,
-                    "user-avatar"
-                  )}
-                />
+                <AvatarImage src={getImageUrl(item.author.avatar_url)} />
                 <AvatarFallback className="text-[8px] md:text-[9px]">
                   {getInitials(item.author.display_name)}
                 </AvatarFallback>

@@ -17,6 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -50,6 +51,10 @@ import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 
 export function GenresManagement() {
+  useEffect(() => {
+    console.log("[GenresManagement] MOUNTED");
+    return () => console.log("[GenresManagement] UNMOUNTED");
+  }, []);
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -442,7 +447,7 @@ export function GenresManagement() {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Tên</label>
+              <Label className="text-sm font-medium mb-2 block">Tên</Label>
               <Input
                 value={formData.name}
                 onChange={(e) =>
@@ -452,7 +457,7 @@ export function GenresManagement() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">Mô tả</label>
+              <Label className="text-sm font-medium mb-2 block">Mô tả</Label>
               <Input
                 value={formData.description || ""}
                 onChange={(e) =>
@@ -487,7 +492,7 @@ export function GenresManagement() {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Tên</label>
+              <Label className="text-sm font-medium mb-2 block">Tên</Label>
               <Input
                 value={formData.name}
                 onChange={(e) =>
@@ -496,7 +501,7 @@ export function GenresManagement() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">Mô tả</label>
+              <Label className="text-sm font-medium mb-2 block">Mô tả</Label>
               <Input
                 value={formData.description || ""}
                 onChange={(e) =>

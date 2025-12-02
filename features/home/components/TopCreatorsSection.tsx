@@ -10,7 +10,7 @@ import { BasicStaticEditorView } from "@/features/editor/components/basic-static
 import { Link } from "@/i18n/routing";
 import type { CreatorStats } from "@/lib/api/models/community/creator-stats";
 import { CreatorStatsUtils } from "@/lib/api/models/community/creator-stats";
-import { getImageUrlWithDefault } from "@/lib/utils/get-image-url-with-default";
+import { getImageUrl } from "@/lib/utils/get-image-url";
 import { getInitials } from "@/lib/utils/get-initials";
 import { ArrowRight, BadgeCheck, BookOpen, Eye, Users } from "lucide-react";
 import { getTranslations } from "next-intl/server";
@@ -88,10 +88,7 @@ function CreatorCard({ creator }: { readonly creator: CreatorStats }) {
             <div className="relative">
               <Avatar className="size-20 ring-2 ring-primary/10">
                 <AvatarImage
-                  src={getImageUrlWithDefault(
-                    creator.avatar_url,
-                    "user-avatar"
-                  )}
+                  src={getImageUrl(creator.avatar_url)}
                   alt={creator.display_name}
                   className="object-cover"
                 />

@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import type { TNode } from "platejs";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   DEFAULT_ITEM_IDS,
   defaultItemsEnd,
@@ -33,8 +33,19 @@ import { useNav } from "./useNav";
  * Both nav items and search content animate with slide-from-bottom effect.
  */
 const Nav = () => {
-  // Get current pathname to force re-render on page change
-  const pathname = usePathname();
+  // Get current pathname (without query params) to avoid re-render on query changes
+  const fullPathname = usePathname();
+  // Strip query params to only track actual route changes
+  const pathname = useMemo(() => {
+    const basePath = fullPathname.split("?")[0];
+    console.log(
+      "[Nav Debug] fullPathname:",
+      fullPathname,
+      "→ basePath:",
+      basePath
+    );
+    return basePath;
+  }, [fullPathname]);
 
   // Get nav state from context
   const {
@@ -49,11 +60,38 @@ const Nav = () => {
     setItemLoading,
   } = useNav();
 
+  // Debug: Track items changes
+  useEffect(() => {
+    console.log(
+      "[Nav Debug] items changed, count:",
+      items.length,
+      "items:",
+      items
+    );
+  }, [items]);
+
   // Get current breakpoint for responsive behavior
   const { breakpoint } = useMediaQuery();
 
   // Get UI preferences for blur effect
   const { preferences } = useUiPreferences();
+
+  // Debug: Track component mount/unmount
+  useEffect(() => {
+    console.log("[Nav Debug] 🟢 Nav component MOUNTED");
+    return () => {
+      console.log("[Nav Debug] 🔴 Nav component UNMOUNTED");
+    };
+  }, []);
+
+  // Track if initial animation has already run to prevent re-animation on re-renders
+  const [hasAnimated, setHasAnimated] = useState(false);
+
+  useEffect(() => {
+    if (!hasAnimated) {
+      setHasAnimated(true);
+    }
+  }, [hasAnimated]);
   const reduceBlur = preferences.reduce_blur;
 
   /**
@@ -66,13 +104,20 @@ const Nav = () => {
    * - Items with IDs that conflict with defaults
    * - Search items from pages (we use default search)
    */
-  const pageItems = items.filter(
-    (item) =>
-      !DEFAULT_ITEM_IDS.has(item.id) && // No default ID conflicts
-      item.type !== "search" // No page-specific search (use default)
+  const pageItems = useMemo(
+    () =>
+      items.filter(
+        (item) =>
+          !DEFAULT_ITEM_IDS.has(item.id) && // No default ID conflicts
+          item.type !== "search" // No page-specific search (use default)
+      ),
+    [items]
   );
 
-  const mergedItems = [...defaultItemsStart, ...pageItems, ...defaultItemsEnd];
+  const mergedItems = useMemo(
+    () => [...defaultItemsStart, ...pageItems, ...defaultItemsEnd],
+    [pageItems]
+  );
 
   // Separate search and pagination items from other nav items
   // Search item is handled specially (can expand to full width)
@@ -414,34 +459,49 @@ const Nav = () => {
   };
 
   const navDefault = () => {
+    const navKey = `nav-content-${pathname}`;
+    console.log(
+      "[Nav Debug] navDefault() called with key:",
+      navKey,
+      "hasAnimated:",
+      hasAnimated
+    );
+
     return (
-      <motion.ul
-        key={`nav-content-${pathname}`}
-        className="flex items-center gap-2"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{
-          duration: 0.2,
-          ease: [0.4, 0, 0.2, 1],
-        }}
-      >
+      <ul className="flex items-center gap-2">
         <AnimatePresence mode="popLayout">
           {/* Render each visible nav item based on its type with index for stagger */}
           {visibleItems.map((item, index) => {
             switch (item.type) {
               case "link":
                 // Link item: navigate to another page
-                return <NavLinkItem key={item.id} item={item} index={index} />;
+                return (
+                  <NavLinkItem
+                    key={item.id}
+                    item={item}
+                    index={index}
+                    hasAnimated={hasAnimated}
+                  />
+                );
               case "action":
                 // Action item: async operation (API calls)
                 return (
-                  <NavActionItem key={item.id} item={item} index={index} />
+                  <NavActionItem
+                    key={item.id}
+                    item={item}
+                    index={index}
+                    hasAnimated={hasAnimated}
+                  />
                 );
               case "trigger":
                 // Trigger item: sync UI action (open modal)
                 return (
-                  <NavTriggerItem key={item.id} item={item} index={index} />
+                  <NavTriggerItem
+                    key={item.id}
+                    item={item}
+                    index={index}
+                    hasAnimated={hasAnimated}
+                  />
                 );
               default:
                 return null;
@@ -452,7 +512,7 @@ const Nav = () => {
             <motion.li
               key={item.id}
               layout
-              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              initial={hasAnimated ? false : { opacity: 0, scale: 0.8, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.8, y: 20 }}
               transition={{
@@ -475,6 +535,7 @@ const Nav = () => {
               key="search-button"
               item={searchItem}
               index={visibleItems.length}
+              hasAnimated={hasAnimated}
             />
           )}
           {/* Render Account button (always visible, part of default items) */}
@@ -483,7 +544,7 @@ const Nav = () => {
             overflowCount={overflowItems.length}
           />
         </AnimatePresence>
-      </motion.ul>
+      </ul>
     );
   };
 
@@ -535,6 +596,15 @@ const Nav = () => {
   };
 
   const renderNavContent = () => {
+    console.log(
+      "[Nav Debug] renderNavContent() - searchMode:",
+      searchMode,
+      "commentMode:",
+      commentMode,
+      "accountMenuOpen:",
+      accountMenuOpen
+    );
+
     if (searchMode) {
       // Search mode: show search input with results (dynamic height)
       return navSearchMode();

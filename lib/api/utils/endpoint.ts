@@ -49,7 +49,11 @@ export function endpoint(
   const cleanPath = path.replace(/^\/+|\/+$/g, "");
 
   // Build base URL with version and path
-  let url = `${base}/${version}/${cleanPath}`;
+  let url = base;
+  if (!base.endsWith(`/${version}`)) {
+    url += `/${version}`;
+  }
+  url += `/${cleanPath}`;
 
   // Separate path params (strings/numbers) from query params (objects)
   const pathParams: (string | number)[] = [];

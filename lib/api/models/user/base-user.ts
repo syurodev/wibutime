@@ -13,7 +13,7 @@ export const BaseUserSchema = z.object({
   id: z.string(),
   display_name: z.string().default("Unknown User"),
   username: z.string().default("unknown"),
-  avatar_url: z.string().default("/images/default-avatar.png"),
+  avatar_url: z.string().default(""),
   created_at: z.string().default(() => new Date().toISOString()),
   updated_at: z.string().default(() => new Date().toISOString()),
 });

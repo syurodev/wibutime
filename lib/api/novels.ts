@@ -4,6 +4,9 @@
  */
 
 import { DateRange } from "@/lib/utils/date-ranges";
+import { MediaSeries } from "./models/content/base-content";
+import { StandardResponse } from "./types";
+import api from "./utils/fetch";
 
 // ============================================================================
 // Type Definitions
@@ -160,4 +163,47 @@ export async function getPublishingActivity(
   // return response.json();
 
   throw new Error("Not implemented - use mock data");
+}
+/**
+ * Get list of novels with filtering
+ */
+export interface GetNovelsParams {
+  page?: number;
+  limit?: number;
+  owner?: string; // Owner ID
+  key_search?: string;
+  genre_ids?: string[];
+  status?: string[];
+  original_language?: string;
+  sort_by?: "created_at" | "rating" | "views" | "last_chapter";
+  sort_order?: "asc" | "desc";
+  token?: string; // Optional auth token for server-side calls
+}
+
+export async function getNovels(
+  params: GetNovelsParams
+): Promise<StandardResponse<MediaSeries[]>> {
+  const queryParams = new URLSearchParams();
+
+  if (params.page) queryParams.append("page", params.page.toString());
+  if (params.limit) queryParams.append("limit", params.limit.toString());
+  if (params.owner) queryParams.append("owner", params.owner);
+  if (params.key_search) queryParams.append("key_search", params.key_search);
+  if (params.original_language)
+    queryParams.append("original_language", params.original_language);
+  if (params.sort_by) queryParams.append("sort_by", params.sort_by);
+  if (params.sort_order) queryParams.append("sort_order", params.sort_order);
+
+  // Handle arrays
+  if (params.genre_ids) {
+    params.genre_ids.forEach((id) => queryParams.append("genre_ids", id));
+  }
+  if (params.status) {
+    params.status.forEach((s) => queryParams.append("status", s));
+  }
+
+  return api.get<StandardResponse<MediaSeries[]>>(
+    `/novels?${queryParams.toString()}`,
+    { token: params.token }
+  );
 }

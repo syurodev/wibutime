@@ -3,6 +3,7 @@
  * Main landing page with featured content and sections
  */
 
+import { Skeleton } from "@/components/ui/skeleton";
 import { getCachedHistory } from "@/features/history/services/history.cached";
 import { CommunityMilestonesSection } from "@/features/home/components/CommunityMilestonesSection";
 import { ContinueSection } from "@/features/home/components/ContinueSection";
@@ -25,6 +26,7 @@ import {
   getCachedTopCreators,
 } from "@/lib/api/services/community/community.cached";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 /**
  * Page metadata (SEO)
@@ -37,28 +39,70 @@ export const metadata: Metadata = {
 };
 
 /**
+ * Data Components for Suspense
+ */
+async function TrendingData() {
+  const series = await getCachedTrending(10);
+  return <TrendingSection series={series} />;
+}
+
+async function LatestData() {
+  const series = await getCachedLatest(10);
+  return <LatestUpdatesSection series={series} />;
+}
+
+async function NewSeriesData() {
+  const series = await getCachedNew(10);
+  return <NewSeriesSection series={series} />;
+}
+
+async function CommunityData() {
+  const [topCreators, genreStats] = await Promise.all([
+    getCachedTopCreators(8),
+    getCachedGenreStats(12),
+  ]);
+
+  return (
+    <>
+      <TopCreatorsSection creators={topCreators} />
+      <GenreHubSection genres={genreStats} />
+    </>
+  );
+}
+
+async function MilestonesData() {
+  const milestones = await getCachedMilestones(6);
+  return <CommunityMilestonesSection milestones={milestones} />;
+}
+
+/**
+ * Section Skeleton Components
+ */
+function SectionSkeleton({ title }: { title?: string }) {
+  return (
+    <div className="container mx-auto px-4 py-8">
+      {title && <Skeleton className="h-8 w-48 mb-6" />}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        {Array.from({ length: 10 }, (_, i) => `skeleton-${i}`).map((key) => (
+          <div key={key} className="space-y-2">
+            <Skeleton className="aspect-2/3 w-full rounded-lg" />
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-3 w-1/2" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/**
  * Homepage Server Component
  */
 export default async function HomePage() {
-  // Fetch all data in parallel
-  const [
-    featuredList,
-    trendingSeries,
-    latestSeries,
-    newSeries,
-    historyItems,
-    topCreators,
-    genreStats,
-    milestones,
-  ] = await Promise.all([
+  // Fetch critical data immediately (above the fold)
+  const [featuredList, historyItems] = await Promise.all([
     getCachedFeaturedList(),
-    getCachedTrending(10),
-    getCachedLatest(10),
-    getCachedNew(10),
     getCachedHistory(12),
-    getCachedTopCreators(8),
-    getCachedGenreStats(12),
-    getCachedMilestones(6),
   ]);
 
   return (
@@ -68,27 +112,43 @@ export default async function HomePage() {
 
       {/* Main Content */}
       <div className="min-h-screen pb-24">
-        {/* Hero Section */}
+        {/* Hero Section - Renders immediately */}
         <HeroSection featuredList={featuredList} />
 
-        {/* Personal Section */}
+        {/* Personal Section - Renders immediately */}
         <ContinueSection history={historyItems} />
 
-        {/* Trending Content */}
-        <TrendingSection series={trendingSeries} />
+        {/* Trending Content - Streams when ready */}
+        <Suspense fallback={<SectionSkeleton />}>
+          <TrendingData />
+        </Suspense>
 
-        {/* Community Engagement - Top Creators & Genre Hub Split Layout */}
-        <TopCreatorsSection creators={topCreators} />
-        <GenreHubSection genres={genreStats} />
+        {/* Community Engagement - Streams when ready */}
+        <Suspense
+          fallback={
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 px-4 py-8">
+              <Skeleton className="h-96 rounded-xl" />
+              <Skeleton className="h-96 rounded-xl" />
+            </div>
+          }
+        >
+          <CommunityData />
+        </Suspense>
 
-        {/* Latest Updates */}
-        <LatestUpdatesSection series={latestSeries} />
+        {/* Latest Updates - Streams when ready */}
+        <Suspense fallback={<SectionSkeleton />}>
+          <LatestData />
+        </Suspense>
 
-        {/* New Series */}
-        <NewSeriesSection series={newSeries} />
+        {/* New Series - Streams when ready */}
+        <Suspense fallback={<SectionSkeleton />}>
+          <NewSeriesData />
+        </Suspense>
 
-        {/* Community Milestones */}
-        <CommunityMilestonesSection milestones={milestones} />
+        {/* Community Milestones - Streams when ready */}
+        <Suspense fallback={<SectionSkeleton />}>
+          <MilestonesData />
+        </Suspense>
       </div>
     </>
   );

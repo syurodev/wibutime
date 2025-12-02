@@ -56,11 +56,13 @@ export const MediaSeriesSchema = z.object({
   // Required fields - MUST có từ BE
   id: z.string(),
   title: z.string().min(1, "Title is required"),
+  original_title: z.string().optional(),
   slug: z.string(),
+  original_language: z.string(),
 
   // Content fields với defaults
   description: z.array(z.any()).default([]), // TNode[] from platejs
-  cover_url: z.string().default("/images/placeholder.png"),
+  cover_url: z.string().default(""),
 
   // Type và status với defaults
   type: z
@@ -72,7 +74,7 @@ export const MediaSeriesSchema = z.object({
 
   // Relations với defaults
   genres: z.array(GenreSchema).default([]),
-  author: BaseUserSchema,
+  owner: BaseUserSchema,
 
   // Stats với defaults
   rating: z.number().min(0).max(10).default(0),

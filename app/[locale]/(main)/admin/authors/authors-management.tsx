@@ -17,6 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -100,7 +101,9 @@ export function AuthorsManagement() {
 
     const queryString = params.toString();
     startTransition(() => {
-      router.push(queryString ? `?${queryString}` : window.location.pathname);
+      router.push(
+        queryString ? `?${queryString}` : globalThis.window.location.pathname
+      );
     });
   };
 
@@ -119,7 +122,10 @@ export function AuthorsManagement() {
       setTotalPages(result.total_pages);
       setTotalItems(result.total_items);
     } catch (error) {
-      const message = error instanceof ApiError ? error.message : "Không thể tải danh sách tác giả";
+      const message =
+        error instanceof ApiError
+          ? error.message
+          : "Không thể tải danh sách tác giả";
       toast.error(message);
       setAuthors([]);
       setTotalPages(1);
@@ -155,13 +161,26 @@ export function AuthorsManagement() {
   const handleCreate = async () => {
     try {
       setSubmitting(true);
-      await AuthorService.create(formData as CreateAuthorRequest);
+      const newAuthor = await AuthorService.create(
+        formData as CreateAuthorRequest
+      );
       toast.success("Đã tạo tác giả thành công");
       setCreateDialogOpen(false);
       setFormData({ name: "", biography: "" });
-      fetchAuthors();
+
+      // Optimistic update if on first page
+      if (currentPage === 1 && !currentSearch) {
+        // Add to top of list, keep only DEFAULT_LIMIT items
+        setAuthors([newAuthor, ...authors.slice(0, DEFAULT_LIMIT - 1)]);
+        setTotalItems(totalItems + 1);
+        setTotalPages(Math.ceil((totalItems + 1) / DEFAULT_LIMIT));
+      } else {
+        // Refetch if not on first page or has search filter
+        await fetchAuthors();
+      }
     } catch (error) {
-      const message = error instanceof ApiError ? error.message : "Không thể tạo tác giả";
+      const message =
+        error instanceof ApiError ? error.message : "Không thể tạo tác giả";
       toast.error(message);
     } finally {
       setSubmitting(false);
@@ -172,7 +191,7 @@ export function AuthorsManagement() {
     if (!selectedAuthor) return;
     try {
       setSubmitting(true);
-      await AuthorService.update(
+      const updatedAuthor = await AuthorService.update(
         selectedAuthor.id,
         formData as UpdateAuthorRequest
       );
@@ -180,9 +199,18 @@ export function AuthorsManagement() {
       setEditDialogOpen(false);
       setSelectedAuthor(null);
       setFormData({ name: "", biography: "" });
-      fetchAuthors();
+
+      // Optimistic update: replace item in current list
+      setAuthors(
+        authors.map((author) =>
+          author.id === selectedAuthor.id ? updatedAuthor : author
+        )
+      );
     } catch (error) {
-      const message = error instanceof ApiError ? error.message : "Không thể cập nhật tác giả";
+      const message =
+        error instanceof ApiError
+          ? error.message
+          : "Không thể cập nhật tác giả";
       toast.error(message);
     } finally {
       setSubmitting(false);
@@ -197,9 +225,22 @@ export function AuthorsManagement() {
       toast.success("Đã xóa tác giả thành công");
       setDeleteDialogOpen(false);
       setSelectedAuthor(null);
-      fetchAuthors();
+
+      // Optimistic update: remove from list
+      const newAuthors = authors.filter(
+        (author) => author.id !== selectedAuthor.id
+      );
+      setAuthors(newAuthors);
+      setTotalItems(totalItems - 1);
+      setTotalPages(Math.ceil((totalItems - 1) / DEFAULT_LIMIT));
+
+      // If current page becomes empty and not first page, go to previous page
+      if (newAuthors.length === 0 && currentPage > 1) {
+        updateURL({ page: currentPage - 1 });
+      }
     } catch (error) {
-      const message = error instanceof ApiError ? error.message : "Không thể xóa tác giả";
+      const message =
+        error instanceof ApiError ? error.message : "Không thể xóa tác giả";
       toast.error(message);
     } finally {
       setSubmitting(false);
@@ -258,9 +299,7 @@ export function AuthorsManagement() {
           <TableBody>
             {authors.map((author) => (
               <TableRow key={author.id}>
-                <TableCell className="font-medium">
-                  {author.name}
-                </TableCell>
+                <TableCell className="font-medium">{author.name}</TableCell>
                 <TableCell className="text-muted-foreground">
                   {author.slug}
                 </TableCell>
@@ -369,9 +408,7 @@ export function AuthorsManagement() {
 
       {/* Table */}
       <Card>
-        <CardContent className="p-0">
-          {renderTableContent()}
-        </CardContent>
+        <CardContent className="p-0">{renderTableContent()}</CardContent>
       </Card>
 
       {/* Create Dialog */}
@@ -383,7 +420,7 @@ export function AuthorsManagement() {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Tên</label>
+              <Label className="text-sm font-medium mb-2 block">Tên</Label>
               <Input
                 value={formData.name}
                 onChange={(e) =>
@@ -393,7 +430,7 @@ export function AuthorsManagement() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">Tiểu sử</label>
+              <Label className="text-sm font-medium mb-2 block">Tiểu sử</Label>
               <Input
                 value={formData.biography || ""}
                 onChange={(e) =>
@@ -403,9 +440,9 @@ export function AuthorsManagement() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">
+              <Label className="text-sm font-medium mb-2 block">
                 Avatar URL
-              </label>
+              </Label>
               <Input
                 value={formData.avatar_url || ""}
                 onChange={(e) =>
@@ -440,7 +477,7 @@ export function AuthorsManagement() {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Tên</label>
+              <Label className="text-sm font-medium mb-2 block">Tên</Label>
               <Input
                 value={formData.name}
                 onChange={(e) =>
@@ -449,7 +486,7 @@ export function AuthorsManagement() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">Tiểu sử</label>
+              <Label className="text-sm font-medium mb-2 block">Tiểu sử</Label>
               <Input
                 value={formData.biography || ""}
                 onChange={(e) =>
@@ -458,9 +495,9 @@ export function AuthorsManagement() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">
+              <Label className="text-sm font-medium mb-2 block">
                 Avatar URL
-              </label>
+              </Label>
               <Input
                 value={formData.avatar_url || ""}
                 onChange={(e) =>

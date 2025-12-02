@@ -61,6 +61,11 @@ export interface FetchOptions extends Omit<RequestInit, "body"> {
    * Timeout in milliseconds
    */
   timeout?: number;
+
+  /**
+   * Internal: Retry count for 401 handling
+   */
+  _retryCount?: number;
 }
 
 /**
@@ -71,10 +76,6 @@ async function getAuthToken(): Promise<string | null> {
   // 1. Try client-side token
   if (globalThis.window) {
     const token = getClientAuthToken();
-    console.log(
-      "[apiFetch] Client-side token check:",
-      token ? "Found" : "Missing"
-    );
     if (token) return token;
   }
   return null;
@@ -104,17 +105,16 @@ function buildHeaders(options?: FetchOptions): Headers {
     ) ||
     null;
 
-  // Debug logging for token
-  if (process.env.NODE_ENV === "development") {
-    if (token) {
-      console.log(`🔑 Auth token found: ${token.substring(0, 20)}...`);
-    } else {
-      console.warn("⚠️ No auth token found in localStorage/sessionStorage");
-    }
-  }
-
   if (token && !headers.has("Authorization")) {
     headers.set("Authorization", `Bearer ${token}`);
+  }
+
+  // Add x-locale-key header from NEXT_LOCALE cookie
+  if (globalThis.window) {
+    const match = /(^| )NEXT_LOCALE=([^;]+)/.exec(document.cookie);
+    if (match) {
+      headers.set("x-locale-key", match[2]);
+    }
   }
 
   return headers;
@@ -159,13 +159,42 @@ function buildNextConfig(options?: FetchOptions): RequestInit {
 /**
  * Refresh auth token
  */
-async function refreshAuthToken(): Promise<string | null> {
+async function refreshAuthToken(headers?: HeadersInit): Promise<string | null> {
   try {
-    const response = await fetch("/api/auth/refresh", {
+    let url = "/api/auth/refresh";
+
+    // If on server, we need absolute URL pointing to Next.js server, not backend
+    if (!globalThis.window) {
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      url = `${appUrl}${url}`;
+      console.log("🔄 [Server] Refreshing token at:", url, "APP_URL:", appUrl);
+    }
+
+    const fetchOptions: RequestInit = {
       method: "POST",
-    });
+    };
+
+    // Pass headers (e.g. Cookie) if provided
+    if (headers) {
+      fetchOptions.headers = headers;
+    }
+
+    const response = await fetch(url, fetchOptions);
 
     if (!response.ok) {
+      // Parse JSON response safely
+      try {
+        const text = await response.text();
+        if (text) {
+          const data = JSON.parse(text);
+          console.warn("⚠️ Token refresh failed with error:", data);
+        }
+      } catch (error) {
+        console.warn(
+          "⚠️ Failed to parse JSON response for failed refresh:",
+          error
+        );
+      }
       return null;
     }
 
@@ -180,9 +209,6 @@ async function refreshAuthToken(): Promise<string | null> {
   }
 }
 
-/**
- * Main fetch function with full features
- */
 /**
  * Process request body and return appropriate BodyInit
  */
@@ -219,6 +245,84 @@ function setupTimeout(
 }
 
 /**
+ * Singleton promise to handle concurrent refresh requests
+ */
+let refreshTokenPromise: Promise<string | null> | null = null;
+
+/**
+ * Handle 401 Unauthorized responses
+ */
+/**
+ * Handle session expiry - show toast and clear auth
+ */
+function handleSessionExpiry(): void {
+  clearAuthToken();
+  if (globalThis.window) {
+    toast.error("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.");
+  }
+}
+
+/**
+ * Perform new token refresh
+ */
+async function performTokenRefresh<T>(
+  url: string,
+  options: FetchOptions | undefined
+): Promise<T> {
+  // Extract Cookie header if present (for server-side refresh)
+  let refreshHeaders: HeadersInit | undefined;
+  if (!globalThis.window && options?.headers) {
+    const headers = new Headers(options.headers);
+    const cookie = headers.get("Cookie");
+    if (cookie) {
+      refreshHeaders = { Cookie: cookie };
+    }
+  }
+
+  // Create the promise
+  refreshTokenPromise = refreshAuthToken(refreshHeaders);
+
+  try {
+    const newToken = await refreshTokenPromise;
+
+    if (!newToken) {
+      handleSessionExpiry();
+      throw new ApiError("Session expired", 401, ErrorCode.AuthInvalidToken);
+    }
+
+    return retryRequest<T>(url, options, newToken);
+  } finally {
+    // Clear the promise so future 401s can trigger a new refresh if needed
+    refreshTokenPromise = null;
+  }
+}
+
+/**
+ * Helper to retry request with new token
+ */
+async function retryRequest<T>(
+  url: string,
+  options: FetchOptions | undefined,
+  newToken: string
+): Promise<T> {
+  // Update local storage
+  setAuthToken(newToken);
+
+  // Retry original request with new token
+  const newHeaders = new Headers(options?.headers);
+  newHeaders.set("Authorization", `Bearer ${newToken}`);
+
+  const newOptions = {
+    ...options,
+    headers: newHeaders,
+    token: newToken,
+    _retryCount: (options?._retryCount || 0) + 1,
+  };
+
+  return apiFetch<T>(url, newOptions);
+}
+
+/**
  * Handle 401 Unauthorized responses
  */
 async function handleUnauthorized<T>(
@@ -229,44 +333,24 @@ async function handleUnauthorized<T>(
 ): Promise<T> {
   // Prevent infinite loop if refresh endpoint itself returns 401
   if (fullURL.includes("/auth/refresh")) {
-    console.warn("🔒 Refresh endpoint returned 401, clearing auth...");
-    toast.error("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.");
-    clearAuthToken();
-    // Don't throw to prevent runtime errors
-    return null as T;
+    handleSessionExpiry();
+    throw new ApiError("Session expired", 401, ErrorCode.AuthInvalidToken);
   }
 
-  console.log("🔒 401 Unauthorized - Attempting token refresh...");
-
-  // Try to refresh token
-  const newToken = await refreshAuthToken();
-
-  if (!newToken) {
-    console.warn("❌ Token refresh failed, clearing auth...");
-    clearAuthToken();
-    toast.error("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.");
-    // Don't throw to prevent runtime errors
-    return null as T;
+  // Check retry count to prevent infinite loops
+  const retryCount = options?._retryCount || 0;
+  if (retryCount >= 1) {
+    handleSessionExpiry();
+    throw new ApiError("Session expired", 401, ErrorCode.AuthInvalidToken);
   }
 
-  console.log("✅ Token refreshed successfully, retrying request...");
+  // If a refresh is already in progress, wait for it
+  if (refreshTokenPromise) {
+    const newToken = await refreshTokenPromise;
+    return newToken ? retryRequest<T>(url, options, newToken) : (null as T);
+  }
 
-  // Update local storage
-  setAuthToken(newToken);
-
-  // Retry original request with new token
-  const newHeaders = new Headers(options?.headers);
-  newHeaders.set("Authorization", `Bearer ${newToken}`);
-
-  // Update headers in options
-  const newOptions = {
-    ...options,
-    headers: newHeaders,
-    token: newToken,
-  };
-
-  // Recursive call with new token
-  return apiFetch<T>(url, newOptions);
+  return performTokenRefresh<T>(url, options);
 }
 
 /**
@@ -301,6 +385,47 @@ function handleFetchError(
   throw new ApiError(
     error instanceof Error ? error.message : "Unknown error occurred"
   );
+}
+
+/**
+ * Handle non-401 API errors
+ */
+async function handleApiError<T>(
+  response: Response,
+  method: string,
+  fullURL: string
+): Promise<T> {
+  const error = await parseApiError(response);
+
+  // Handle token errors gracefully
+  if (
+    error.code === ErrorCode.AuthInvalidToken ||
+    error.message?.includes("Invalid or expired token") ||
+    error.message?.includes("token")
+  ) {
+    console.warn("🔒 Token error detected:", error.message);
+    handleSessionExpiry();
+    return null as T;
+  }
+
+  // Log and throw other errors
+  logError(method, fullURL, error);
+  throw error;
+}
+
+/**
+ * Parse JSON response safely
+ */
+async function parseJsonResponse<T>(response: Response): Promise<T> {
+  try {
+    const text = await response.text();
+    if (!text) return {} as T;
+    const data = JSON.parse(text);
+    return data as T;
+  } catch (error) {
+    console.warn("⚠️ Failed to parse JSON response:", error);
+    return {} as T;
+  }
 }
 
 /**
@@ -362,24 +487,7 @@ export async function apiFetch<T = unknown>(
 
     // Handle errors
     if (!response.ok) {
-      const error = await parseApiError(response);
-
-      // Handle token errors gracefully
-      if (
-        error.code === ErrorCode.AuthInvalidToken ||
-        error.message?.includes("Invalid or expired token") ||
-        error.message?.includes("token")
-      ) {
-        console.warn("🔒 Token error detected:", error.message);
-        toast.error("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.");
-        clearAuthToken();
-        // Don't throw, return null to prevent runtime errors
-        return null as T;
-      }
-
-      // Log and throw other errors
-      logError(method, fullURL, error);
-      throw error;
+      return await handleApiError<T>(response, method, fullURL);
     }
 
     // Return raw response if requested
@@ -387,9 +495,8 @@ export async function apiFetch<T = unknown>(
       return response as unknown as T;
     }
 
-    // Parse JSON response
-    const data = await response.json();
-    return data as T;
+    // Parse JSON response safely
+    return await parseJsonResponse<T>(response);
   } catch (error) {
     // Clear timeout on error
     if (timeoutInfo?.timeoutId) clearTimeout(timeoutInfo.timeoutId);
@@ -402,18 +509,18 @@ export async function apiFetch<T = unknown>(
  */
 async function parseApiError(response: Response): Promise<ApiError> {
   try {
-    const data = await response.json();
+    const text = await response.text();
+    if (!text) {
+      return new ApiError(
+        `Request failed with status ${response.status}`,
+        response.status
+      );
+    }
 
-    // Debug: Log toàn bộ error response từ server
-    console.log("🔴 Error Response từ Server:", {
-      status: response.status,
-      statusText: response.statusText,
-      data: data,
-    });
+    const data = JSON.parse(text);
 
     // Backend StandardResponse format: {success: false, code: "...", message: "..."}
     if (data.message) {
-      console.log("✅ Lấy message từ data.message:", data.message);
       return new ApiError(
         data.message, // Message đã được dịch từ server
         response.status,
@@ -424,7 +531,6 @@ async function parseApiError(response: Response): Promise<ApiError> {
 
     // Legacy backend error format (nếu có)
     if (data.error) {
-      console.log("✅ Lấy message từ data.error.message:", data.error.message);
       return new ApiError(
         data.error.message || `Request failed with status ${response.status}`,
         response.status,

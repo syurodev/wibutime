@@ -16,6 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { FileUploader } from "@/components/ui/file-uploader";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -160,11 +161,23 @@ export function ArtistsManagement() {
   const handleCreate = async () => {
     try {
       setSubmitting(true);
-      await ArtistService.create(formData as CreateArtistRequest);
+      const newArtist = await ArtistService.create(
+        formData as CreateArtistRequest
+      );
       toast.success("Đã tạo hoạ sĩ thành công");
       setCreateDialogOpen(false);
       setFormData({ name: "", biography: "", specialization: "" });
-      fetchArtists();
+
+      // Optimistic update if on first page
+      if (currentPage === 1 && !currentSearch) {
+        // Add to top of list, keep only DEFAULT_LIMIT items
+        setArtists([newArtist, ...artists.slice(0, DEFAULT_LIMIT - 1)]);
+        setTotalItems(totalItems + 1);
+        setTotalPages(Math.ceil((totalItems + 1) / DEFAULT_LIMIT));
+      } else {
+        // Refetch if not on first page or has search filter
+        await fetchArtists();
+      }
     } catch (error) {
       const message =
         error instanceof ApiError ? error.message : "Không thể tạo hoạ sĩ";
@@ -178,7 +191,7 @@ export function ArtistsManagement() {
     if (!selectedArtist) return;
     try {
       setSubmitting(true);
-      await ArtistService.update(
+      const updatedArtist = await ArtistService.update(
         selectedArtist.id,
         formData as UpdateArtistRequest
       );
@@ -186,7 +199,13 @@ export function ArtistsManagement() {
       setEditDialogOpen(false);
       setSelectedArtist(null);
       setFormData({ name: "", biography: "", specialization: "" });
-      fetchArtists();
+
+      // Optimistic update: replace item in current list
+      setArtists(
+        artists.map((artist) =>
+          artist.id === selectedArtist.id ? updatedArtist : artist
+        )
+      );
     } catch (error) {
       const message =
         error instanceof ApiError ? error.message : "Không thể cập nhật hoạ sĩ";
@@ -204,7 +223,19 @@ export function ArtistsManagement() {
       toast.success("Đã xóa hoạ sĩ thành công");
       setDeleteDialogOpen(false);
       setSelectedArtist(null);
-      fetchArtists();
+
+      // Optimistic update: remove from list
+      const newArtists = artists.filter(
+        (artist) => artist.id !== selectedArtist.id
+      );
+      setArtists(newArtists);
+      setTotalItems(totalItems - 1);
+      setTotalPages(Math.ceil((totalItems - 1) / DEFAULT_LIMIT));
+
+      // If current page becomes empty and not first page, go to previous page
+      if (newArtists.length === 0 && currentPage > 1) {
+        updateURL({ page: currentPage - 1 });
+      }
     } catch (error) {
       const message =
         error instanceof ApiError ? error.message : "Không thể xóa hoạ sĩ";
@@ -417,12 +448,12 @@ export function ArtistsManagement() {
               <label className="text-sm font-medium mb-2 block">
                 Avatar URL
               </label>
-              <Input
+              <FileUploader
                 value={formData.avatar_url || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, avatar_url: e.target.value })
+                onValueChange={(url) =>
+                  setFormData({ ...formData, avatar_url: url })
                 }
-                placeholder="https://..."
+                type="avatar"
               />
             </div>
             <div>
@@ -493,11 +524,12 @@ export function ArtistsManagement() {
               <label className="text-sm font-medium mb-2 block">
                 Avatar URL
               </label>
-              <Input
+              <FileUploader
                 value={formData.avatar_url || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, avatar_url: e.target.value })
+                onValueChange={(url) =>
+                  setFormData({ ...formData, avatar_url: url })
                 }
+                type="avatar"
               />
             </div>
             <div>
