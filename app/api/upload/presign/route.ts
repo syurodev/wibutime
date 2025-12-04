@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     const command = new PutObjectCommand({
       Bucket: R2_BUCKET_NAME,
       Key: key,
-      MediaType: contentType,
+      ContentType: contentType,
     });
 
     const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });

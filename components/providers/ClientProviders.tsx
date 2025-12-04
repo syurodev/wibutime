@@ -2,7 +2,6 @@
 
 import { NavProvider } from "@/components/layout/nav/NavContext";
 import { UserSettingsProvider } from "@/components/providers/UserSettingsProvider";
-import { useEffect } from "react";
 
 /**
  * Client Providers Wrapper
@@ -14,14 +13,6 @@ export function ClientProviders({
 }: {
   readonly children: React.ReactNode;
 }) {
-  // Debug: Track component mount/unmount
-  useEffect(() => {
-    console.log("[ClientProviders Debug] 🟢 ClientProviders MOUNTED");
-    return () => {
-      console.log("[ClientProviders Debug] 🔴 ClientProviders UNMOUNTED");
-    };
-  }, []);
-
   return (
     <UserSettingsProvider>
       <NavProvider>{children}</NavProvider>

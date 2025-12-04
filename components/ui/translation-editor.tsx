@@ -2,7 +2,6 @@
 
 import { Plate, usePlateEditor } from "platejs/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Transforms } from "slate"; // Added Transforms import
 
 import { Button } from "@/components/ui/button";
 import { Editor, EditorContainer } from "@/components/ui/editor";
@@ -77,7 +76,6 @@ export function TranslationEditor({
   const {
     markAsTranslated,
     getProgress,
-    isTranslated,
     reset: resetProgress,
   } = useTranslationTracker({
     totalNodes: totalSourceNodes,
@@ -113,26 +111,6 @@ export function TranslationEditor({
     nodeId: editorNodeIdConfig,
   });
 
-  // Get node ID by index
-  const getNodeIdByIndex = useCallback(
-    (index: number): string | null => {
-      const node = normalizedSourceValue[index] as TElement;
-      return (node?.id as string) || null;
-    },
-    [normalizedSourceValue]
-  );
-
-  // Get last translated node index
-  const getLastTranslatedNodeIndex = useCallback((): number => {
-    for (let i = normalizedSourceValue.length - 1; i >= 0; i--) {
-      const nodeId = getNodeIdByIndex(i);
-      if (nodeId && isTranslated(nodeId)) {
-        return i;
-      }
-    }
-    return -1; // Chưa có node nào được dịch
-  }, [normalizedSourceValue, getNodeIdByIndex, isTranslated]);
-
   // Transfer node from source to translation
   const handleTransferNode = useCallback(
     (sourceNodeId: string, targetIndex?: number) => {
@@ -155,9 +133,8 @@ export function TranslationEditor({
         // Or just replace content.
         // Using removeNodes + insertNodes is reliable.
 
-        Transforms.removeNodes(translationEditor, { at: path });
-        Transforms.insertNodes(
-          translationEditor,
+        translationEditor.tf.removeNodes({ at: path });
+        translationEditor.tf.insertNodes(
           {
             ...sourceNode,
             id: targetNode.id, // Keep existing ID
@@ -166,7 +143,7 @@ export function TranslationEditor({
         );
 
         // Restore selection/focus if needed
-        Transforms.select(translationEditor, {
+        translationEditor.tf.select({
           anchor: { path: [targetIndex, 0], offset: 0 },
           focus: { path: [targetIndex, 0], offset: 0 },
         });
@@ -175,8 +152,7 @@ export function TranslationEditor({
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { id, ...nodeWithoutId } = sourceNode;
 
-        Transforms.insertNodes(
-          translationEditor,
+        translationEditor.tf.insertNodes(
           {
             ...nodeWithoutId,
           },
@@ -209,7 +185,7 @@ export function TranslationEditor({
   const updateFloatingPosition = useCallback(() => {
     if (!translationContainerRef.current) return;
 
-    const domSelection = window.getSelection();
+    const domSelection = globalThis.window.getSelection();
     if (!domSelection || domSelection.rangeCount === 0) return;
 
     const range = domSelection.getRangeAt(0);
@@ -348,7 +324,7 @@ export function TranslationEditor({
                   placeholder="Source content..."
                   variant="fullWidth"
                   readOnly={true}
-                  className="flex-1 focus-visible:ring-0 min-h-[300px] px-8 py-4 !opacity-100 cursor-default source-editor-content"
+                  className="flex-1 focus-visible:ring-0 min-h-[300px] px-8 py-4 opacity-100! cursor-default source-editor-content"
                 />
 
                 {/* Removed old fixed Copy Button positioned relative to highlighted node */}

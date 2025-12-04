@@ -88,15 +88,6 @@ export default async function LocaleLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground min-h-screen`}
       >
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-            window.addEventListener('beforeunload', () => {
-              console.log('Page unloading', new Error().stack);
-            });
-          `,
-          }}
-        />
         <ThemeProvider>
           <Suspense fallback={null}>
             <SessionHydrator />

@@ -4,7 +4,7 @@
  */
 
 import { generateMockParagraphs } from "@/features/editor/api/mock-editor";
-import { MEDIA_TYPE, type ContentStatus } from "@/lib/constants/default";
+import { MEDIA_TYPE } from "@/lib/constants/default";
 import {
   GenreSchema,
   MediaSeriesSchema,
@@ -13,6 +13,8 @@ import {
   type MediaSeries,
 } from "../models/content/base-content";
 import { BaseUserSchema, type BaseUser } from "../models/user/base-user";
+
+type ContentStatus = "ongoing" | "completed" | "hiatus";
 
 /**
  * Mock Genres - parsed through Zod schema

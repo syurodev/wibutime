@@ -9,15 +9,9 @@ interface SessionSyncProps {
 
 export function SessionSync({ accessToken }: SessionSyncProps) {
   useEffect(() => {
-    console.log("[SessionSync] MOUNTED, accessToken:", accessToken);
     // Hydrate the token into the client-side auth system
-    console.log(
-      "[SessionSync] Hydrating token:",
-      accessToken ? "Present" : "Null"
-    );
     if (accessToken) {
       setAuthToken(accessToken);
-      console.log("[SessionSync] Token set in localStorage");
     }
   }, [accessToken]);
 

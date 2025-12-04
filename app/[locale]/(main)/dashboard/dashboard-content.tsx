@@ -6,12 +6,8 @@
  */
 
 import type { EngagementMetric } from "@/components/dashboard/engagement-metrics-chart";
-import { EngagementMetricsChart } from "@/components/dashboard/engagement-metrics-chart";
-import { PublishingFrequencyChart } from "@/components/dashboard/publishing-frequency-chart";
 import { StatCard } from "@/components/dashboard/stat-card";
-import { StatusBreakdownChart } from "@/components/dashboard/status-breakdown-chart";
-import { TimeSeriesChart } from "@/components/dashboard/time-series-chart";
-import { TopNovelsTable } from "@/components/dashboard/top-novels-table";
+import { Skeleton } from "@/components/ui/skeleton";
 import type {
   DashboardStats,
   NovelStatusBreakdown,
@@ -23,7 +19,49 @@ import type { DateRange } from "@/lib/utils/date-ranges";
 import { formatNumber, formatRating } from "@/lib/utils/format-stats";
 import { BookOpen, Eye, FileText, Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
+import dynamic from "next/dynamic";
 import { useState } from "react";
+
+// Dynamic imports cho chart components (giảm initial bundle size)
+const TimeSeriesChart = dynamic(
+  () =>
+    import("@/components/dashboard/time-series-chart").then(
+      (m) => m.TimeSeriesChart
+    ),
+  { loading: () => <Skeleton className="h-80 rounded-xl" /> }
+);
+
+const StatusBreakdownChart = dynamic(
+  () =>
+    import("@/components/dashboard/status-breakdown-chart").then(
+      (m) => m.StatusBreakdownChart
+    ),
+  { loading: () => <Skeleton className="h-80 rounded-xl" /> }
+);
+
+const TopNovelsTable = dynamic(
+  () =>
+    import("@/components/dashboard/top-novels-table").then(
+      (m) => m.TopNovelsTable
+    ),
+  { loading: () => <Skeleton className="h-80 rounded-xl" /> }
+);
+
+const PublishingFrequencyChart = dynamic(
+  () =>
+    import("@/components/dashboard/publishing-frequency-chart").then(
+      (m) => m.PublishingFrequencyChart
+    ),
+  { loading: () => <Skeleton className="h-80 rounded-xl" /> }
+);
+
+const EngagementMetricsChart = dynamic(
+  () =>
+    import("@/components/dashboard/engagement-metrics-chart").then(
+      (m) => m.EngagementMetricsChart
+    ),
+  { loading: () => <Skeleton className="h-80 rounded-xl" /> }
+);
 
 interface DashboardContentProps {
   stats: DashboardStats;

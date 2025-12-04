@@ -28,7 +28,7 @@ export function useTypewriterScroll<
 
       try {
         const domRange = ReactEditor.toDOMRange(
-          editor as ReactEditor,
+          editor as unknown as ReactEditor,
           editor.selection
         );
         const rect = domRange.getBoundingClientRect();
@@ -61,9 +61,9 @@ export function useTypewriterScroll<
     // We need to subscribe to editor changes.
     // In Plate/Slate, we can overwrite `onChange`.
 
-    const { onChange } = editor;
+    const originalOnChange = editor.onChange as (() => void) | undefined;
     editor.onChange = () => {
-      onChange();
+      originalOnChange?.();
       if (enabled) {
         // Use requestAnimationFrame to avoid layout thrashing and ensure DOM is updated
         requestAnimationFrame(updateScroll);
@@ -71,7 +71,7 @@ export function useTypewriterScroll<
     };
 
     return () => {
-      editor.onChange = onChange;
+      editor.onChange = originalOnChange;
     };
   }, [enabled, editor, containerRef, offset]);
 }
