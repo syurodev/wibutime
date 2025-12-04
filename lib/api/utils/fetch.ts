@@ -347,7 +347,11 @@ async function handleUnauthorized<T>(
   // If a refresh is already in progress, wait for it
   if (refreshTokenPromise) {
     const newToken = await refreshTokenPromise;
-    return newToken ? retryRequest<T>(url, options, newToken) : (null as T);
+    if (!newToken) {
+      handleSessionExpiry();
+      throw new ApiError("Session expired", 401, ErrorCode.AuthInvalidToken);
+    }
+    return retryRequest<T>(url, options, newToken);
   }
 
   return performTokenRefresh<T>(url, options);
@@ -397,7 +401,7 @@ async function handleApiError<T>(
 ): Promise<T> {
   const error = await parseApiError(response);
 
-  // Handle token errors gracefully
+  // Handle token errors - clear session and throw error
   if (
     error.code === ErrorCode.AuthInvalidToken ||
     error.message?.includes("Invalid or expired token") ||
@@ -405,7 +409,7 @@ async function handleApiError<T>(
   ) {
     console.warn("🔒 Token error detected:", error.message);
     handleSessionExpiry();
-    return null as T;
+    throw error;
   }
 
   // Log and throw other errors

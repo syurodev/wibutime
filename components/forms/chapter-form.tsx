@@ -27,10 +27,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { useAutosave } from "@/hooks/use-autosave";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Save } from "lucide-react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { SaveIndicator } from "../ui/save-indicator";
 
 const formSchema = z.object({
   chapter_number: z.number().min(1, "Chapter number must be at least 1"),
@@ -54,6 +57,8 @@ interface ChapterFormProps {
   readonly onSubmit: (values: ChapterFormValues) => Promise<void>;
   readonly isSubmitting: boolean;
   readonly submitLabel?: string;
+  readonly volumeId?: string;
+  readonly novelId?: string;
 }
 
 export function ChapterForm({
@@ -61,6 +66,8 @@ export function ChapterForm({
   onSubmit,
   isSubmitting,
   submitLabel = "Lưu Chapter",
+  volumeId,
+  novelId,
 }: ChapterFormProps) {
   const form = useForm<ChapterFormValues>({
     resolver: zodResolver(formSchema),
@@ -80,9 +87,53 @@ export function ChapterForm({
     },
   });
 
+  // Auto-save logic
+  const contentId = `chapter-draft-${volumeId || "no-volume"}-${
+    initialValues?.chapter_number || "new"
+  }`; // Use a better ID strategy if possible
+  const { status, lastSaved, save, loadDraft, clearDraft } = useAutosave({
+    contentId,
+    delay: 2000,
+    enableLocalStorage: true,
+  });
+
+  // Load draft on mount
+  useEffect(() => {
+    const draft = loadDraft();
+    if (draft && draft.length > 0) {
+      // Only load draft if form content is empty or default
+      const currentContent = form.getValues("content");
+      const isDefault =
+        Array.isArray(currentContent) &&
+        currentContent.length === 1 &&
+        currentContent[0].children[0].text === "";
+
+      if (isDefault) {
+        form.setValue("content", draft);
+      }
+    }
+  }, [loadDraft, form]);
+
+  // Watch content changes and save
+  const content = form.watch("content");
+  useEffect(() => {
+    if (content) {
+      save(content);
+    }
+  }, [content, save]);
+
+  // Clear draft on successful submit
+  const handleSubmit = async (values: ChapterFormValues) => {
+    await onSubmit(values);
+    clearDraft();
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+        <div className="flex justify-end mb-4">
+          <SaveIndicator status={status} lastSaved={lastSaved} />
+        </div>
         <div className="grid gap-8 grid-cols-1 lg:grid-cols-3">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
@@ -119,6 +170,7 @@ export function ChapterForm({
                           value={field.value}
                           onChange={field.onChange}
                           placeholder="Bắt đầu viết câu chuyện của bạn..."
+                          novelId={novelId}
                         />
                       </FormControl>
                       <FormMessage />

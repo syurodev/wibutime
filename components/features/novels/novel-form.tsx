@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileUploader } from "@/components/ui/file-uploader";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LanguageSelect } from "@/components/ui/language-select";
 import { MultiSelect } from "@/components/ui/multi-select";
 import {
   Select,
@@ -265,23 +266,14 @@ export function NovelForm({
                     <Label htmlFor="original_language">
                       Ngôn ngữ gốc <span className="text-destructive">*</span>
                     </Label>
-                    <Select
+                    <LanguageSelect
                       value={formData.original_language}
                       onValueChange={(value) =>
                         setFormData({ ...formData, original_language: value })
                       }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Chọn ngôn ngữ" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="vi">Tiếng Việt</SelectItem>
-                        <SelectItem value="en">English</SelectItem>
-                        <SelectItem value="ja">日本語 (Japanese)</SelectItem>
-                        <SelectItem value="ko">한국어 (Korean)</SelectItem>
-                        <SelectItem value="zh">中文 (Chinese)</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      placeholder="Chọn ngôn ngữ"
+                      showFlags={true}
+                    />
                   </div>
 
                   {/* Genres */}

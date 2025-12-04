@@ -3,7 +3,7 @@
  * Displays trending series with content type filters and pagination
  */
 
-import { MediaTypeTabs } from "@/components/content/MediaTypeTabs";
+import { MediaTypeTabs } from "@/components/content/ContentTypeTabs";
 import { SeriesGrid } from "@/components/content/SeriesGrid";
 import { SeriesGridSkeleton } from "@/components/content/SeriesGridSkeleton";
 import { Container } from "@/components/layout/Container";

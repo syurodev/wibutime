@@ -14,8 +14,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 interface Props {
-  novelId: string;
-  volumeId: string;
+  readonly novelId: string;
+  readonly volumeId: string;
 }
 
 export function CreateChapterView({ novelId, volumeId }: Props) {
@@ -79,6 +79,8 @@ export function CreateChapterView({ novelId, volumeId }: Props) {
         onSubmit={onSubmit}
         isSubmitting={isSubmitting}
         submitLabel="Tạo Chapter"
+        volumeId={volumeId}
+        novelId={novelId}
       />
     </Container>
   );
