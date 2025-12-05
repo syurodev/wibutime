@@ -8,13 +8,15 @@ import { StaticEditorView } from "./static-editor-view";
  * Converts h1, h2, h3, h4, div → p while keeping children/formatting
  */
 function normalizeNodesToParagraphs(nodes: TNode[]): TNode[] {
-  return nodes.map((node) => {
-    if ("type" in node && node.type !== "p") {
-      // Convert any block element (h1, h2, h3, h4, div) to paragraph
-      return { ...node, type: "p" };
-    }
-    return node;
-  });
+  return nodes
+    ? nodes.map((node) => {
+        if ("type" in node && node.type !== "p") {
+          // Convert any block element (h1, h2, h3, h4, div) to paragraph
+          return { ...node, type: "p" };
+        }
+        return node;
+      })
+    : [];
 }
 
 /**

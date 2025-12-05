@@ -61,7 +61,7 @@ export const MediaSeriesSchema = z.object({
   original_language: z.string(),
 
   // Content fields với defaults
-  description: z.array(z.any()).default([]), // TNode[] from platejs
+  synopsis: z.array(z.any()).default([]), // TNode[] from platejs
   cover_url: z.string().default(""),
 
   // Type và status với defaults
@@ -105,7 +105,7 @@ export const PartialMediaSeriesSchema = MediaSeriesSchema.partial({
   cover_url: true,
   genres: true,
   latest_chapter: true,
-  description: true,
+  synopsis: true,
 });
 
 export type PartialMediaSeries = z.infer<typeof PartialMediaSeriesSchema>;

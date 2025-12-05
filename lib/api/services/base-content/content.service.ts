@@ -15,6 +15,7 @@ import {
   type PaginationMeta,
   type StandardResponse,
 } from "../../types";
+import api from "../../utils/fetch";
 import { ApiParser } from "../../utils/parsers";
 
 /**
@@ -246,49 +247,30 @@ export class ContentService {
     currentPage: number;
   }> {
     const { type = "all", page = 1, limit = 20 } = options || {};
-    await mockDelay();
 
-    // Filter by type if specified
-    let filteredSeries = getMockMediaSeries(100).filter(
-      (s) => s.views >= 10000
+    // Backend currently only supports limit, not full pagination for trending
+    // So we fetch the top 'limit' items and return them as page 1
+    const queryParams = new URLSearchParams({
+      type,
+      limit: limit.toString(),
+      range: "week", // Default to weekly trending
+    });
+
+    const response = await api.get<StandardResponse<MediaSeries[]>>(
+      `/analytics/trending?${queryParams.toString()}`
     );
-    if (type !== "all") {
-      filteredSeries = filteredSeries.filter((s) => s.type === type);
-    }
-
-    // Sort by views (trending = high views)
-    const sortedSeries = filteredSeries.toSorted((a, b) => b.views - a.views);
-
-    // Calculate pagination
-    const totalItems = sortedSeries.length;
-    const totalPages = Math.ceil(totalItems / limit);
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    const paginatedItems = sortedSeries.slice(startIndex, endIndex);
-
-    const meta: PaginationMeta = {
-      page,
-      limit,
-      total_items: totalItems,
-      total_pages: totalPages,
-    };
-
-    const response: StandardResponse<MediaSeries[]> = {
-      success: true,
-      message: "Trending series retrieved successfully",
-      data: paginatedItems,
-      meta,
-    };
 
     if (!isSuccessResponse(response)) {
       throw new Error(response.message || "Failed to fetch trending series");
     }
 
+    const items = ApiParser.parseResponseArray(MediaSeriesSchema, response);
+
     return {
-      items: ApiParser.parseResponseArray(MediaSeriesSchema, response),
-      totalItems: meta.total_items,
-      totalPages: meta.total_pages,
-      currentPage: meta.page,
+      items,
+      totalItems: items.length,
+      totalPages: 1,
+      currentPage: 1,
     };
   }
 

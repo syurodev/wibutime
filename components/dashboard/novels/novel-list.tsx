@@ -124,7 +124,7 @@ export function NovelList({ novels }: NovelListProps) {
                           </Badge>
                         </div>
                         <p className="text-sm text-muted-foreground line-clamp-2">
-                          {novel.description && novel.description.length > 0
+                          {novel.synopsis && novel.synopsis.length > 0
                             ? "Có mô tả"
                             : "Chưa có mô tả"}
                         </p>
