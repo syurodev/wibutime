@@ -66,8 +66,8 @@ export function Container({
         bottomSpacing && "pb-24",
         // Max-width variants
         maxWidth === "sm" && "max-w-screen-sm",
-        maxWidth === "md" && "max-w-screen-md",
-        maxWidth === "lg" && "max-w-screen-lg",
+        maxWidth === "md" && "max-w-3xl",
+        maxWidth === "lg" && "max-w-5xl",
         maxWidth === "xl" && "max-w-7xl",
         maxWidth === "2xl" && "max-w-screen-2xl",
         maxWidth === "full" && "max-w-full",
