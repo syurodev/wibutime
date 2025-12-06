@@ -1,6 +1,7 @@
 "use client";
 
 import { NavProvider } from "@/components/layout/nav/NavContext";
+import { AuthProvider } from "@/components/providers/AuthProvider";
 import { UserSettingsProvider } from "@/components/providers/UserSettingsProvider";
 
 /**
@@ -14,8 +15,10 @@ export function ClientProviders({
   readonly children: React.ReactNode;
 }) {
   return (
-    <UserSettingsProvider>
-      <NavProvider>{children}</NavProvider>
-    </UserSettingsProvider>
+    <AuthProvider>
+      <UserSettingsProvider>
+        <NavProvider>{children}</NavProvider>
+      </UserSettingsProvider>
+    </AuthProvider>
   );
 }

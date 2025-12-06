@@ -3,7 +3,6 @@
 import {
   createContext,
   useCallback,
-  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -29,14 +28,6 @@ interface NavProviderProps {
  * Should be placed in the layout component.
  */
 export function NavProvider({ children }: NavProviderProps) {
-  // Debug: Track component mount/unmount
-  useEffect(() => {
-    console.log("[NavProvider Debug] 🟢 NavProvider MOUNTED");
-    return () => {
-      console.log("[NavProvider Debug] 🔴 NavProvider UNMOUNTED");
-    };
-  }, []);
-
   // Current navigation items (set by each page)
   const [items, setItems] = useState<NavItem[]>([]);
 
@@ -130,24 +121,6 @@ export function NavProvider({ children }: NavProviderProps) {
       setItemLoading,
     ]
   );
-
-  // Debug: Track context value changes
-  useEffect(() => {
-    console.log("[NavContext Debug] contextValue changed!", {
-      itemsCount: items.length,
-      searchMode,
-      commentMode,
-      accountMenuOpen,
-      loadingItemsSize: loadingItems.size,
-    });
-  }, [
-    contextValue,
-    items.length,
-    searchMode,
-    commentMode,
-    accountMenuOpen,
-    loadingItems,
-  ]);
 
   return (
     <NavContext.Provider value={contextValue}>{children}</NavContext.Provider>
