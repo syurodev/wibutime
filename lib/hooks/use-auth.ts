@@ -6,8 +6,11 @@
 
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { toast } from "sonner";
+
+// Debug counter for tracking hook instances
+let instanceCounter = 0;
 
 /**
  * User type matching BaseUser schema
@@ -31,6 +34,10 @@ type SessionResponse = {
  * Auth Hook - Fetch-based session management
  */
 export function useAuth() {
+  // Debug: unique instance ID
+  const instanceId = useRef(++instanceCounter).current;
+  const componentId = useId();
+
   const [user, setUser] = useState<AuthUser | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -41,16 +48,35 @@ export function useAuth() {
   // Track if this is initial mount to avoid showing toast on page load
   const isInitialMountRef = useRef(true);
 
+  // Debug: Track mount/unmount
+  useEffect(() => {
+    console.log(
+      `[useAuth #${instanceId}] 🟢 MOUNTED (componentId: ${componentId})`
+    );
+    return () => {
+      console.log(`[useAuth #${instanceId}] 🔴 UNMOUNTED`);
+    };
+  }, [instanceId, componentId]);
+
   // Fetch session on mount
   useEffect(() => {
     fetchSession();
   }, []);
 
   const fetchSession = async () => {
+    console.log(`[useAuth #${instanceId}] 📡 fetchSession START`);
     try {
       const response = await fetch("/api/auth/session");
       const data: SessionResponse = await response.json();
+      console.log(`[useAuth #${instanceId}] 📡 fetchSession RESPONSE:`, {
+        hasUser: !!data.user,
+        userName: data.user?.name,
+      });
 
+      console.log(
+        `[useAuth #${instanceId}] 📝 setUser:`,
+        data.user?.name || "null"
+      );
       setUser(data.user);
       setAccessToken(data.accessToken || null);
 
@@ -59,11 +85,15 @@ export function useAuth() {
       if (data.user && data.isExpired && !isRefreshingRef.current) {
         await refreshToken();
       }
-    } catch {
+    } catch (err) {
       // Silent fail - session fetch error
+      console.log(`[useAuth #${instanceId}] ❌ fetchSession ERROR:`, err);
       setUser(null);
       setAccessToken(null);
     } finally {
+      console.log(
+        `[useAuth #${instanceId}] ✅ fetchSession COMPLETE, setIsLoading(false)`
+      );
       setIsLoading(false);
     }
   };
