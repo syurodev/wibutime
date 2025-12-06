@@ -16,6 +16,7 @@ import {
   getCachedNewNovels,
   getCachedTrendingNovels,
 } from "@/lib/api/services/novel/novel.cached";
+import { MEDIA_TYPE } from "@/lib/constants/default";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
@@ -34,17 +35,17 @@ export const metadata: Metadata = {
  */
 async function TrendingData() {
   const series = await getCachedTrendingNovels(10);
-  return <TrendingSection series={series} title="Trending Novels" />;
+  return <TrendingSection series={series} />;
 }
 
 async function LatestData() {
   const series = await getCachedLatestNovels(10);
-  return <LatestUpdatesSection series={series} title="Latest Updates" />;
+  return <LatestUpdatesSection series={series} />;
 }
 
 async function NewSeriesData() {
   const series = await getCachedNewNovels(10);
-  return <NewSeriesSection series={series} title="New Arrivals" />;
+  return <NewSeriesSection series={series} />;
 }
 
 /**
@@ -78,7 +79,9 @@ export default async function NovelsPage() {
   ]);
 
   // Filter history for novels only
-  const novelHistory = historyItems.filter((item) => item.type === "Novel");
+  const novelHistory = historyItems.filter(
+    (item) => item.type === MEDIA_TYPE.NOVEL
+  );
 
   return (
     <div className="min-h-screen pb-24">

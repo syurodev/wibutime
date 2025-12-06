@@ -160,10 +160,7 @@ function HeroSlide({
             </h1>
 
             <div className="text-white text-sm sm:text-base md:text-lg font-semibold max-w-2xl line-clamp-3 md:line-clamp-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 text-shadow-md">
-              <BasicStaticEditorView
-                content={featured.description}
-                maxLines={4}
-              />
+              <BasicStaticEditorView content={featured.synopsis} maxLines={4} />
             </div>
 
             <div className="flex items-center gap-4 md:gap-6 text-white py-2 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300 text-sm md:text-base text-shadow-md">

@@ -33,7 +33,7 @@ export const getMockHistoryMedia = (count = 12): HistoryMedia[] => {
       // Extract chapter/episode number from latest_chapter title
       const chapterMatch = item.latest_chapter?.title?.match(/(\d+)/);
       const currentUnit = chapterMatch
-        ? parseInt(chapterMatch[1], 10)
+        ? Number.parseInt(chapterMatch[1], 10)
         : randomInt(10, 80);
       const totalUnits = randomInt(currentUnit + 10, 150);
       const progressPercentage = Math.min(
@@ -67,7 +67,7 @@ export const getMockHistoryMedia = (count = 12): HistoryMedia[] => {
         title: item.title,
         slug: item.slug,
         cover_url: item.cover_url,
-        description: item.description
+        description: item.synopsis
           ? `${item.title} - A captivating ${item.type} series with amazing storyline and characters.`
           : null,
         type: item.type,
