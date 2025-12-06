@@ -93,3 +93,47 @@ export async function deleteArtist(id: string): Promise<void> {
   updateTag("artists");
   updateTag(`artist-${id}`);
 }
+
+/**
+ * Merge artists
+ *
+ * @example
+ * await mergeArtist({ target_id: "...", source_ids: ["...", "..."] })
+ */
+export async function mergeArtist(data: {
+  target_id: string;
+  source_ids: string[];
+}) {
+  const url = endpoint("artists/merge");
+  const response = await serverApi.post<StandardResponse<unknown>>(url, data);
+
+  if (!isSuccessResponse(response)) {
+    throw new Error(response.message || "Failed to merge artists");
+  }
+
+  updateTag("artists");
+
+  return response.data;
+}
+
+export async function previewMergeArtist(data: {
+  target_id: string;
+  source_ids: string[];
+}) {
+  const url = endpoint("artists/merge/preview");
+  const response = await serverApi.post<StandardResponse<unknown>>(url, data);
+
+  if (!isSuccessResponse(response)) {
+    throw new Error(response.message || "Failed to preview merge");
+  }
+
+  return response.data as {
+    affected_novels: {
+      id: string;
+      title: string;
+      slug: string;
+      cover_image_url?: string | null;
+    }[];
+    source_artists?: string[];
+  };
+}

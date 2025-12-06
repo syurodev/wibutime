@@ -5,6 +5,7 @@
  * CRUD interface for artists with URL-synced pagination and search
  */
 
+import { MergeArtistDialog } from "@/components/features/artists/merge-artist-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -40,6 +41,7 @@ import {
   AlertCircle,
   CheckCircle,
   Edit2,
+  GitMerge,
   Loader2,
   Plus,
   Search,
@@ -71,6 +73,7 @@ export function ArtistsManagement() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [mergeDialogOpen, setMergeDialogOpen] = useState(false);
   const [selectedArtist, setSelectedArtist] = useState<Artist | null>(null);
 
   // Form states
@@ -403,10 +406,19 @@ export function ArtistsManagement() {
                 className="pl-10"
               />
             </div>
-            <Button onClick={() => setCreateDialogOpen(true)}>
-              <Plus className="size-4" />
-              Thêm hoạ sĩ
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => setMergeDialogOpen(true)}
+                variant="outline"
+              >
+                <GitMerge className="size-4 mr-2" />
+                Gộp hoạ sĩ
+              </Button>
+              <Button onClick={() => setCreateDialogOpen(true)}>
+                <Plus className="size-4 mr-2" />
+                Thêm hoạ sĩ
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -599,6 +611,15 @@ export function ArtistsManagement() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Merge Dialog */}
+      <MergeArtistDialog
+        open={mergeDialogOpen}
+        onOpenChange={setMergeDialogOpen}
+        onSuccess={() => {
+          fetchArtists();
+        }}
+      />
     </div>
   );
 }

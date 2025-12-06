@@ -14,9 +14,9 @@ export type { FetchOptions } from "./utils/fetch";
 
 /**
  * Server-side API (Server Components / Server Actions)
- * Auto-handles authentication from session
- */
-export { serverApi, serverFetch } from "./server";
+// Server-side API utilities should be imported directly from "@/lib/api/server"
+// or specific files to avoid bundling server code in client components.
+// export { serverApi, serverFetch } from "./server";
 
 /**
  * Authenticated Client (Client Components with explicit token)
@@ -37,10 +37,8 @@ export {
   setAuthToken,
 } from "./auth-client";
 
-/**
- * Server-side auth (Server Components/Actions only)
- */
-export { getServerAuthHeaders, getServerAuthToken } from "./auth-server";
+// Server-side auth should be imported from "@/lib/api/auth-server"
+// export { getServerAuthHeaders, getServerAuthToken } from "./auth-server";
 
 // ===== CONFIGURATION =====
 
@@ -74,18 +72,16 @@ export * from "./models";
 
 // ===== QUERIES (Server Components) =====
 
-/**
- * Use these in Server Components for data fetching
- * All queries use React cache for automatic deduplication
- */
-export * from "@/features/artist/api/queries";
-export * from "@/features/genre/api/queries";
-export * from "@/features/history/api/queries";
-export * from "@/features/library/api/queries";
-export * from "./queries/author";
-export * from "./queries/community";
-export * from "./queries/content";
-export * from "./queries/user";
+// Server Components Queries - Import directly from specific feature files
+// to avoid "server-only" errors in Client Components.
+// export * from "@/features/artist/api/queries";
+// export * from "@/features/genre/api/queries";
+// export * from "@/features/history/api/queries";
+// export * from "@/features/library/api/queries";
+// export * from "./queries/author";
+// export * from "./queries/community";
+// export * from "./queries/content";
+// export * from "./queries/user";
 
 // ===== ACTIONS (Server Actions) =====
 

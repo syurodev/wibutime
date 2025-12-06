@@ -5,6 +5,7 @@
  * CRUD interface for genres with URL-synced pagination and search
  */
 
+import { MergeGenreDialog } from "@/components/features/genres/merge-genre-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -37,9 +38,9 @@ import { ApiError } from "@/lib/api/utils/error-handler";
 import { DEFAULT_LIMIT, DEFAULT_PAGE } from "@/lib/constants/default";
 import {
   AlertCircle,
-  CheckCircle,
   Edit2,
   Loader2,
+  Merge,
   Plus,
   Search,
   Trash2,
@@ -51,10 +52,6 @@ import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 
 export function GenresManagement() {
-  useEffect(() => {
-    console.log("[GenresManagement] MOUNTED");
-    return () => console.log("[GenresManagement] UNMOUNTED");
-  }, []);
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -76,6 +73,7 @@ export function GenresManagement() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [mergeDialogOpen, setMergeDialogOpen] = useState(false);
   const [selectedGenre, setSelectedGenre] = useState<Genre | null>(null);
 
   // Form states
@@ -334,15 +332,9 @@ export function GenresManagement() {
                 </TableCell>
                 <TableCell>
                   {genre.is_active ? (
-                    <Badge variant="default" className="bg-green-600">
-                      <CheckCircle className="size-3" />
-                      Active
-                    </Badge>
+                    <Badge variant="default">Active</Badge>
                   ) : (
-                    <Badge variant="secondary">
-                      <AlertCircle className="size-3" />
-                      Inactive
-                    </Badge>
+                    <Badge variant="secondary">Inactive</Badge>
                   )}
                 </TableCell>
                 <TableCell>{renderTrendBadge(genre.trend)}</TableCell>
@@ -425,10 +417,19 @@ export function GenresManagement() {
                 className="pl-10"
               />
             </div>
-            <Button onClick={() => setCreateDialogOpen(true)}>
-              <Plus className="size-4" />
-              Thêm thể loại
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setMergeDialogOpen(true)}
+              >
+                <Merge className="size-4 mr-2" />
+                Gộp thể loại
+              </Button>
+              <Button onClick={() => setCreateDialogOpen(true)}>
+                <Plus className="size-4 mr-2" />
+                Thêm thể loại
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -569,6 +570,15 @@ export function GenresManagement() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Merge Dialog */}
+      <MergeGenreDialog
+        open={mergeDialogOpen}
+        onOpenChange={setMergeDialogOpen}
+        onSuccess={() => {
+          fetchGenres(); // Reload data after merge
+        }}
+      />
     </div>
   );
 }

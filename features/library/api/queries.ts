@@ -1,5 +1,6 @@
+"use cache";
 import type { MEDIA_TYPE } from "@/lib/constants/default";
-import { cacheLife, cacheTag } from "next/cache";
+
 import { LibraryService } from "../services/library.service";
 
 export async function getLibraryPaginated(options?: {
@@ -8,9 +9,5 @@ export async function getLibraryPaginated(options?: {
   limit?: number;
   sort?: "recent" | "title" | "updated" | "rating";
 }) {
-  "use cache";
-  cacheLife("seconds");
-  cacheTag("library-list");
-
   return LibraryService.getLibraryPaginated(options);
 }

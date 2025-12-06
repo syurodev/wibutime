@@ -38,12 +38,7 @@ const Nav = () => {
   // Strip query params to only track actual route changes
   const pathname = useMemo(() => {
     const basePath = fullPathname.split("?")[0];
-    console.log(
-      "[Nav Debug] fullPathname:",
-      fullPathname,
-      "→ basePath:",
-      basePath
-    );
+
     return basePath;
   }, [fullPathname]);
 
@@ -60,29 +55,11 @@ const Nav = () => {
     setItemLoading,
   } = useNav();
 
-  // Debug: Track items changes
-  useEffect(() => {
-    console.log(
-      "[Nav Debug] items changed, count:",
-      items.length,
-      "items:",
-      items
-    );
-  }, [items]);
-
   // Get current breakpoint for responsive behavior
   const { breakpoint } = useMediaQuery();
 
   // Get UI preferences for blur effect
   const { preferences } = useUiPreferences();
-
-  // Debug: Track component mount/unmount
-  useEffect(() => {
-    console.log("[Nav Debug] 🟢 Nav component MOUNTED");
-    return () => {
-      console.log("[Nav Debug] 🔴 Nav component UNMOUNTED");
-    };
-  }, []);
 
   // Track if initial animation has already run to prevent re-animation on re-renders
   const [hasAnimated, setHasAnimated] = useState(false);
@@ -459,14 +436,6 @@ const Nav = () => {
   };
 
   const navDefault = () => {
-    const navKey = `nav-content-${pathname}`;
-    console.log(
-      "[Nav Debug] navDefault() called with key:",
-      navKey,
-      "hasAnimated:",
-      hasAnimated
-    );
-
     return (
       <ul className="flex items-center gap-2">
         <AnimatePresence mode="popLayout">
@@ -596,15 +565,6 @@ const Nav = () => {
   };
 
   const renderNavContent = () => {
-    console.log(
-      "[Nav Debug] renderNavContent() - searchMode:",
-      searchMode,
-      "commentMode:",
-      commentMode,
-      "accountMenuOpen:",
-      accountMenuOpen
-    );
-
     if (searchMode) {
       // Search mode: show search input with results (dynamic height)
       return navSearchMode();

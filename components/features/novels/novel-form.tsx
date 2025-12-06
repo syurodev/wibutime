@@ -16,12 +16,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { createArtist } from "@/features/artist/api/actions";
+import { createGenre } from "@/features/genre/api/actions";
 import { useArtists } from "@/hooks/use-artists";
 import { useAuthors } from "@/hooks/use-authors";
 import { useGenres } from "@/hooks/use-genres";
 import { Link } from "@/i18n/routing";
+import { createAuthor } from "@/lib/api/actions";
 import { ArrowLeft, Save } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export interface NovelFormData {
   title: string;
@@ -122,6 +126,48 @@ export function NovelForm({
       author_ids: selectedAuthors.map((i) => i.value),
       artist_ids: selectedArtists.map((i) => i.value),
     });
+  };
+
+  const handleCreateGenre = async (name: string) => {
+    try {
+      const newGenre = await createGenre({ name });
+      setSelectedGenres((prev) => [
+        ...prev,
+        { label: newGenre.name, value: newGenre.id },
+      ]);
+      toast.success(`Đã tạo thể loại: ${newGenre.name}`);
+    } catch (error: any) {
+      toast.error(error.message || "Lỗi khi tạo thể loại");
+      console.error("Create genre error:", error);
+    }
+  };
+
+  const handleCreateAuthor = async (name: string) => {
+    try {
+      const newAuthor = await createAuthor({ name });
+      setSelectedAuthors((prev) => [
+        ...prev,
+        { label: newAuthor.name, value: newAuthor.id },
+      ]);
+      toast.success(`Đã tạo tác giả: ${newAuthor.name}`);
+    } catch (error: any) {
+      toast.error(error.message || "Lỗi khi tạo tác giả");
+      console.error("Create author error:", error);
+    }
+  };
+
+  const handleCreateArtist = async (name: string) => {
+    try {
+      const newArtist = await createArtist({ name });
+      setSelectedArtists((prev) => [
+        ...prev,
+        { label: newArtist.name, value: newArtist.id },
+      ]);
+      toast.success(`Đã tạo họa sĩ: ${newArtist.name}`);
+    } catch (error: any) {
+      toast.error(error.message || "Lỗi khi tạo họa sĩ");
+      console.error("Create artist error:", error);
+    }
   };
 
   return (
@@ -293,6 +339,7 @@ export function NovelForm({
                       onLoadMore={loadMoreGenres}
                       hasMore={hasMoreGenres}
                       loading={isLoadingMoreGenres}
+                      onCreate={handleCreateGenre}
                     />
                   </div>
 
@@ -311,6 +358,7 @@ export function NovelForm({
                       onLoadMore={loadMoreAuthors}
                       hasMore={hasMoreAuthors}
                       loading={isLoadingMoreAuthors}
+                      onCreate={handleCreateAuthor}
                     />
                   </div>
 
@@ -329,6 +377,7 @@ export function NovelForm({
                       onLoadMore={loadMoreArtists}
                       hasMore={hasMoreArtists}
                       loading={isLoadingMoreArtists}
+                      onCreate={handleCreateArtist}
                     />
                   </div>
 

@@ -37,8 +37,8 @@ export interface PaginatedResponse<T> {
  */
 export function isSuccessResponse<T>(
   response: StandardResponse<T>
-): response is StandardResponse<T> & { success: true; data: T } {
-  return response.success === true && response.data !== undefined;
+): response is StandardResponse<T> & { success: true } {
+  return response.success === true;
 }
 
 /**

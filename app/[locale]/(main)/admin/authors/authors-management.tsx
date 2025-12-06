@@ -5,6 +5,7 @@
  * CRUD interface for authors with URL-synced pagination and search
  */
 
+import { MergeAuthorDialog } from "@/components/features/authors/merge-author-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -39,6 +40,7 @@ import {
   AlertCircle,
   CheckCircle,
   Edit2,
+  GitMerge,
   Loader2,
   Plus,
   Search,
@@ -70,6 +72,7 @@ export function AuthorsManagement() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [mergeDialogOpen, setMergeDialogOpen] = useState(false);
   const [selectedAuthor, setSelectedAuthor] = useState<Author | null>(null);
 
   // Form states
@@ -398,10 +401,19 @@ export function AuthorsManagement() {
                 className="pl-10"
               />
             </div>
-            <Button onClick={() => setCreateDialogOpen(true)}>
-              <Plus className="size-4" />
-              Thêm tác giả
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => setMergeDialogOpen(true)}
+                variant="outline"
+              >
+                <GitMerge className="size-4 mr-2" />
+                Gộp tác giả
+              </Button>
+              <Button onClick={() => setCreateDialogOpen(true)}>
+                <Plus className="size-4 mr-2" />
+                Thêm tác giả
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -551,6 +563,15 @@ export function AuthorsManagement() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Merge Dialog */}
+      <MergeAuthorDialog
+        open={mergeDialogOpen}
+        onOpenChange={setMergeDialogOpen}
+        onSuccess={() => {
+          fetchAuthors();
+        }}
+      />
     </div>
   );
 }

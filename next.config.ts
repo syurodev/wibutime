@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "pub-555eabc68738400295d4791cd391a852.r2.dev",
+        hostname: "cdn.wibutime.io.vn",
       },
     ],
   },

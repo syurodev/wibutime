@@ -5,9 +5,9 @@
 
 "use client";
 
-import { getClientAuthToken } from "./auth";
-import { api } from "./utils/fetch";
+import { getClientAuthToken } from "./auth-client";
 import type { FetchOptions } from "./utils/fetch";
+import { api } from "./utils/fetch";
 
 /**
  * Create authenticated API client for client-side use
@@ -21,7 +21,10 @@ export function createAuthenticatedClient(accessToken?: string | null) {
     /**
      * GET request with authentication
      */
-    get<T = unknown>(endpoint: string, options?: Omit<FetchOptions, "method" | "body" | "token">) {
+    get<T = unknown>(
+      endpoint: string,
+      options?: Omit<FetchOptions, "method" | "body" | "token">
+    ) {
       return api.get<T>(endpoint, { ...options, token: token || undefined });
     },
 
@@ -33,7 +36,10 @@ export function createAuthenticatedClient(accessToken?: string | null) {
       body?: unknown,
       options?: Omit<FetchOptions, "method" | "body" | "token">
     ) {
-      return api.post<T>(endpoint, body, { ...options, token: token || undefined });
+      return api.post<T>(endpoint, body, {
+        ...options,
+        token: token || undefined,
+      });
     },
 
     /**
@@ -44,7 +50,10 @@ export function createAuthenticatedClient(accessToken?: string | null) {
       body?: unknown,
       options?: Omit<FetchOptions, "method" | "body" | "token">
     ) {
-      return api.put<T>(endpoint, body, { ...options, token: token || undefined });
+      return api.put<T>(endpoint, body, {
+        ...options,
+        token: token || undefined,
+      });
     },
 
     /**
@@ -55,13 +64,19 @@ export function createAuthenticatedClient(accessToken?: string | null) {
       body?: unknown,
       options?: Omit<FetchOptions, "method" | "body" | "token">
     ) {
-      return api.patch<T>(endpoint, body, { ...options, token: token || undefined });
+      return api.patch<T>(endpoint, body, {
+        ...options,
+        token: token || undefined,
+      });
     },
 
     /**
      * DELETE request with authentication
      */
-    delete<T = unknown>(endpoint: string, options?: Omit<FetchOptions, "method" | "body" | "token">) {
+    delete<T = unknown>(
+      endpoint: string,
+      options?: Omit<FetchOptions, "method" | "body" | "token">
+    ) {
       return api.delete<T>(endpoint, { ...options, token: token || undefined });
     },
   };

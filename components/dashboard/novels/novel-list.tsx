@@ -187,9 +187,9 @@ export function NovelList({ novels }: NovelListProps) {
                     <TableRow key={novel.id}>
                       <TableCell>
                         {/* Cover */}
-                        <Avatar className="w-[66px] h-[100px] rounded-lg border-3">
+                        <Avatar className="w-[66px] h-[100px] rounded-lg border-3 overflow-hidden">
                           <AvatarImage src={getImageUrl(novel.cover_url)} />
-                          <AvatarFallback className="w-[66px] h-[100px] rounded-lg font-semibold text-xl">
+                          <AvatarFallback className="w-[66px] h-[100px] rounded-none font-semibold text-xl">
                             {getInitials(novel.title)}
                           </AvatarFallback>
                         </Avatar>

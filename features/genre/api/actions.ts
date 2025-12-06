@@ -10,7 +10,8 @@ import { serverApi } from "@/lib/api/server";
 import { isSuccessResponse, type StandardResponse } from "@/lib/api/types";
 import { endpoint } from "@/lib/api/utils/endpoint";
 import { ApiParser } from "@/lib/api/utils/parsers";
-import { updateTag } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import * as z from "zod";
 
 /**
  * Create a new genre
@@ -76,4 +77,53 @@ export async function deleteGenre(id: string): Promise<void> {
   // Revalidate genres cache
   updateTag("genres");
   updateTag(`genre-${id}`);
+}
+
+/**
+ * Merge genres
+ *
+ * @example
+ * await mergeGenre({ target_id: "...", source_ids: ["...", "..."] })
+ */
+export async function mergeGenre(data: {
+  target_id: string;
+  source_ids: string[];
+}) {
+  const url = endpoint("genres/merge");
+  const response = await serverApi.post<StandardResponse<unknown>>(url, data);
+
+  if (!isSuccessResponse(response)) {
+    throw new Error(response.message || "Failed to merge genres");
+  }
+
+  revalidatePath("/admin/genres");
+  updateTag("genres");
+
+  return response.data;
+}
+
+export async function previewMergeGenre(data: {
+  target_id: string;
+  source_ids: string[];
+}) {
+  const url = endpoint("genres/merge/preview");
+  const response = await serverApi.post<StandardResponse<unknown>>(url, data);
+
+  if (!isSuccessResponse(response)) {
+    throw new Error(response.message || "Failed to preview merge");
+  }
+
+  const PreviewSchema = z.object({
+    affected_novels: z.array(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        slug: z.string(),
+        cover_image_url: z.string().nullable().optional(),
+      })
+    ),
+    source_genres: z.array(z.string()).nullable().optional(),
+  });
+
+  return ApiParser.parse(PreviewSchema, response);
 }

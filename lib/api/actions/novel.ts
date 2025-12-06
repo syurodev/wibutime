@@ -92,7 +92,7 @@ export async function createNovel(data: CreateNovelData): Promise<Novel> {
     JSON.stringify(response, null, 2)
   );
 
-  if (!response || !isSuccessResponse(response)) {
+  if (!response || !isSuccessResponse(response) || !response.data) {
     const message = response?.message || "Failed to create novel";
     console.error("[Action] Create novel failed:", message);
     throw new Error(message);
@@ -132,7 +132,7 @@ export async function updateNovel(
     JSON.stringify(response, null, 2)
   );
 
-  if (!response || !isSuccessResponse(response)) {
+  if (!response || !isSuccessResponse(response) || !response.data) {
     const message = response?.message || "Failed to update novel";
     console.error("[Action] Update novel failed:", message);
     throw new Error(message);

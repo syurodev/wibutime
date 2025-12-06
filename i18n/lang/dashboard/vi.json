@@ -183,5 +183,39 @@
     "settings": "Cài đặt",
     "quickActions": "Hành động nhanh",
     "personalContent": "Nội dung cá nhân"
+  },
+  "merge": {
+    "title": "Gộp {entity}",
+    "description": "Gộp nhiều {items} thành một. Hành động này không thể hoàn tác.",
+    "step1Desc": "Chọn {entity} đích (chính) và các {items} nguồn (bị gộp).",
+    "step2Desc": "Xem lại các novel bị ảnh hưởng và xác nhận gộp.",
+    "targetLabel": "{entity} Đích",
+    "searchTargetPlaceholder": "Tìm kiếm {entity} đích...",
+    "sourceLabel": "{items} Nguồn",
+    "searchSourcePlaceholder": "Tìm kiếm {items} nguồn...",
+    "previewHeader": "{items} đã chọn",
+    "mergeInto": "Gộp vào",
+    "affectedNovels": "Novel bị ảnh hưởng ({count})",
+    "noAffectedNovels": "Không có novel nào bị ảnh hưởng.",
+    "warning": {
+      "title": "Cảnh báo",
+      "message": "Bạn sắp gộp {count} {items} vào {target}. Điều này sẽ cập nhật tất cả novel bị ảnh hưởng. <b>Hành động này không thể hoàn tác.</b>"
+    },
+    "actions": {
+      "back": "Quay lại",
+      "cancel": "Hủy",
+      "continue": "Tiếp tục",
+      "confirm": "Xác nhận Gộp"
+    },
+    "success": "Gộp {entity} thành công",
+    "error": "Có lỗi xảy ra khi gộp"
+  },
+  "entities": {
+    "genre": "Thể loại",
+    "genres": "Các thể loại",
+    "artist": "Họa sĩ",
+    "artists": "Các họa sĩ",
+    "author": "Tác giả",
+    "authors": "Các tác giả"
   }
 }

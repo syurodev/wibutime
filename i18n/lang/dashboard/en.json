@@ -183,5 +183,39 @@
     "settings": "Settings",
     "quickActions": "Quick Actions",
     "personalContent": "Personal content"
+  },
+  "merge": {
+    "title": "Merge {entity}",
+    "description": "Merge multiple {items} into one. This action cannot be undone.",
+    "step1Desc": "Select a target {entity} (main) and source {items} (to be merged).",
+    "step2Desc": "Review affected novels and confirm merge.",
+    "targetLabel": "Target {entity}",
+    "searchTargetPlaceholder": "Search target {entity}...",
+    "sourceLabel": "Source {items}",
+    "searchSourcePlaceholder": "Search source {items}...",
+    "previewHeader": "Selected {items}",
+    "mergeInto": "Merge into",
+    "affectedNovels": "Affected Novels ({count})",
+    "noAffectedNovels": "No novels affected by this merge.",
+    "warning": {
+      "title": "Warning",
+      "message": "You are about to merge {count} {items} into {target}. This will update all affected novels. <b>This action cannot be undone.</b>"
+    },
+    "actions": {
+      "back": "Back",
+      "cancel": "Cancel",
+      "continue": "Continue",
+      "confirm": "Confirm Merge"
+    },
+    "success": "{entity} merged successfully",
+    "error": "An error occurred while merging"
+  },
+  "entities": {
+    "genre": "Genre",
+    "genres": "Genres",
+    "artist": "Artist",
+    "artists": "Artists",
+    "author": "Author",
+    "authors": "Authors"
   }
 }
