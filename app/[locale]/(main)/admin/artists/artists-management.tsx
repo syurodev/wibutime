@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { FileUploader } from "@/components/ui/file-uploader";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -27,16 +28,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArtistService } from "@/features/artist/services/artist.service";
+import { ArtistService } from "@/features/artist/hooks/use-artists";
 import {
-  Artist,
+  type Artist,
   ARTIST_SPECIALIZATION_LABELS,
-  ArtistUtils,
-  CreateArtistRequest,
-  UpdateArtistRequest,
-} from "@/features/artist/types/artist";
+  type CreateArtistRequest,
+  type UpdateArtistRequest,
+} from "@/features/artist/types";
 import { ApiError } from "@/lib/api/utils/error-handler";
 import { DEFAULT_LIMIT, DEFAULT_PAGE } from "@/lib/constants/default";
+import { formatFullDate } from "@/lib/utils/date-ranges";
+import { formatNumber } from "@/lib/utils/format-number";
 import {
   AlertCircle,
   CheckCircle,
@@ -106,7 +108,9 @@ export function ArtistsManagement() {
 
     const queryString = params.toString();
     startTransition(() => {
-      router.push(queryString ? `?${queryString}` : window.location.pathname);
+      router.push(
+        queryString ? `?${queryString}` : globalThis.window.location.pathname
+      );
     });
   };
 
@@ -307,9 +311,7 @@ export function ArtistsManagement() {
                   {artist.slug}
                 </TableCell>
                 <TableCell>
-                  <Badge variant="outline">
-                    {ArtistUtils.getSpecializationLabel(artist.specialization)}
-                  </Badge>
+                  <Badge variant="outline">{artist.specialization}</Badge>
                 </TableCell>
                 <TableCell>
                   {artist.is_verified ? (
@@ -331,10 +333,10 @@ export function ArtistsManagement() {
                   {artist.artwork_count}
                 </TableCell>
                 <TableCell className="text-right">
-                  {ArtistUtils.formatFollowers(artist.follower_count)}
+                  {formatNumber(artist.follower_count)}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {ArtistUtils.formatDate(artist.created_at)}
+                  {formatFullDate(artist.created_at)}
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
@@ -437,7 +439,7 @@ export function ArtistsManagement() {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Tên</label>
+              <Label className="text-sm font-medium mb-2 block">Tên</Label>
               <Input
                 value={formData.name}
                 onChange={(e) =>
@@ -447,7 +449,7 @@ export function ArtistsManagement() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">Tiểu sử</label>
+              <Label className="text-sm font-medium mb-2 block">Tiểu sử</Label>
               <Input
                 value={formData.biography || ""}
                 onChange={(e) =>
@@ -457,9 +459,9 @@ export function ArtistsManagement() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">
+              <Label className="text-sm font-medium mb-2 block">
                 Avatar URL
-              </label>
+              </Label>
               <FileUploader
                 value={formData.avatar_url || ""}
                 onValueChange={(url) =>
@@ -469,9 +471,9 @@ export function ArtistsManagement() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">
+              <Label className="text-sm font-medium mb-2 block">
                 Chuyên môn
-              </label>
+              </Label>
               <select
                 value={formData.specialization}
                 onChange={(e) =>
@@ -515,7 +517,7 @@ export function ArtistsManagement() {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Tên</label>
+              <Label className="text-sm font-medium mb-2 block">Tên</Label>
               <Input
                 value={formData.name}
                 onChange={(e) =>
@@ -524,7 +526,7 @@ export function ArtistsManagement() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">Tiểu sử</label>
+              <Label className="text-sm font-medium mb-2 block">Tiểu sử</Label>
               <Input
                 value={formData.biography || ""}
                 onChange={(e) =>
@@ -533,9 +535,9 @@ export function ArtistsManagement() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">
+              <Label className="text-sm font-medium mb-2 block">
                 Avatar URL
-              </label>
+              </Label>
               <FileUploader
                 value={formData.avatar_url || ""}
                 onValueChange={(url) =>
@@ -545,9 +547,9 @@ export function ArtistsManagement() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">
+              <Label className="text-sm font-medium mb-2 block">
                 Chuyên môn
-              </label>
+              </Label>
               <select
                 value={formData.specialization}
                 onChange={(e) =>

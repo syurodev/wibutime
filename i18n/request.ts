@@ -19,6 +19,7 @@ export async function loadMessages(locale: Locale) {
   const history = (await import(`./lang/history/${locale}.json`)).default;
   const dashboard = (await import(`./lang/dashboard/${locale}.json`)).default;
   const workspace = (await import(`./lang/workspace/${locale}.json`)).default;
+  const account = (await import(`./lang/account/${locale}.json`)).default;
 
   return {
     common,
@@ -31,6 +32,7 @@ export async function loadMessages(locale: Locale) {
     history,
     dashboard,
     workspace,
+    account,
   };
 }
 

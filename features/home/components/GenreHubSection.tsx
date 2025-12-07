@@ -6,7 +6,7 @@
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
 import { GenreCard } from "@/features/genre/components/GenreCard";
-import type { GenreStats } from "@/features/genre/types/genre-stats";
+import { GenreStats } from "@/features/genre/types";
 import { Link } from "@/i18n/routing";
 import { ArrowRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";

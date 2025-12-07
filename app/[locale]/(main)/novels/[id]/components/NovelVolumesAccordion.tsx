@@ -5,8 +5,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
+import { NovelVolume } from "@/features/novel";
 import { Link } from "@/i18n/routing";
-import type { NovelVolume } from "@/lib/api/models/content/novel";
 import { formatNumberAbbreviated } from "@/lib/api/utils/number";
 import { ChevronRight, Clock, Eye, Lock } from "lucide-react";
 import { useTranslations } from "next-intl";

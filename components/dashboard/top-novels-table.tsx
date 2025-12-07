@@ -5,10 +5,9 @@
  * Displays a table of top performing novels with key metrics
  */
 
-import { Link } from "@/i18n/routing";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -18,11 +17,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowUpRight, Eye, Heart, Star } from "lucide-react";
-import { formatNumber, formatRating } from "@/lib/utils/format-stats";
+import type { TopNovel } from "@/features/novel/types";
+import { Link } from "@/i18n/routing";
 import { getRelativeTime } from "@/lib/utils/date-ranges";
-import type { TopNovel } from "@/lib/api/novels";
-import { cn } from "@/lib/utils";
+import { formatNumber, formatRating } from "@/lib/utils/format-number";
+import { ArrowUpRight, Eye, Heart, Star } from "lucide-react";
 
 export interface TopNovelsTableProps {
   data: TopNovel[];
@@ -113,9 +112,7 @@ export function TopNovelsTable({
             <TableBody>
               {data.map((novel, index) => {
                 const statusConfig = STATUS_LABELS[novel.status];
-                const href = baseHref
-                  ? `${baseHref}/${novel.id}/volumes`
-                  : "#";
+                const href = baseHref ? `${baseHref}/${novel.id}/volumes` : "#";
 
                 return (
                   <TableRow key={novel.id} className="group">

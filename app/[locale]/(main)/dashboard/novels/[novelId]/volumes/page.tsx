@@ -7,8 +7,8 @@ import { DraggableVolumeList } from "@/components/dashboard/novels/draggable-vol
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { NovelVolumeService } from "@/features/novel-volume/service";
 import { Link } from "@/i18n/routing";
-import { getVolumesByNovel } from "@/lib/api/volumes";
 import { AlertCircle, ArrowLeft, BookText, Plus } from "lucide-react";
 
 interface Props {
@@ -27,14 +27,14 @@ export default async function NovelVolumesPage({ params }: Props) {
 
   try {
     // Fetch volumes
-    const volumesResponse = await getVolumesByNovel(novelId);
+    const data = await NovelVolumeService.getByNovel(novelId);
 
-    console.log(volumesResponse);
+    console.log(data);
 
     // Parse new response structure
-    if (volumesResponse.data) {
-      novelTitle = volumesResponse.data.novel_title || novelTitle;
-      volumes = volumesResponse.data.volumes || [];
+    if (data) {
+      novelTitle = data.novel_title || novelTitle;
+      volumes = data.volumes || [];
     }
   } catch (err: any) {
     console.error("Failed to fetch volumes:", err);

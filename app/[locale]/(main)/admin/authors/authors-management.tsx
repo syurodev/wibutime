@@ -27,15 +27,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { AuthorService } from "@/features/author/hooks/use-authors";
 import type {
   Author,
   CreateAuthorRequest,
   UpdateAuthorRequest,
-} from "@/lib/api/models/admin/author";
-import { AuthorUtils } from "@/lib/api/models/admin/author";
-import { AuthorService } from "@/lib/api/services/admin/author.service";
+} from "@/features/author/types";
 import { ApiError } from "@/lib/api/utils/error-handler";
 import { DEFAULT_LIMIT, DEFAULT_PAGE } from "@/lib/constants/default";
+import { formatFullDate } from "@/lib/utils/date-ranges";
+import { formatNumber } from "@/lib/utils/format-number";
 import {
   AlertCircle,
   CheckCircle,
@@ -323,13 +324,13 @@ export function AuthorsManagement() {
                   {author.novel_count}
                 </TableCell>
                 <TableCell className="text-right">
-                  {AuthorUtils.formatViews(author.total_views)}
+                  {formatNumber(author.total_views)}
                 </TableCell>
                 <TableCell className="text-right">
-                  {AuthorUtils.formatFollowers(author.follower_count)}
+                  {formatNumber(author.follower_count)}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {AuthorUtils.formatDate(author.created_at)}
+                  {formatFullDate(author.created_at)}
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">

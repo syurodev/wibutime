@@ -1,6 +1,6 @@
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
-import type { HistoryMedia } from "@/features/history/types/history-content";
+import type { HistoryMedia } from "@/features/history/types";
 import { ContinueCarousel } from "@/features/home/components/ContinueCarousel";
 import { Link } from "@/i18n/routing";
 import { getCurrentTime } from "@/lib/utils/time-cache";

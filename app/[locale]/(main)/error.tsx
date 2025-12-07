@@ -8,6 +8,7 @@ import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { AlertTriangle, Home, RefreshCw } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -15,6 +16,8 @@ interface ErrorProps {
 }
 
 export default function HomeError({ error, reset }: ErrorProps) {
+  const t = useTranslations("common.error");
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Container maxWidth="md">
@@ -25,11 +28,9 @@ export default function HomeError({ error, reset }: ErrorProps) {
             </div>
           </div>
 
-          <h1 className="text-2xl font-bold mb-2">Unable to load homepage</h1>
+          <h1 className="text-2xl font-bold mb-2">{t("title")}</h1>
 
-          <p className="text-muted-foreground mb-6">
-            Something went wrong while loading the content. Please try again.
-          </p>
+          <p className="text-muted-foreground mb-6">{t("description")}</p>
 
           {error.digest && (
             <p className="text-xs text-muted-foreground mb-6 font-mono">
@@ -40,13 +41,13 @@ export default function HomeError({ error, reset }: ErrorProps) {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button onClick={reset} className="gap-2">
               <RefreshCw className="size-4" />
-              Try Again
+              {t("retry")}
             </Button>
 
             <Button variant="outline" className="gap-2" asChild>
               <a href="/">
                 <Home className="size-4" />
-                Reload Page
+                {t("home")}
               </a>
             </Button>
           </div>

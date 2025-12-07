@@ -1,8 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import type { Milestone } from "@/lib/api/models/community/milestone";
-import { MilestoneUtils } from "@/lib/api/models/community/milestone";
+import { Milestone, MilestoneUtils } from "@/features/community";
 import { cn } from "@/lib/utils";
 import {
   Award,
@@ -69,9 +68,7 @@ export function MilestoneCard({
       <div className="p-6">
         <div className="flex items-start gap-4">
           {/* Icon */}
-          <div
-            className={cn("flex-shrink-0 rounded-lg border-2 p-3", colorClass)}
-          >
+          <div className={cn("shrink-0 rounded-lg border-2 p-3", colorClass)}>
             <Icon className="size-6" />
           </div>
 

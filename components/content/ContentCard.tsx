@@ -1,7 +1,7 @@
 "use client";
 
+import { MediaSeries } from "@/features/content";
 import { Link } from "@/i18n/routing";
-import type { MediaSeries } from "@/lib/api/models/content/base-content";
 import { formatNumberAbbreviated } from "@/lib/api/utils/number";
 import { useUiPreferences } from "@/lib/hooks/use-user-settings";
 import { cn } from "@/lib/utils";
@@ -9,11 +9,11 @@ import { getContentBadgeVariant } from "@/lib/utils/get-content-bg";
 import { getImageUrl } from "@/lib/utils/get-image-url";
 import { getInitials } from "@/lib/utils/get-initials";
 import { Eye, Heart } from "lucide-react";
-import Image from "next/image";
 import { memo } from "react";
 import { AspectRatio } from "../ui/aspect-ratio";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
+import { ImageWithFallback } from "../ui/image-with-fallback";
 
 export interface ContentCardProps {
   readonly series: MediaSeries;
@@ -47,8 +47,8 @@ export const ContentCard = memo(function ContentCard({
           {/* Content Wrapper */}
           <div className="absolute inset-0 z-0 overflow-hidden">
             {/* 1. IMAGE LAYER */}
-            <Image
-              src={series.cover_url || "/placeholder-cover.svg"}
+            <ImageWithFallback
+              src={getImageUrl(series.cover_url)}
               alt={series.title}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
@@ -57,6 +57,7 @@ export const ContentCard = memo(function ContentCard({
               className="object-cover transition-transform duration-500 md:group-hover:scale-105"
               loading="lazy"
               decoding="async"
+              fallback={getInitials(series.title)}
             />
 
             {/* --- OPTIMIZATION LOGIC START --- */}

@@ -8,7 +8,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Eye, Heart, Star, MessageSquare } from "lucide-react";
-import { formatNumber, formatPercentage } from "@/lib/utils/format-stats";
+import { formatNumber, formatPercentage } from "@/lib/utils/format-number";
 import { cn } from "@/lib/utils";
 
 export interface EngagementMetric {

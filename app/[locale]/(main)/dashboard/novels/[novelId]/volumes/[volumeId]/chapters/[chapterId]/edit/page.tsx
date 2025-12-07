@@ -6,8 +6,8 @@ import {
 } from "@/components/forms/chapter-form";
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
+import { ChapterService } from "@/features/novel-chapter/hooks/use-chapters";
 import { useRouter } from "@/i18n/routing";
-import { getChapter, updateChapter } from "@/lib/api/chapters";
 import { calculateContentStatistics } from "@/lib/editor/utils/text-statistics";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { use, useEffect, useState } from "react";
@@ -32,9 +32,8 @@ export default function EditChapterPage({ params }: Props) {
   useEffect(() => {
     async function fetchChapter() {
       try {
-        const response = await getChapter(chapterId);
-        if (response.data) {
-          const chapter = response.data;
+        const chapter = await ChapterService.get(chapterId);
+        if (chapter) {
           setInitialValues({
             chapter_number: chapter.chapter_number,
             title: chapter.title,
@@ -64,7 +63,7 @@ export default function EditChapterPage({ params }: Props) {
         values.content
       );
 
-      await updateChapter(chapterId, {
+      await ChapterService.update(chapterId, {
         ...values,
         content: values.content,
         word_count: wordCount,

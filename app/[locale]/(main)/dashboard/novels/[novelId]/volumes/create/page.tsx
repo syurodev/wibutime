@@ -10,8 +10,8 @@ import {
   VolumeFormData,
 } from "@/components/features/volumes/volume-form";
 import { Container } from "@/components/layout/Container";
+import { NovelVolumeService } from "@/features/novel-volume/service";
 import { useRouter } from "@/i18n/routing";
-import { createVolume } from "@/lib/api/volumes";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -36,7 +36,7 @@ export default function CreateVolumePage({ params }: Props) {
 
     try {
       // Backend sẽ tự tính volume_number
-      await createVolume(novelId, {
+      await NovelVolumeService.create(novelId, {
         title: formData.title,
         description: formData.description,
         cover_image_url: formData.cover_image_url,

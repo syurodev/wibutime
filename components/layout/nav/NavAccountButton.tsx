@@ -5,11 +5,12 @@
 
 "use client";
 
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { MoreHorizontal } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/hooks/use-auth";
-import { useNav } from "./useNav";
+import { getInitials } from "@/lib/utils/get-initials";
+import { MoreHorizontal } from "lucide-react";
 import { NavTriggerItem } from "./NavTriggerItem";
+import { useNav } from "./useNav";
 
 interface NavAccountButtonProps {
   /**
@@ -23,7 +24,10 @@ interface NavAccountButtonProps {
   readonly overflowCount: number;
 }
 
-export function NavAccountButton({ index, overflowCount }: NavAccountButtonProps) {
+export function NavAccountButton({
+  index,
+  overflowCount,
+}: NavAccountButtonProps) {
   const { user, isLoggedIn } = useAuth();
   const { toggleAccountMenu } = useNav();
 
@@ -38,7 +42,7 @@ export function NavAccountButton({ index, overflowCount }: NavAccountButtonProps
             <Avatar className="h-6 w-6">
               <AvatarImage src={user.image} alt={user.name} />
               <AvatarFallback className="text-xs">
-                {user.name?.charAt(0).toUpperCase() || "U"}
+                {getInitials(user.name)}
               </AvatarFallback>
             </Avatar>
           ) : (

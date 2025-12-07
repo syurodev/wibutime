@@ -1,0 +1,41 @@
+{
+  "title": "Account Settings",
+  "tabs": {
+    "general": "General",
+    "security": "Security",
+    "data_privacy": "Data & Privacy"
+  },
+  "profile": {
+    "title": "Personal Information",
+    "full_name": "Full Name",
+    "display_name": "Display Name",
+    "bio": "Bio",
+    "avatar": "Avatar",
+    "save": "Save Changes",
+    "upload_avatar": "Upload Avatar",
+    "profile_picture": "Profile Picture",
+    "avatar_updated": "Avatar updated successfully",
+    "success": "Profile updated successfully"
+  },
+  "security": {
+    "title": "Security Settings",
+    "password": {
+      "title": "Change Password",
+      "current": "Current Password",
+      "new": "New Password",
+      "confirm": "Confirm New Password",
+      "update": "Update Password",
+      "success": "Password changed successfully"
+    },
+    "sessions": {
+      "title": "Active Sessions",
+      "description": "Manage your active sessions on other devices.",
+      "current": "Current session",
+      "platform": "Platform",
+      "browser": "Browser",
+      "last_active": "Last active",
+      "revoke": "Sign out",
+      "revoke_success": "Session revoked"
+    }
+  }
+}

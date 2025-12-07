@@ -5,6 +5,18 @@
  * Line/Area chart showing metrics over time with date range selector
  */
 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { TimeSeriesData } from "@/features/novel/types";
+import type { DateRange } from "@/lib/utils/date-ranges";
+import { formatChartDate } from "@/lib/utils/date-ranges";
+import { formatNumber } from "@/lib/utils/format-number";
 import { useMemo, useState } from "react";
 import {
   Area,
@@ -12,23 +24,9 @@ import {
   CartesianGrid,
   Line,
   LineChart,
-  ResponsiveContainer,
-  Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { formatChartDate } from "@/lib/utils/date-ranges";
-import { formatNumber } from "@/lib/utils/format-stats";
-import type { DateRange } from "@/lib/utils/date-ranges";
-import type { TimeSeriesData } from "@/lib/api/novels";
 
 export interface TimeSeriesChartProps {
   data: TimeSeriesData[];
@@ -137,7 +135,10 @@ export function TimeSeriesChart({
       </CardHeader>
 
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px] w-full md:h-[400px]">
+        <ChartContainer
+          config={chartConfig}
+          className="h-[300px] w-full md:h-[400px]"
+        >
           {chartType === "area" ? (
             <AreaChart data={chartData}>
               <defs>

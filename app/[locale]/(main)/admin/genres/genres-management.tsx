@@ -27,15 +27,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { GenreService } from "@/features/genre/services/admin-genre.service";
+import { GenreService } from "@/features/genre/hooks/use-genres";
 import {
-  GenreUtils,
   type CreateGenreRequest,
   type Genre,
   type UpdateGenreRequest,
-} from "@/features/genre/types/admin-genre";
+} from "@/features/genre/types";
 import { ApiError } from "@/lib/api/utils/error-handler";
 import { DEFAULT_LIMIT, DEFAULT_PAGE } from "@/lib/constants/default";
+import { formatFullDate } from "@/lib/utils/date-ranges";
+import { formatNumber } from "@/lib/utils/format-number";
 import {
   AlertCircle,
   Edit2,
@@ -266,13 +267,11 @@ export function GenresManagement() {
 
   // Helper function to render trend badge
   const renderTrendBadge = (trend: string) => {
-    const trendInfo = GenreUtils.getTrendBadge(trend as any);
-
     if (trend === "rising") {
       return (
         <Badge variant="default" className="bg-green-600">
           <TrendingUp className="size-3" />
-          {trendInfo.label}
+          {trend}
         </Badge>
       );
     }
@@ -281,12 +280,12 @@ export function GenresManagement() {
       return (
         <Badge variant="destructive">
           <TrendingDown className="size-3" />
-          {trendInfo.label}
+          {trend}
         </Badge>
       );
     }
 
-    return <Badge variant="secondary">{trendInfo.label}</Badge>;
+    return <Badge variant="secondary">{trend}</Badge>;
   };
 
   // Helper function to render table content based on state
@@ -342,10 +341,10 @@ export function GenresManagement() {
                   {genre.series_count}
                 </TableCell>
                 <TableCell className="text-right">
-                  {GenreUtils.formatViews(genre.total_views)}
+                  {formatNumber(genre.total_views)}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {GenreUtils.formatDate(genre.created_at)}
+                  {formatFullDate(genre.created_at)}
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">

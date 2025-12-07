@@ -4,20 +4,10 @@
  */
 
 import { Container } from "@/components/layout/Container";
-import { HistoryEmpty } from "@/features/history/components/HistoryEmpty";
-import {
-  HistoryFilters,
-  type HistorySortOption,
-} from "@/features/history/components/HistoryFilters";
-import { HistoryGrid } from "@/features/history/components/HistoryGrid";
-import { HistoryGridSkeleton } from "@/features/history/components/HistoryGridSkeleton";
-import { HistoryService } from "@/features/history/services/history.service";
+import { type HistorySortOption } from "@/features/history/components/HistoryFilters";
 import type { MEDIA_TYPE } from "@/lib/constants/default";
-import { getCurrentTime } from "@/lib/utils/time-cache";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { Suspense } from "react";
-import { HistoryNavigation } from "./HistoryNavigation";
 
 /**
  * Page metadata (SEO)
@@ -40,26 +30,26 @@ interface HistoryPageProps {
 /**
  * History Content Component (Async - for Suspense)
  */
-async function HistoryContent({
-  type,
-  page,
-  sort,
-}: {
-  type: MEDIA_TYPE | "all";
-  page: number;
-  sort: HistorySortOption;
-}) {
-  // Fetch paginated history
-  const { items } = await HistoryService.getHistoryPaginated({
-    type,
-    page,
-    limit: 15,
-    sort,
-  });
-  const currentTime = await getCurrentTime();
+// async function HistoryContent({
+//   type,
+//   page,
+//   sort,
+// }: {
+//   type: MEDIA_TYPE | "all";
+//   page: number;
+//   sort: HistorySortOption;
+// }) {
+//   // Fetch paginated history
+//   const { items } = await HistoryService.getHistoryPaginated({
+//     type,
+//     page,
+//     limit: 15,
+//     sort,
+//   });
+//   const currentTime = await getCurrentTime();
 
-  return <HistoryGrid history={items} currentTime={currentTime} />;
-}
+//   return <HistoryGrid history={items} currentTime={currentTime} />;
+// }
 
 /**
  * History Page Server Component
@@ -84,16 +74,16 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
   const selectedSort = validSorts.includes(sort) ? sort : "recent";
 
   // Fetch pagination metadata for navigation
-  const { totalPages, currentPage, totalItems } =
-    await HistoryService.getHistoryPaginated({
-      type: selectedType,
-      page,
-      limit: 15,
-      sort: selectedSort as HistorySortOption,
-    });
+  // const { totalPages, currentPage, totalItems } =
+  //   await HistoryService.getHistoryPaginated({
+  //     type: selectedType,
+  //     page,
+  //     limit: 15,
+  //     sort: selectedSort as HistorySortOption,
+  //   });
 
   // Check if history is empty
-  const hasContent = totalItems > 0;
+  // const hasContent = totalItems > 0;
 
   return (
     <div className="min-h-screen py-8">
@@ -108,18 +98,17 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
           </div>
 
           {/* Filters */}
-          {hasContent && (
+          {/* {hasContent && (
             <HistoryFilters
               currentType={selectedType}
               currentSort={selectedSort}
             />
-          )}
+          )} */}
         </div>
 
         {/* Content Section */}
-        {hasContent ? (
+        {/* {hasContent ? (
           <>
-            {/* Content with Suspense - Shows skeleton while loading */}
             <Suspense
               key={`${selectedType}-${page}-${selectedSort}`}
               fallback={<HistoryGridSkeleton count={15} />}
@@ -131,7 +120,6 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
               />
             </Suspense>
 
-            {/* Bottom Navigation with Pagination */}
             <HistoryNavigation
               currentPage={currentPage}
               totalPages={totalPages}
@@ -139,7 +127,7 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
           </>
         ) : (
           <HistoryEmpty />
-        )}
+        )} */}
       </Container>
     </div>
   );

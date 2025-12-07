@@ -8,7 +8,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { HistoryCard } from "@/features/history/components/HistoryCard";
-import type { HistoryMedia } from "@/features/history/types/history-content";
+import type { HistoryMedia } from "@/features/history/types";
 
 export interface ContinueCarouselProps {
   readonly history: HistoryMedia[];

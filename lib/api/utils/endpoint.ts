@@ -138,4 +138,12 @@ export const endpoints = {
   community: (params?: Record<string, any>) =>
     endpoint("community", params || {}),
   communityById: (id: string) => endpoint("community", id),
+
+  // Analytics endpoints
+  analyticsTrending: (params?: Record<string, any>) =>
+    endpoint("analytics", "trending", params || {}),
+
+  // Creator endpoints
+  creators: (params?: Record<string, any>) =>
+    endpoint("creators", params || {}),
 } as const;

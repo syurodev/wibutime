@@ -5,6 +5,7 @@ export enum GlobalRole {
   SUPER_ADMIN = "SUPER_ADMIN",
   ADMIN = "ADMIN",
   MODERATOR = "MODERATOR",
+  CREATOR = "CREATOR",
   USER = "USER",
   GUEST = "GUEST",
 }

@@ -521,37 +521,46 @@ async function parseApiError(response: Response): Promise<ApiError> {
       );
     }
 
-    const data = JSON.parse(text);
+    try {
+      const data = JSON.parse(text);
 
-    // Backend StandardResponse format: {success: false, code: "...", message: "..."}
-    if (data.message) {
+      // Backend StandardResponse format: {success: false, code: "...", message: "..."}
+      if (data.message) {
+        return new ApiError(
+          data.message, // Message đã được dịch từ server
+          response.status,
+          data.code,
+          data.data // Details nếu có
+        );
+      }
+
+      // Legacy backend error format (nếu có)
+      if (data.error) {
+        return new ApiError(
+          data.error.message || `Request failed with status ${response.status}`,
+          response.status,
+          data.error.code,
+          data.error.details
+        );
+      }
+
+      // Fallback
+      console.warn("⚠️ Không tìm thấy message trong response, dùng fallback");
       return new ApiError(
-        data.message, // Message đã được dịch từ server
-        response.status,
-        data.code,
-        data.data // Details nếu có
+        `Request failed with status ${response.status}`,
+        response.status
+      );
+    } catch {
+      // Response không phải JSON (VD: "404 page not found")
+      // Dùng nguyên text làm error message
+      return new ApiError(
+        text || `HTTP ${response.status}: ${response.statusText}`,
+        response.status
       );
     }
-
-    // Legacy backend error format (nếu có)
-    if (data.error) {
-      return new ApiError(
-        data.error.message || `Request failed with status ${response.status}`,
-        response.status,
-        data.error.code,
-        data.error.details
-      );
-    }
-
-    // Fallback
-    console.warn("⚠️ Không tìm thấy message trong response, dùng fallback");
-    return new ApiError(
-      `Request failed with status ${response.status}`,
-      response.status
-    );
   } catch (err) {
-    // Cannot parse JSON
-    console.error("❌ Không thể parse JSON response:", err);
+    // Other errors (reading text failed, etc)
+    console.error("❌ Error parsing API error response:", err);
     return new ApiError(
       `HTTP ${response.status}: ${response.statusText}`,
       response.status

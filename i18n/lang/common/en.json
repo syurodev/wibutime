@@ -7,5 +7,19 @@
     "page": "Page",
     "goToPage": "Go to page",
     "clickToEnterPage": "Click to enter page number"
+  },
+  "sections": {
+    "trending": "Trending Now"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "description": "We couldn't load the content. Please try again.",
+    "retry": "Try Again",
+    "home": "Back to Home",
+    "adminTitle": "Admin Panel Error",
+    "adminDescription": "Unable to load admin panel. Please try refreshing the page.",
+    "dashboardTitle": "Dashboard Unavailable",
+    "dashboardDescription": "We couldn't load your dashboard data. This might be a temporary issue.",
+    "viewNovels": "View My Novels"
   }
 }

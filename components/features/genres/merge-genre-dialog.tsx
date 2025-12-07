@@ -20,7 +20,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { MultiSelect } from "@/components/ui/multi-select";
-import { mergeGenre, previewMergeGenre } from "@/features/genre/api/actions";
+import { mergeGenre, previewMergeGenre } from "@/features/genre/actions";
 import { useGenres } from "@/hooks/use-genres";
 import { getImageUrl } from "@/lib/utils/get-image-url";
 import { getInitials } from "@/lib/utils/get-initials";

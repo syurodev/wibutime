@@ -7,5 +7,19 @@
     "page": "Trang",
     "goToPage": "Đến trang",
     "clickToEnterPage": "Nhấp để nhập số trang"
+  },
+  "sections": {
+    "trending": "Đang thịnh hành"
+  },
+  "error": {
+    "title": "Có lỗi xảy ra",
+    "description": "Không thể tải nội dung. Vui lòng thử lại sau.",
+    "retry": "Thử lại",
+    "home": "Về trang chủ",
+    "adminTitle": "Lỗi Admin Panel",
+    "adminDescription": "Không thể tải trang quản trị. Vui lòng tải lại trang.",
+    "dashboardTitle": "Dashboard không khả dụng",
+    "dashboardDescription": "Không thể tải dữ liệu dashboard. Đây có thể là lỗi tạm thời.",
+    "viewNovels": "Xem Truyện của tôi"
   }
 }

@@ -7,8 +7,8 @@
 
 "use client";
 
+import type { UiPreferences } from "@/features/user/types";
 import { useUserSettingsStore } from "@/lib/stores/user-settings.store";
-import type { UiPreferences } from "@/lib/api/models/user/user-settings";
 
 /**
  * Subscribe to theme only
@@ -52,7 +52,9 @@ export function useContentFilters() {
   const filters = useUserSettingsStore((state) => state.content_filters);
   const setFilters = useUserSettingsStore((state) => state.setContentFilters);
   const addFilter = useUserSettingsStore((state) => state.addContentFilter);
-  const removeFilter = useUserSettingsStore((state) => state.removeContentFilter);
+  const removeFilter = useUserSettingsStore(
+    (state) => state.removeContentFilter
+  );
 
   return {
     filters,
@@ -68,13 +70,18 @@ export function useContentFilters() {
 export function useUiPreferences() {
   const preferences = useUserSettingsStore((state) => state.ui_preferences);
   const setPreference = useUserSettingsStore((state) => state.setUiPreference);
-  const updatePreferences = useUserSettingsStore((state) => state.updateUiPreferences);
+  const updatePreferences = useUserSettingsStore(
+    (state) => state.updateUiPreferences
+  );
 
   // Convenience methods for common preferences
   const setReduceBlur = (value: boolean) => setPreference("reduce_blur", value);
-  const setAutoPlayVideo = (value: boolean) => setPreference("auto_play_video", value);
-  const setShowMatureContent = (value: boolean) => setPreference("show_mature_content", value);
-  const setCompactView = (value: boolean) => setPreference("compact_view", value);
+  const setAutoPlayVideo = (value: boolean) =>
+    setPreference("auto_play_video", value);
+  const setShowMatureContent = (value: boolean) =>
+    setPreference("show_mature_content", value);
+  const setCompactView = (value: boolean) =>
+    setPreference("compact_view", value);
 
   return {
     preferences,
@@ -95,7 +102,10 @@ export function useUiPreference<K extends keyof UiPreferences>(key: K) {
   const value = useUserSettingsStore((state) => state.ui_preferences[key]);
   const setValue = useUserSettingsStore((state) => state.setUiPreference);
 
-  return [value, (newValue: UiPreferences[K]) => setValue(key, newValue)] as const;
+  return [
+    value,
+    (newValue: UiPreferences[K]) => setValue(key, newValue),
+  ] as const;
 }
 
 /**
@@ -104,7 +114,9 @@ export function useUiPreference<K extends keyof UiPreferences>(key: K) {
  */
 export function useSyncStatus() {
   const isSyncing = useUserSettingsStore((state) => state.isSyncing);
-  const hasPendingChanges = useUserSettingsStore((state) => state.hasPendingChanges);
+  const hasPendingChanges = useUserSettingsStore(
+    (state) => state.hasPendingChanges
+  );
   const lastSyncedAt = useUserSettingsStore((state) => state.lastSyncedAt);
   const error = useUserSettingsStore((state) => state.error);
 

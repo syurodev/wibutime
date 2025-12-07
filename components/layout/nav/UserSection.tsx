@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "@/i18n/routing";
 import { useAuth } from "@/lib/hooks/use-auth";
+import { getInitials } from "@/lib/utils/get-initials";
 import {
   LayoutDashboard,
   LogIn,
@@ -104,9 +105,7 @@ export function UserSection({ onActionClick }: UserSectionProps) {
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
             <AvatarImage src={user.image} alt={user.name} />
-            <AvatarFallback>
-              {user.name?.charAt(0).toUpperCase() || "U"}
-            </AvatarFallback>
+            <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
             <p className="font-medium text-sm truncate">{user.name}</p>

@@ -14,9 +14,9 @@ import type {
   PublishingActivityData,
   TimeSeriesData,
   TopNovel,
-} from "@/lib/api/novels";
+} from "@/features/novel/types";
 import type { DateRange } from "@/lib/utils/date-ranges";
-import { formatNumber, formatRating } from "@/lib/utils/format-stats";
+import { formatNumber, formatRating } from "@/lib/utils/format-number";
 import { BookOpen, Eye, FileText, Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";

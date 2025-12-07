@@ -4,7 +4,7 @@
  */
 
 import { Container } from "@/components/layout/Container";
-import type { Milestone } from "@/lib/api/models/community/milestone";
+import { Milestone } from "@/features/community";
 import { getTranslations } from "next-intl/server";
 import { MilestoneCard } from "./MilestoneCard";
 

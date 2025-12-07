@@ -6,10 +6,9 @@
 import { Container } from "@/components/layout/Container";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { CreatorStats, CreatorStatsUtils } from "@/features/community";
 import { BasicStaticEditorView } from "@/features/editor/components/basic-static-editor-view";
 import { Link } from "@/i18n/routing";
-import type { CreatorStats } from "@/lib/api/models/community/creator-stats";
-import { CreatorStatsUtils } from "@/lib/api/models/community/creator-stats";
 import { getImageUrl } from "@/lib/utils/get-image-url";
 import { getInitials } from "@/lib/utils/get-initials";
 import { ArrowRight, BadgeCheck, BookOpen, Eye, Users } from "lucide-react";

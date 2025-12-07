@@ -1,4 +1,4 @@
-import { CreateChapterView } from "@/features/chapters/components/create-chapter-view";
+import { CreateChapterView } from "@/features/novel-chapter/components/create-chapter-view";
 import { use } from "react";
 
 interface Props {

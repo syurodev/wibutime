@@ -2,10 +2,10 @@
  * User Settings Store - Zustand with localStorage persistence & API sync
  */
 
+import { UserSettingsService } from "@/features/user/hooks/user-settings-service";
+import type { UiPreferences, UserSettings } from "@/features/user/types";
+import { UserSettingsUtils } from "@/features/user/types";
 import { isAuthenticated } from "@/lib/api/auth-client";
-import type { UiPreferences, UserSettings } from "@/lib/api/models/user/user-settings";
-import { UserSettingsUtils } from "@/lib/api/models/user/user-settings";
-import { UserSettingsService } from "@/lib/api/services/user/user-settings.service";
 import { create } from "zustand";
 import { createJSONStorage, devtools, persist } from "zustand/middleware";
 
@@ -160,10 +160,10 @@ export const useUserSettingsStore = create<UserSettingsState>()(
           // Skip if not authenticated
           if (!isAuthenticated()) {
             console.log("Skipping settings load - user not authenticated");
-            set({ 
-              isLoading: false, 
+            set({
+              isLoading: false,
               isInitialized: true, // Mark as initialized even if skipped
-              error: null 
+              error: null,
             });
             return;
           }
@@ -183,7 +183,9 @@ export const useUserSettingsStore = create<UserSettingsState>()(
             get()._resetRetry();
           } catch (error) {
             const errorMessage =
-              error instanceof Error ? error.message : "Failed to load settings";
+              error instanceof Error
+                ? error.message
+                : "Failed to load settings";
             set({
               isLoading: false,
               error: errorMessage,
@@ -235,7 +237,9 @@ export const useUserSettingsStore = create<UserSettingsState>()(
             }
           } catch (error) {
             const errorMessage =
-              error instanceof Error ? error.message : "Failed to sync settings";
+              error instanceof Error
+                ? error.message
+                : "Failed to sync settings";
             set({
               isSyncing: false,
               error: errorMessage,
@@ -303,7 +307,8 @@ export const useUserSettingsStore = create<UserSettingsState>()(
 
         // Internal Actions
         _setError: (error) => set({ error }),
-        _incrementRetry: () => set((state) => ({ retryCount: state.retryCount + 1 })),
+        _incrementRetry: () =>
+          set((state) => ({ retryCount: state.retryCount + 1 })),
         _resetRetry: () => set({ retryCount: 0 }),
       }),
       {
@@ -367,7 +372,9 @@ function scheduleRetry(get: () => UserSettingsState) {
 
   // Schedule retry
   retryTimeout = setTimeout(() => {
-    console.log(`Retrying sync (attempt ${get().retryCount + 1}/${MAX_RETRY_COUNT})`);
+    console.log(
+      `Retrying sync (attempt ${get().retryCount + 1}/${MAX_RETRY_COUNT})`
+    );
     get().syncToApi();
   }, RETRY_DELAY_MS);
 }

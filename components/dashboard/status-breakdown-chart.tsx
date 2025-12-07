@@ -5,12 +5,10 @@
  * Pie/Donut chart showing distribution of novels by status
  */
 
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
-import { ChartContainer } from "@/components/ui/chart";
-import type { NovelStatusBreakdown } from "@/lib/api/novels";
+import type { NovelStatusBreakdown } from "@/features/novel/types";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 export interface StatusBreakdownChartProps {
   data: NovelStatusBreakdown[];
@@ -119,7 +117,8 @@ export function StatusBreakdownChart({
                             <div
                               className="size-3 rounded-full"
                               style={{
-                                backgroundColor: STATUS_CONFIG[data.status].color,
+                                backgroundColor:
+                                  STATUS_CONFIG[data.status].color,
                               }}
                             />
                             <span className="font-medium">
@@ -131,7 +130,9 @@ export function StatusBreakdownChart({
                               <span className="text-muted-foreground">
                                 Số lượng:
                               </span>{" "}
-                              <span className="font-semibold">{data.count}</span>
+                              <span className="font-semibold">
+                                {data.count}
+                              </span>
                             </p>
                             <p>
                               <span className="text-muted-foreground">

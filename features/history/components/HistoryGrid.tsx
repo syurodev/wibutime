@@ -3,7 +3,7 @@
  * Grid layout for displaying history items with enhanced cards
  */
 
-import type { HistoryMedia } from "@/features/history/types/history-content";
+import type { HistoryMedia } from "@/features/history/types";
 import { EnhancedHistoryCard } from "./EnhancedHistoryCard";
 
 export interface HistoryGridProps {

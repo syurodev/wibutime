@@ -19,6 +19,60 @@
     "rating": "Xếp Hạng",
     "views": "Lượt Xem",
     "favorites": "Yêu Thích",
-    "rank": "Hạng"
+    "rank": "Xếp hạng"
+  },
+  "browse": {
+    "title": "Danh Sách Novel",
+    "subtitle": "Khám phá thế giới light novel và web novel trên WibuTime",
+    "filters": {
+      "searchPlaceholder": "Tìm kiếm novel theo tên...",
+      "status": "Trạng thái",
+      "language": "Ngôn ngữ gốc",
+      "author": "Tác giả",
+      "artist": "Họa sĩ",
+      "genre": "Thể loại",
+      "genrePlaceholder": "Chọn thể loại...",
+      "sortBy": "Sắp xếp",
+      "sortOrder": "Thứ tự",
+      "activeFilters": "Đang lọc:",
+      "clearAll": "Xóa tất cả bộ lọc",
+      "selectStatus": "Chọn trạng thái",
+      "selectLanguage": "Chọn ngôn ngữ",
+      "selectAuthor": "Chọn tác giả",
+      "selectArtist": "Chọn họa sĩ",
+      "allAuthors": "Tất cả tác giả",
+      "allArtists": "Tất cả họa sĩ",
+      "loading": "Đang tải...",
+      "options": {
+        "status": {
+          "all": "Tất cả trạng thái",
+          "ongoing": "Đang tiến hành",
+          "completed": "Đã hoàn thành",
+          "hiatus": "Tạm ngưng",
+          "dropped": "Đã hủy",
+          "draft": "Nháp"
+        },
+        "language": {
+          "all": "Tất cả ngôn ngữ",
+          "ja": "Nhật Bản (Japanese)",
+          "ko": "Hàn Quốc (Korean)",
+          "zh": "Trung Quốc (Chinese)",
+          "vi": "Việt Nam (Vietnamese)",
+          "en": "Anh (English)"
+        },
+        "sort": {
+          "views": "Lượt xem",
+          "last_chapter": "Mới cập nhật",
+          "created_at": "Mới đăng",
+          "rating": "Đánh giá"
+        },
+        "order": {
+          "asc": "Tăng dần",
+          "desc": "Giảm dần",
+          "ascTooltip": "Tăng dần",
+          "descTooltip": "Giảm dần"
+        }
+      }
+    }
   }
 }

@@ -12,10 +12,11 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 import { Separator } from "@/components/ui/separator";
+import { MediaSeries } from "@/features/content";
 import { BasicStaticEditorView } from "@/features/editor/components/basic-static-editor-view";
 import { Link } from "@/i18n/routing";
-import { MediaSeries } from "@/lib/api/models/content/base-content";
 import { formatNumberAbbreviated } from "@/lib/api/utils/number";
 import { cn } from "@/lib/utils";
 import {
@@ -31,16 +32,16 @@ import Image from "next/image";
 import { useMemo } from "react";
 
 export interface HeroSectionProps {
-  readonly featuredList: MediaSeries[];
+  readonly seriesList: MediaSeries[];
 }
 
-export function HeroSection({ featuredList }: HeroSectionProps) {
+export function HeroSection({ seriesList }: HeroSectionProps) {
   const plugin = useMemo(
     () => Autoplay({ delay: 20000, stopOnInteraction: true }),
     []
   );
 
-  if (!featuredList?.length) return null;
+  if (!seriesList?.length) return null;
 
   return (
     <section className="relative w-full group">
@@ -56,10 +57,10 @@ export function HeroSection({ featuredList }: HeroSectionProps) {
         onMouseLeave={plugin.reset}
       >
         <CarouselContent className="ml-0">
-          {featuredList.map((featured, index) => (
-            <CarouselItem key={featured.id} className="pl-0">
+          {seriesList.map((series, index) => (
+            <CarouselItem key={series.id} className="pl-0">
               {/* Pass priority true cho slide đầu tiên để LCP nhanh */}
-              <HeroSlide featured={featured} isFirst={index === 0} />
+              <HeroSlide series={series} isFirst={index === 0} />
             </CarouselItem>
           ))}
         </CarouselContent>
@@ -77,10 +78,10 @@ export function HeroSection({ featuredList }: HeroSectionProps) {
 }
 
 function HeroSlide({
-  featured,
+  series,
   isFirst,
 }: {
-  readonly featured: MediaSeries;
+  readonly series: MediaSeries;
   readonly isFirst: boolean;
 }) {
   const t = useTranslations("home");
@@ -89,14 +90,24 @@ function HeroSlide({
     <div className="relative w-full overflow-hidden bg-zinc-950 transform-gpu will-change-transform backface-hidden">
       {/* --- BACKGROUND (Giữ nguyên) --- */}
       <div className="absolute inset-0 w-full h-[calc(100%+100px)] top-[-50px] z-0">
-        <Image
-          src={featured.cover_url}
-          alt=""
+        {/* <Image
+          src={getImageUrl(series.cover_url)}
+          alt={series.title}
           fill
-          priority={isFirst}
           quality={60}
           sizes="100vw"
           className="object-cover opacity-100 scale-105 blur-3xl saturate-150 translate-z-0 brightness-70"
+        /> */}
+        <ImageWithFallback
+          src={getImageUrl(series.cover_url)}
+          alt={series.title}
+          fill
+          sizes="100vw"
+          className="object-cover opacity-100 scale-105 blur-3xl saturate-150 translate-z-0 brightness-70"
+          loading="lazy"
+          decoding="async"
+          fallback={getInitials(series.title)}
+          quality={60}
         />
       </div>
 
@@ -124,13 +135,24 @@ function HeroSlide({
                 ratio={2 / 3}
                 className="rounded-2xl overflow-hidden shadow-2xl border-2 border-white/20 transform-gpu h-full w-full"
               >
-                <Image
-                  src={featured.cover_url}
-                  alt={featured.title}
+                {/* <Image
+                  src={getImageUrl(series.cover_url)}
+                  alt={series.title}
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 400px, 500px"
                   priority={isFirst}
+                /> */}
+                <ImageWithFallback
+                  src={getImageUrl(series.cover_url)}
+                  alt={series.title}
+                  fill
+                  sizes="(max-width: 768px) 400px, 500px"
+                  className="object-cover"
+                  loading="lazy"
+                  decoding="async"
+                  fallback={getInitials(series.title)}
+                  quality={60}
                 />
                 <div className="absolute inset-0 bg-linear-to-tr from-white/20 to-transparent pointer-events-none" />
               </AspectRatio>
@@ -143,12 +165,12 @@ function HeroSlide({
 
             <div className="flex flex-wrap gap-2 animate-in fade-in slide-in-from-bottom-4 duration-700">
               <Badge
-                variant={getContentBadgeVariant(featured.type, false)}
+                variant={getContentBadgeVariant(series.type, false)}
                 className="capitalize"
               >
-                {featured.type}
+                {series.type}
               </Badge>
-              {featured.genres.slice(0, 3).map((genre) => (
+              {series.genres.slice(0, 3).map((genre) => (
                 <Badge key={genre.id} variant="default">
                   {genre.name}
                 </Badge>
@@ -156,27 +178,27 @@ function HeroSlide({
             </div>
 
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold leading-[1.1] tracking-tight text-white animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100 text-shadow-md line-clamp-2">
-              {featured.title}
+              {series.title}
             </h1>
 
             <div className="text-white text-sm sm:text-base md:text-lg font-semibold max-w-2xl line-clamp-3 md:line-clamp-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 text-shadow-md">
-              <BasicStaticEditorView content={featured.synopsis} maxLines={4} />
+              <BasicStaticEditorView content={series.synopsis} maxLines={4} />
             </div>
 
             <div className="flex items-center gap-4 md:gap-6 text-white py-2 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300 text-sm md:text-base text-shadow-md">
               <div className="flex items-center gap-2 min-w-0 max-w-[60%]">
                 <Avatar className="size-8 shrink-0 ring-1 ring-white/30">
                   <AvatarImage
-                    src={getImageUrl(featured.owner.avatar_url)}
-                    alt={featured.owner.username}
+                    src={getImageUrl(series.owner.avatar_url)}
+                    alt={series.owner.username}
                     loading="lazy"
                   />
                   <AvatarFallback className="text-[9px] text-foreground">
-                    {getInitials(featured.owner.display_name)}
+                    {getInitials(series.owner.display_name)}
                   </AvatarFallback>
                 </Avatar>
                 <span className="text-sm font-semibold truncate text-white/90 text-shadow-sm">
-                  {featured.owner.display_name}
+                  {series.owner.display_name}
                 </span>
               </div>
 
@@ -189,31 +211,29 @@ function HeroSlide({
               <div className="flex items-center gap-1.5">
                 <Star className="size-4" />
                 <span className="font-semibold">
-                  {formatNumberAbbreviated(featured.rating)}
+                  {formatNumberAbbreviated(series.rating)}
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
                 <Eye className="size-4" />
                 <span className="font-semibold">
-                  {formatNumberAbbreviated(featured.views)}
+                  {formatNumberAbbreviated(series.views)}
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
                 <Heart className="size-4" />
                 <span className="font-semibold">
-                  {formatNumberAbbreviated(featured.favorites)}
+                  {formatNumberAbbreviated(series.favorites)}
                 </span>
               </div>
             </div>
 
             <div className="flex flex-row gap-3 md:gap-4 pt-2 md:pt-4 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-400">
               <Button
-                className={cn(
-                  getContentBg({ type: featured.type, blur: false })
-                )}
+                className={cn(getContentBg({ type: series.type, blur: false }))}
                 asChild
               >
-                <Link href={`/series/${featured.slug}`}>
+                <Link href={`/series/${series.slug}`}>
                   <Play className="fill-current h-5 w-5 md:h-6 md:w-6" />
                   {t("common.readNow")}
                 </Link>
@@ -235,8 +255,8 @@ function HeroSlide({
                 className="rounded-2xl overflow-hidden shadow-2xl border-4 transform-gpu"
               >
                 <Image
-                  src={featured.cover_url}
-                  alt={featured.title}
+                  src={getImageUrl(series.cover_url)}
+                  alt={series.title}
                   fill
                   className="object-cover"
                   sizes="(max-width: 1280px) 300px, 380px"

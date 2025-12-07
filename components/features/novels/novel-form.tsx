@@ -16,13 +16,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { createArtist } from "@/features/artist/api/actions";
-import { createGenre } from "@/features/genre/api/actions";
+import { createArtist } from "@/features/artist/actions";
+import { createAuthor } from "@/features/author/actions";
+import { createGenre } from "@/features/genre/actions";
 import { useArtists } from "@/hooks/use-artists";
 import { useAuthors } from "@/hooks/use-authors";
 import { useGenres } from "@/hooks/use-genres";
 import { Link } from "@/i18n/routing";
-import { createAuthor } from "@/lib/api/actions";
 import { ArrowLeft, Save } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";

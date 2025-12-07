@@ -1,0 +1,41 @@
+{
+  "title": "Cài đặt tài khoản",
+  "tabs": {
+    "general": "Chung",
+    "security": "Bảo mật",
+    "data_privacy": "Dữ liệu & Quyền riêng tư"
+  },
+  "profile": {
+    "title": "Thông tin cá nhân",
+    "full_name": "Họ và tên",
+    "display_name": "Tên hiển thị",
+    "bio": "Giới thiệu",
+    "avatar": "Ảnh đại diện",
+    "save": "Lưu thay đổi",
+    "upload_avatar": "Tải ảnh lên",
+    "profile_picture": "Ảnh hồ sơ",
+    "avatar_updated": "Cập nhật ảnh đại diện thành công",
+    "success": "Cập nhật hồ sơ thành công"
+  },
+  "security": {
+    "title": "Cài đặt bảo mật",
+    "password": {
+      "title": "Đổi mật khẩu",
+      "current": "Mật khẩu hiện tại",
+      "new": "Mật khẩu mới",
+      "confirm": "Xác nhận mật khẩu mới",
+      "update": "Cập nhật mật khẩu",
+      "success": "Đổi mật khẩu thành công"
+    },
+    "sessions": {
+      "title": "Phiên đăng nhập",
+      "description": "Quản lý các thiết bị đang đăng nhập.",
+      "current": "Phiên hiện tại",
+      "platform": "Nền tảng",
+      "browser": "Trình duyệt",
+      "last_active": "Hoạt động cuối",
+      "revoke": "Đăng xuất",
+      "revoke_success": "Đã đăng xuất phiên này"
+    }
+  }
+}

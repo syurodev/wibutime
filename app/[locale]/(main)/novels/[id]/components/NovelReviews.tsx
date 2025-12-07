@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { formatNumberAbbreviated } from "@/lib/api/utils/number";
 import { cn } from "@/lib/utils";
+import { getInitials } from "@/lib/utils/get-initials";
 import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -106,7 +107,7 @@ export async function NovelReviews({
             <div className="flex gap-4">
               <Avatar className="size-12 shrink-0">
                 <AvatarImage src={review.user.avatar} />
-                <AvatarFallback>{review.user.name.charAt(0)}</AvatarFallback>
+                <AvatarFallback>{getInitials(review.user.name)}</AvatarFallback>
               </Avatar>
               <div className="flex-1 space-y-3">
                 <div className="flex items-start justify-between gap-2">

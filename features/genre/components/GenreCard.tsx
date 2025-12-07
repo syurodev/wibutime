@@ -3,11 +3,11 @@
  * Reusable card for displaying genre with stats and visual effects
  */
 
-import type { GenreStats } from "@/features/genre/types/genre-stats";
-import { GenreStatsUtils } from "@/features/genre/types/genre-stats";
 import { Link } from "@/i18n/routing";
+import { Trend } from "@/lib/constants/trend";
 import { cn } from "@/lib/utils";
 import { BookOpen, TrendingDown, TrendingUp, Users } from "lucide-react";
+import { GenreStats, GenreStatsUtils } from "../types";
 
 export interface GenreCardProps {
   /**
@@ -54,9 +54,9 @@ export function GenreCard({
 }: GenreCardProps) {
   // Get trend icon component
   let TrendIcon = null;
-  if (genre.trend === "rising") {
+  if (genre.trend === Trend.RISING) {
     TrendIcon = TrendingUp;
-  } else if (genre.trend === "falling") {
+  } else if (genre.trend === Trend.FALLING) {
     TrendIcon = TrendingDown;
   }
 
@@ -71,26 +71,10 @@ export function GenreCard({
         )}
       >
         {/* Gradient background overlay with animated position on hover */}
-        <div
-          className="absolute inset-0 rounded-2xl opacity-10 pointer-events-none transition-all duration-500 ease-out"
-          style={{
-            background: `linear-gradient(135deg, ${
-              genre.color || "#8b5cf6"
-            }, transparent)`,
-            backgroundSize: "200% 200%",
-            backgroundPosition: "0% 0%",
-          }}
-        />
+        <div className="absolute inset-0 rounded-2xl opacity-10 pointer-events-none transition-all duration-500 ease-out" />
 
         {/* Hover state gradient animation */}
-        <div
-          className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-15 pointer-events-none transition-opacity duration-500"
-          style={{
-            background: `linear-gradient(135deg, transparent, ${
-              genre.color || "#8b5cf6"
-            })`,
-          }}
-        />
+        <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-15 pointer-events-none transition-opacity duration-500" />
 
         <div className="relative p-4">
           {/* Genre Name with Trend */}
@@ -102,8 +86,8 @@ export function GenreCard({
               <TrendIcon
                 className={cn(
                   "size-4 shrink-0",
-                  genre.trend === "rising" && "text-green-500",
-                  genre.trend === "falling" && "text-red-500"
+                  genre.trend === Trend.RISING && "text-green-500",
+                  genre.trend === Trend.FALLING && "text-red-500"
                 )}
               />
             )}

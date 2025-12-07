@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { HistoryMedia } from "@/features/history/types/history-content";
+import type { HistoryMedia } from "@/features/history/types";
 import { Link } from "@/i18n/routing";
 import { MEDIA_TYPE } from "@/lib/constants/default";
 import { cn } from "@/lib/utils";

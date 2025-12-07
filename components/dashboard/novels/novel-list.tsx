@@ -1,7 +1,6 @@
 "use client";
 
 import { Link } from "@/i18n/routing";
-import { MediaSeries } from "@/lib/api/models/content/base-content";
 import { getImageUrl } from "@/lib/utils/get-image-url";
 import {
   BookOpen,
@@ -26,6 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { MediaSeries } from "@/features/content";
 import { MEDIA_STATUS } from "@/lib/constants/default";
 import { formatFullDate } from "@/lib/utils/date-ranges";
 import { getInitials } from "@/lib/utils/get-initials";

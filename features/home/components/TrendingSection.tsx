@@ -1,61 +1,50 @@
-/**
- * Trending Section Component
- * Displays trending series in a grid layout
- */
+"use client";
 
-import { ArrowRight } from "lucide-react";
-import { getTranslations } from "next-intl/server";
 import { ContentCard } from "@/components/content/ContentCard";
 import { Container } from "@/components/layout/Container";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Button } from "@/components/ui/button";
-import { Link } from "@/i18n/routing";
-import type { MediaSeries } from "@/lib/api/models/content/base-content";
+import { MediaSeries } from "@/features/content/types";
+import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
-export interface TrendingSectionProps {
-	/**
-	 * List of trending series (plain objects from cache)
-	 */
-	readonly series: MediaSeries[];
+interface TrendingSectionProps {
+  readonly series: MediaSeries[];
+  readonly className?: string;
 }
 
-export async function TrendingSection({ series }: TrendingSectionProps) {
-	const t = await getTranslations("home");
+export function TrendingSection({ series, className }: TrendingSectionProps) {
+  const t = useTranslations("common.sections");
 
-	if (!series || series.length === 0) {
-		return null;
-	}
+  if (!series || series.length === 0) {
+    return null;
+  }
 
-	return (
-		<section className="w-full py-12">
-			<Container maxWidth="xl">
-				{/* Section Header */}
-				<div className="mb-8 flex items-end justify-between">
-					<div className="space-y-2">
-						<h2 className="text-3xl font-bold tracking-tight">
-							{t("trending.title")}
-						</h2>
-						<p className="text-muted-foreground">{t("trending.subtitle")}</p>
-					</div>
+  return (
+    <Container maxWidth="xl">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold tracking-tight">
+          {t("trending") || "Trending Now"}
+        </h2>
+        {/* View all link could go here */}
+      </div>
 
-					{/* See All Link */}
-					<Button variant="ghost" className="group gap-2" asChild>
-						<Link href="/trending">
-							{t("common.seeAll")}
-							<ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-						</Link>
-					</Button>
-				</div>
-
-				{/* Grid Layout */}
-				<div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:gap-6">
-					{series.map((item) => (
-						<AspectRatio key={item.id} ratio={3 / 5} className="w-full">
-							<ContentCard series={item} className="h-full" />
-						</AspectRatio>
-					))}
-				</div>
-			</Container>
-		</section>
-	);
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+        {series.map((item, index) => (
+          <ContentCard
+            key={item.id}
+            series={item}
+            className={cn(
+              // CSS trick for 20 items:
+              // Mobile (2 cols): Show all 20 -> OK
+              // Tablet (3 cols): 20/3 dư 2 -> Hide last 2 items
+              // Desktop (5 cols): Show all 20 -> OK
+              // Logic:
+              // Index >= 18 (items 19, 20)
+              // Hidden on md (`hidden`) BUT Visible on lg (`lg:block`) AND Visible on default mobile (`block`)
+              index >= 18 ? "md:hidden lg:block" : ""
+            )}
+          />
+        ))}
+      </div>
+    </Container>
+  );
 }

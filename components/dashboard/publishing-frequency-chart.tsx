@@ -5,21 +5,13 @@
  * Bar chart showing publishing activity over time
  */
 
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChartContainer } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
+import type { PublishingActivityData } from "@/features/novel/types";
 import { formatChartDate } from "@/lib/utils/date-ranges";
-import { formatNumber } from "@/lib/utils/format-stats";
-import type { PublishingActivityData } from "@/lib/api/novels";
+import { formatNumber } from "@/lib/utils/format-number";
+import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from "recharts";
 
 export interface PublishingFrequencyChartProps {
   data: PublishingActivityData[];

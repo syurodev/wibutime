@@ -20,5 +20,59 @@
     "views": "Views",
     "favorites": "Favorites",
     "rank": "Rank"
+  },
+  "browse": {
+    "title": "Browse Novels",
+    "subtitle": "Discover the vast world of light novels and web novels on WibuTime",
+    "filters": {
+      "searchPlaceholder": "Search novels by title...",
+      "status": "Status",
+      "language": "Original Language",
+      "author": "Author",
+      "artist": "Artist",
+      "genre": "Genres",
+      "genrePlaceholder": "Select Genres",
+      "sortBy": "Sort by",
+      "sortOrder": "Order",
+      "activeFilters": "Active filters:",
+      "clearAll": "Clear all filters",
+      "selectStatus": "Select Status",
+      "selectLanguage": "Select Language",
+      "selectAuthor": "Select Author",
+      "selectArtist": "Select Artist",
+      "allAuthors": "All Authors",
+      "allArtists": "All Artists",
+      "loading": "Loading...",
+      "options": {
+        "status": {
+          "all": "All Statuses",
+          "ongoing": "Ongoing",
+          "completed": "Completed",
+          "hiatus": "Hiatus",
+          "dropped": "Dropped",
+          "draft": "Draft"
+        },
+        "language": {
+          "all": "All Languages",
+          "ja": "Japanese",
+          "ko": "Korean",
+          "zh": "Chinese",
+          "vi": "Vietnamese",
+          "en": "English"
+        },
+        "sort": {
+          "views": "Most Viewed",
+          "last_chapter": "Latest Chapter",
+          "created_at": "Recently Added",
+          "rating": "Top Rated"
+        },
+        "order": {
+          "asc": "Ascending",
+          "desc": "Descending",
+          "ascTooltip": "Ascending",
+          "descTooltip": "Descending"
+        }
+      }
+    }
   }
 }

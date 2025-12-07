@@ -34,16 +34,16 @@ export function logRequest(
     if (headers) {
       const headersObj: Record<string, string> = {};
       headers.forEach((value, key) => {
-        headersObj[key] = key.toLowerCase() === "authorization"
-          ? `Bearer ${value.substring(7, 27)}...`
-          : value;
+        headersObj[key] =
+          key.toLowerCase() === "authorization"
+            ? `Bearer ${value.substring(7, 27)}...`
+            : value;
       });
       console.log("Headers:", headersObj);
     }
     if (body) {
       console.log("Body:", body);
     }
-    console.log("Timestamp:", new Date().toISOString());
     console.groupEnd();
   }
 }
@@ -64,7 +64,6 @@ export function logResponse(
     if (data) {
       console.log("Data:", data);
     }
-    console.log("Timestamp:", new Date().toISOString());
     console.groupEnd();
   }
 }
@@ -72,14 +71,9 @@ export function logResponse(
 /**
  * Log API error details
  */
-export function logError(
-  method: string,
-  url: string,
-  error: unknown
-): void {
+export function logError(method: string, url: string, error: unknown): void {
   console.group(`🔴 API Error: ${method} ${url}`);
   console.error("Error:", error);
-  console.log("Timestamp:", new Date().toISOString());
   console.groupEnd();
 }
 
@@ -91,14 +85,14 @@ export function handle401Unauthorized(): void {
   console.warn("🔒 Unauthorized - Redirecting to login");
 
   // Clear any stored auth tokens
-  if (typeof window !== "undefined") {
+  if (globalThis.window) {
     localStorage.removeItem("auth_token");
     sessionStorage.removeItem("auth_token");
 
     // Redirect to login page
-    const currentPath = window.location.pathname;
+    const currentPath = globalThis.window.location.pathname;
     const loginUrl = `/login?redirect=${encodeURIComponent(currentPath)}`;
-    window.location.href = loginUrl;
+    globalThis.window.location.href = loginUrl;
   }
 }
 
@@ -123,10 +117,7 @@ export async function parseApiError(
     }
 
     // Fallback
-    return new ApiError(
-      data.message || defaultMessage,
-      response.status
-    );
+    return new ApiError(data.message || defaultMessage, response.status);
   } catch {
     // Không parse được JSON
     return new ApiError(
@@ -180,7 +171,9 @@ export async function fetchWithErrorHandling(
     logError(method, url, error);
 
     if (error instanceof TypeError && error.message === "Failed to fetch") {
-      throw new ApiError("Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.");
+      throw new ApiError(
+        "Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng."
+      );
     }
 
     throw new ApiError(

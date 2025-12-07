@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/form";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { useAuthors } from "@/hooks/use-authors";
-import { mergeAuthor, previewMergeAuthor } from "@/lib/api/actions/author";
+import { mergeAuthor, previewMergeAuthor } from "@/features/author/actions";
 import { getImageUrl } from "@/lib/utils/get-image-url";
 import { getInitials } from "@/lib/utils/get-initials";
 import { zodResolver } from "@hookform/resolvers/zod";

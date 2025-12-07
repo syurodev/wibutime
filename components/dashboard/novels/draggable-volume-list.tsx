@@ -3,9 +3,9 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { NovelVolume } from "@/features/novel";
+import { NovelVolumeService } from "@/features/novel-volume/service";
 import { Link } from "@/i18n/routing";
-import { NovelVolume } from "@/lib/api/models/content/novel";
-import { updateVolumeDisplayOrder } from "@/lib/api/volumes";
 import { BookText, FileEdit, GripVertical, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
@@ -18,11 +18,11 @@ interface DraggableVolumeListProps {
 }
 
 interface DraggableVolumeCardProps {
-  volume: NovelVolume;
-  index: number;
-  novelId: string;
-  moveVolume: (dragIndex: number, hoverIndex: number) => void;
-  onOrderUpdate: (volumeId: string, newOrder: number) => Promise<void>;
+  readonly volume: NovelVolume;
+  readonly index: number;
+  readonly novelId: string;
+  readonly moveVolume: (dragIndex: number, hoverIndex: number) => void;
+  readonly onOrderUpdate: (volumeId: string, newOrder: number) => Promise<void>;
 }
 
 const ITEM_TYPE = "VOLUME_CARD";
@@ -148,7 +148,7 @@ export function DraggableVolumeList({
 
   const handleOrderUpdate = async (volumeId: string, newOrder: number) => {
     try {
-      await updateVolumeDisplayOrder(volumeId, newOrder);
+      await NovelVolumeService.updateDisplayOrder(volumeId, newOrder);
       toast.success("Đã cập nhật thứ tự volume");
     } catch (error) {
       console.error("Failed to update volume order:", error);

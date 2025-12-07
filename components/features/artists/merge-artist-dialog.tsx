@@ -21,7 +21,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { MultiSelect } from "@/components/ui/multi-select";
-import { mergeArtist, previewMergeArtist } from "@/features/artist/api/actions";
+import { mergeArtist, previewMergeArtist } from "@/features/artist/actions";
 import { useArtists } from "@/hooks/use-artists";
 import { getImageUrl } from "@/lib/utils/get-image-url";
 import { getInitials } from "@/lib/utils/get-initials";

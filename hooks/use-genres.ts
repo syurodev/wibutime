@@ -1,67 +1,83 @@
-import { GenreService } from "@/lib/api/services/genre/genre.service";
-import { useEffect, useState } from "react";
+"use client";
+
+import type { StandardResponse } from "@/lib/api/types/response";
+import { endpoint } from "@/lib/api/utils/endpoint";
+import { api } from "@/lib/api/utils/fetch";
+import useSWRInfinite from "swr/infinite";
 
 export interface Genre {
   id: string;
   name: string;
 }
 
+interface GenreSelectionResponse {
+  items: Genre[];
+  meta: {
+    page: number;
+    limit: number;
+    total_items: number;
+    total_pages: number;
+  };
+}
+
+const fetcher = async (url: string) => {
+  const response = await api.get<StandardResponse<Genre[]>>(url);
+  return {
+    items: response.data || [],
+    meta: response.meta || {
+      page: 1,
+      limit: 20,
+      total_items: 0,
+      total_pages: 0,
+    },
+  };
+};
+
 export function useGenres(search?: string) {
-  const [data, setData] = useState<Genre[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<any>(null);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const getKey = (
+    pageIndex: number,
+    previousPageData: GenreSelectionResponse | null
+  ) => {
+    // Reached the end
+    if (
+      previousPageData &&
+      previousPageData.meta.page >= previousPageData.meta.total_pages
+    ) {
+      return null;
+    }
 
-  // Reset pagination when search changes
-  useEffect(() => {
-    setPage(1);
-  }, [search]);
+    const page = pageIndex + 1;
+    return endpoint("genres", "selection", { search, page, limit: 20 });
+  };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (page === 1) {
-        setIsLoading(true);
-      } else {
-        setIsLoadingMore(true);
-      }
+  const { data, error, isLoading, isValidating, size, setSize, mutate } =
+    useSWRInfinite(getKey, fetcher, {
+      revalidateFirstPage: false,
+      dedupingInterval: 300, // Debounce
+    });
 
-      try {
-        const res = await GenreService.getSelection(search, page);
-        const newData = res?.items || [];
-
-        if (page === 1) {
-          setData(newData);
-        } else {
-          setData((prev) => [...prev, ...newData]);
-        }
-
-        const totalPages = res?.meta?.total_pages || 1;
-        setHasMore(page < totalPages);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setIsLoading(false);
-        setIsLoadingMore(false);
-      }
-    };
-
-    const timeoutId = setTimeout(
-      () => {
-        fetchData();
-      },
-      search && page === 1 ? 300 : 0
-    );
-
-    return () => clearTimeout(timeoutId);
-  }, [search, page]);
+  // Flatten all pages
+  const allItems = data ? data.flatMap((page) => page.items) : [];
+  const lastPage = data?.[data.length - 1];
+  const hasMore = lastPage
+    ? lastPage.meta.page < lastPage.meta.total_pages
+    : true;
+  const isLoadingMore =
+    isLoading || (size > 0 && data && typeof data[size - 1] === "undefined");
 
   const loadMore = () => {
-    if (!isLoading && !isLoadingMore && hasMore) {
-      setPage((prev) => prev + 1);
+    if (!isLoading && !isValidating && hasMore) {
+      setSize(size + 1);
     }
   };
 
-  return { data, isLoading, error, loadMore, hasMore, isLoadingMore };
+  return {
+    data: allItems,
+    isLoading,
+    error,
+    loadMore,
+    hasMore,
+    isLoadingMore: isLoadingMore || isValidating,
+    refetch: mutate,
+  };
 }

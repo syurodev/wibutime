@@ -7,8 +7,8 @@ import { Container } from "@/components/layout/Container";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChapterService } from "@/features/novel-chapter/service";
 import { Link } from "@/i18n/routing";
-import { getChaptersByVolume } from "@/lib/api/chapters";
 import {
   AlertCircle,
   ArrowLeft,
@@ -35,11 +35,11 @@ export default async function VolumeChaptersPage({ params }: Props) {
   let error: string | null = null;
 
   try {
-    const response = await getChaptersByVolume(volumeId);
+    const data = await ChapterService.getByVolume(volumeId);
 
-    if (response.data) {
-      volumeTitle = response.data.volume_title || volumeTitle;
-      chapters = response.data.chapters || [];
+    if (data) {
+      volumeTitle = data.volume_title || volumeTitle;
+      chapters = data.chapters || [];
     }
   } catch (err: any) {
     console.error("Failed to fetch chapters:", err);

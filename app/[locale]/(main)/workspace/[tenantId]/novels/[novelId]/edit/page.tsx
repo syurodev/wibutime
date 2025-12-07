@@ -11,7 +11,7 @@ import {
 } from "@/components/features/novels/novel-form";
 import { Container } from "@/components/layout/Container";
 import { useRouter } from "@/i18n/routing";
-import { updateNovel } from "@/lib/api/actions/novel";
+import { updateNovel } from "@/features/novel/actions";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
