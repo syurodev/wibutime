@@ -16,9 +16,9 @@ export const CreatorStatsSchema = BaseUserSchema.extend({
   total_views: z.number().int().min(0).default(0),
   is_verified: z.boolean().default(false),
   bio: z.array(z.any()).optional(), // TNode[] from platejs
-  popular_work_id: z.string().optional(),
-  popular_work_title: z.string().optional(),
-  popular_work_cover_url: z.string().optional(),
+  popular_work_id: z.string().nullable().optional(),
+  popular_work_title: z.string().nullable().optional(),
+  popular_work_cover_url: z.string().nullable().optional(),
 });
 
 export type CreatorStats = z.infer<typeof CreatorStatsSchema>;

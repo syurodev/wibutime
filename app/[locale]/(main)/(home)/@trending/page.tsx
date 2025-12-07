@@ -1,8 +1,9 @@
-import { getTrendingFeatured } from "@/features/content/queries";
+"use client";
+
+import { useHomeData } from "@/features/home/components/HomeDataProvider";
 import { TrendingSection } from "@/features/home/components/TrendingSection";
 
-export default async function TrendingSlot() {
-  const series = await getTrendingFeatured(20);
-
-  return <TrendingSection series={series} />;
+export default function TrendingSlot() {
+  const { trending } = useHomeData();
+  return <TrendingSection series={trending} />;
 }

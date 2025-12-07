@@ -17,21 +17,19 @@ export const GenreSchema = z.object({
 
   // Optional fields
   description: z.string().max(1000, "Description too long").default(""),
-  parent_id: z.string().nullable().default(null),
-  display_order: z.number().int().min(0).default(0),
-  is_active: z.boolean().default(false),
+  parent_id: z.string().nullable().optional(),
+  display_order: z.number().int().min(0).optional(),
+  is_active: z.boolean().optional(),
 
   // Stats
   series_count: z.number().int().min(0).default(0),
   active_readers: z.number().int().min(0).default(0),
   total_views: z.number().int().min(0).default(0),
-  trend: z
-    .enum([Trend.RISING, Trend.STABLE, Trend.FALLING])
-    .default(Trend.STABLE),
+  trend: z.enum([Trend.RISING, Trend.STABLE, Trend.FALLING]).optional(),
 
   // Timestamps
-  created_at: z.string().default(() => new Date().toISOString()),
-  updated_at: z.string().default(() => new Date().toISOString()),
+  created_at: z.string().optional(),
+  updated_at: z.string().optional(),
 });
 
 export type Genre = z.infer<typeof GenreSchema>;
@@ -91,9 +89,7 @@ export const GenreStatsSchema = GenreSchema.extend({
   series_count: z.number().int().min(0).default(0), // tổng anime, manga, novel
   active_readers: z.number().int().min(0).default(0), // số người đọc, xem
   total_views: z.number().int().min(0).default(0), // tổng lượt xem
-  trend: z
-    .enum([Trend.RISING, Trend.STABLE, Trend.FALLING])
-    .default(Trend.STABLE), // xu hướng cần i18n
+  trend: z.enum([Trend.RISING, Trend.STABLE, Trend.FALLING]).optional(), // xu hướng cần i18n
   description: z.string().optional(),
 });
 

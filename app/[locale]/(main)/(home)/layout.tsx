@@ -1,3 +1,5 @@
+import { HomeDataProvider } from "@/features/home/components/HomeDataProvider";
+import { getHomeData } from "@/features/home/queries";
 import type { ReactNode } from "react";
 
 interface HomeLayoutProps {
@@ -11,7 +13,7 @@ interface HomeLayoutProps {
   continue: ReactNode;
 }
 
-export default function HomeLayout({
+export default async function HomeLayout({
   children,
   trending,
   genre_hub,
@@ -21,31 +23,36 @@ export default function HomeLayout({
   milestones,
   continue: continueReading,
 }: HomeLayoutProps) {
+  // Fetch all home data in one API call (cached by backend for 10 min)
+  const homeDataPromise = getHomeData();
+
   return (
-    <div className="min-h-screen pb-24">
-      {/* Hero Section - from page.tsx */}
-      {children}
+    <HomeDataProvider homeDataPromise={homeDataPromise}>
+      <div className="min-h-screen pb-24">
+        {/* Hero Section - from page.tsx */}
+        {children}
 
-      {/* Continue Reading */}
-      {continueReading}
+        {/* Continue Reading */}
+        {continueReading}
 
-      {/* Trending Content */}
-      {trending}
+        {/* Trending Content */}
+        {trending}
 
-      {/* Genre Hub */}
-      {genre_hub}
+        {/* Genre Hub */}
+        {genre_hub}
 
-      {/* Community Engagement */}
-      {community}
+        {/* Community Engagement */}
+        {community}
 
-      {/* Latest Updates */}
-      {latest}
+        {/* Latest Updates */}
+        {latest}
 
-      {/* New Series */}
-      {newSeries}
+        {/* New Series */}
+        {newSeries}
 
-      {/* Community Milestones */}
-      {milestones}
-    </div>
+        {/* Community Milestones */}
+        {milestones}
+      </div>
+    </HomeDataProvider>
   );
 }

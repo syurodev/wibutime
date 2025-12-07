@@ -1,15 +1,18 @@
+"use client";
+
 /**
  * Genre Hub Section Component
  * Displays popular genres with activity stats
+ * Supports both Server and Client rendering via props
  */
 
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
 import { GenreCard } from "@/features/genre/components/GenreCard";
-import { GenreStats } from "@/features/genre/types";
+import type { GenreStats } from "@/features/genre/types";
 import { Link } from "@/i18n/routing";
 import { ArrowRight } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 
 export interface GenreHubSectionProps {
   /**
@@ -18,8 +21,8 @@ export interface GenreHubSectionProps {
   readonly genres: GenreStats[];
 }
 
-export async function GenreHubSection({ genres }: GenreHubSectionProps) {
-  const t = await getTranslations("home");
+export function GenreHubSection({ genres }: GenreHubSectionProps) {
+  const t = useTranslations("home");
 
   if (!genres || genres.length === 0) {
     return null;

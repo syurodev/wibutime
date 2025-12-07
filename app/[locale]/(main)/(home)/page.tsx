@@ -3,8 +3,7 @@
  * Hero section only, other sections are parallel routes
  */
 
-import { getHeroFeatured } from "@/features/content";
-import { HeroSection } from "@/features/home/components/HeroSection";
+import { HeroSectionWrapper } from "@/features/home/components/HeroSectionWrapper";
 import { HomeNavigation } from "@/features/home/components/HomeNavigation";
 import type { Metadata } from "next";
 
@@ -15,17 +14,14 @@ export const metadata: Metadata = {
   keywords: ["anime", "manga", "novel", "read online", "wibutime"],
 };
 
-export default async function HomePage() {
-  // Fetch hero featured data from analytics trending API
-  const seriesList = await getHeroFeatured(6);
-
+export default function HomePage() {
   return (
     <>
       {/* Navigation Setup (Client Component) */}
       <HomeNavigation />
 
-      {/* Hero Section */}
-      <HeroSection seriesList={seriesList} />
+      {/* Hero Section - uses useHomeData hook */}
+      <HeroSectionWrapper />
     </>
   );
 }

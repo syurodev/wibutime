@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Top Creators Section Component
  * Displays popular creators with their stats
@@ -6,13 +8,16 @@
 import { Container } from "@/components/layout/Container";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { CreatorStats, CreatorStatsUtils } from "@/features/community";
+import {
+  CreatorStats,
+  CreatorStatsUtils,
+} from "@/features/community/creator-stats";
 import { BasicStaticEditorView } from "@/features/editor/components/basic-static-editor-view";
 import { Link } from "@/i18n/routing";
 import { getImageUrl } from "@/lib/utils/get-image-url";
 import { getInitials } from "@/lib/utils/get-initials";
 import { ArrowRight, BadgeCheck, BookOpen, Eye, Users } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 
 export interface TopCreatorsSectionProps {
@@ -22,10 +27,8 @@ export interface TopCreatorsSectionProps {
   readonly creators: CreatorStats[];
 }
 
-export async function TopCreatorsSection({
-  creators,
-}: TopCreatorsSectionProps) {
-  const t = await getTranslations("home");
+export function TopCreatorsSection({ creators }: TopCreatorsSectionProps) {
+  const t = useTranslations("home");
 
   if (!creators || creators.length === 0) {
     return null;
@@ -67,15 +70,7 @@ export async function TopCreatorsSection({
  * Individual Creator Card
  */
 function CreatorCard({ creator }: { readonly creator: CreatorStats }) {
-  const t = (key: string) => {
-    // Simple translation helper for card
-    const translations: Record<string, string> = {
-      followers: "Followers",
-      works: "Works",
-      views: "Views",
-    };
-    return translations[key] || key;
-  };
+  const t = useTranslations("home.topCreators");
 
   return (
     <Link href={`/creator/${creator.username}`}>
@@ -171,7 +166,9 @@ function CreatorCard({ creator }: { readonly creator: CreatorStats }) {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs text-muted-foreground">Popular work</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t("popularWork")}
+                  </p>
                   <p className="text-sm font-medium line-clamp-1">
                     {creator.popular_work_title}
                   </p>

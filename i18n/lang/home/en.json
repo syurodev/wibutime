@@ -55,7 +55,9 @@
     "empty": "No creators available",
     "followers": "Followers",
     "works": "Works",
+    "views": "Views",
     "totalViews": "Total Views",
+    "popularWork": "Popular work",
     "verified": "Verified"
   },
   "genreHub": {

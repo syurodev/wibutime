@@ -336,7 +336,9 @@ export function GenresManagement() {
                     <Badge variant="secondary">Inactive</Badge>
                   )}
                 </TableCell>
-                <TableCell>{renderTrendBadge(genre.trend)}</TableCell>
+                <TableCell>
+                  {renderTrendBadge(genre.trend || "stable")}
+                </TableCell>
                 <TableCell className="text-right">
                   {genre.series_count}
                 </TableCell>
@@ -344,7 +346,7 @@ export function GenresManagement() {
                   {formatNumber(genre.total_views)}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {formatFullDate(genre.created_at)}
+                  {genre.created_at ? formatFullDate(genre.created_at) : "-"}
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">

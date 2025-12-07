@@ -25,16 +25,16 @@ export type Option = {
 };
 
 interface MultiSelectProps {
-  options: Option[];
-  selected: Option[];
-  onChange: (selected: Option[]) => void;
-  placeholder?: string;
-  className?: string;
-  onSearch?: (value: string) => void;
-  onLoadMore?: () => void;
-  loading?: boolean;
-  hasMore?: boolean;
-  onCreate?: (value: string) => Promise<void> | void;
+  readonly options: Option[];
+  readonly selected: Option[];
+  readonly onChange: (selected: Option[]) => void;
+  readonly placeholder?: string;
+  readonly className?: string;
+  readonly onSearch?: (value: string) => void;
+  readonly onLoadMore?: () => void;
+  readonly loading?: boolean;
+  readonly hasMore?: boolean;
+  readonly onCreate?: (value: string) => Promise<void> | void;
 }
 
 export function MultiSelect({
@@ -50,6 +50,7 @@ export function MultiSelect({
   onCreate,
 }: MultiSelectProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const justFocusedRef = React.useRef(false);
   const [open, setOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
   const [isCreating, setIsCreating] = React.useState(false);
@@ -102,7 +103,7 @@ export function MultiSelect({
     if (input) {
       if (e.key === "Delete" || e.key === "Backspace") {
         if (input.value === "" && selected.length > 0) {
-          handleUnselect(selected[selected.length - 1]);
+          handleUnselect(selected.at(-1)!);
         }
       }
       if (e.key === "Escape") {
@@ -116,7 +117,17 @@ export function MultiSelect({
   );
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover
+      open={open}
+      modal={false}
+      onOpenChange={(newOpen) => {
+        // Ignore false if we just focused (race condition with trigger)
+        if (!newOpen && justFocusedRef.current) {
+          return;
+        }
+        setOpen(newOpen);
+      }}
+    >
       <Command
         onKeyDown={handleKeyDown}
         className={cn("overflow-visible bg-transparent", className)}
@@ -158,8 +169,21 @@ export function MultiSelect({
                 ref={inputRef}
                 value={inputValue}
                 onValueChange={setInputValue}
-                onBlur={() => setOpen(false)}
-                onFocus={() => setOpen(true)}
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                }}
+                onBlur={() => {
+                  justFocusedRef.current = false;
+                  setOpen(false);
+                }}
+                onFocus={() => {
+                  justFocusedRef.current = true;
+                  setOpen(true);
+                  // Clear the flag after a short delay
+                  setTimeout(() => {
+                    justFocusedRef.current = false;
+                  }, 100);
+                }}
                 placeholder={selected.length === 0 ? placeholder : undefined}
                 className="ml-2 flex-1 bg-transparent outline-none placeholder:text-muted-foreground min-w-[100px]"
               />
@@ -168,7 +192,7 @@ export function MultiSelect({
         </PopoverTrigger>
 
         <PopoverContent
-          className="w-[var(--radix-popover-trigger-width)] p-0"
+          className="w-(--radix-popover-trigger-width) p-0"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
           <CommandList>

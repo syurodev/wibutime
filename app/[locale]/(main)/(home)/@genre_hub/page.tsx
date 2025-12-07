@@ -1,14 +1,22 @@
-import { getGenres } from "@/features/genre/api";
+"use client";
+
+import type { GenreStats } from "@/features/genre/types";
 import { GenreHubSection } from "@/features/home/components/GenreHubSection";
+import { useHomeData } from "@/features/home/components/HomeDataProvider";
 
-export default async function GenreHubSlot() {
-  // Fetch genres with limit 20, sorted by active readers
-  const { data: genres } = await getGenres({
-    limit: 12,
-    sort_by: "series",
-    sort_order: "desc",
-    active_only: true,
-  });
+export default function GenreHubSlot() {
+  const { genres } = useHomeData();
 
-  return <GenreHubSection genres={genres || []} />;
+  // Map HomeGenre to GenreStats
+  const genreStats: GenreStats[] = genres.map((g) => ({
+    id: g.id,
+    name: g.name,
+    slug: g.slug,
+    description: g.description || "",
+    series_count: g.novel_count,
+    active_readers: g.active_readers,
+    total_views: g.total_views,
+  }));
+
+  return <GenreHubSection genres={genreStats} />;
 }
