@@ -8,8 +8,8 @@ import { Editor, EditorContainer } from "@/components/ui/editor";
 import { EditorStats } from "@/components/ui/editor-stats";
 import { FindReplaceToolbar } from "@/components/ui/find-replace-toolbar";
 import { FixedToolbar } from "@/components/ui/fixed-toolbar";
+import { NotesPanel } from "@/components/ui/notes-panel";
 import { SideNotes } from "@/components/ui/side-notes";
-import { TableOfContents } from "@/components/ui/table-of-contents";
 import { useBooleanQueryState } from "@/hooks/use-query-state";
 import { useTypewriterScroll } from "@/hooks/use-typewriter-scroll";
 import { editorNodeIdConfig } from "@/lib/editor/config";
@@ -163,9 +163,9 @@ function FullEditorContent({
       <CompactFloatingToolbar />
 
       <div className="flex flex-1 overflow-hidden relative">
-        {/* Table of Contents - Hide in Zen Mode */}
+        {/* Notes Panel - Hide in Zen Mode */}
         {!isZenMode && !readOnly && (
-          <TableOfContents className="border-r bg-background/50 backdrop-blur-sm" />
+          <NotesPanel className="border-r bg-background/50 backdrop-blur-sm" />
         )}
 
         <EditorContainer

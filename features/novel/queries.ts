@@ -83,3 +83,28 @@ export const getNovelsServer = cache(
     };
   }
 );
+
+/**
+ * Get novel by ID
+ * Cached with React cache for deduplication
+ */
+import { NovelBackendSchema, type NovelBackend } from "./types";
+
+export const getNovelById = cache(async (id: string): Promise<NovelBackend> => {
+  const url = endpoint("novels", id);
+
+  const response = await serverApi.get<StandardResponse<unknown>>(url, {
+    next: {
+      revalidate: 60, // Cache 1 minute
+      tags: [`novel-${id}`, "novels"],
+    },
+  });
+
+  console.log(response);
+
+  if (!isSuccessResponse(response)) {
+    throw new Error(response.message || "Failed to fetch novel");
+  }
+
+  return ApiParser.parse(NovelBackendSchema, response);
+});

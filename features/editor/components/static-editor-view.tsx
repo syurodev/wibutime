@@ -2,6 +2,11 @@ import type { TNode } from "platejs";
 import type React from "react";
 import { useMemo } from "react";
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 export interface StaticEditorViewProps {
@@ -73,6 +78,25 @@ export function StaticEditorView({
         if (node.italic) text = <em key={index}>{text}</em>;
         if (node.underline) text = <u key={index}>{text}</u>;
         if (node.code) text = <code key={index}>{text}</code>;
+
+        // Handle note mark with tooltip
+        if (node.note && node.note_text) {
+          text = (
+            <Tooltip key={`note-${index}`}>
+              <TooltipTrigger asChild>
+                <span className="underline decoration-amber-500 decoration-2 cursor-help">
+                  {text}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent
+                side="top"
+                className="max-w-xs whitespace-pre-wrap text-sm"
+              >
+                {node.note_text as string}
+              </TooltipContent>
+            </Tooltip>
+          );
+        }
 
         return text;
       }

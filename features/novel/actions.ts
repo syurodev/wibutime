@@ -36,6 +36,7 @@ export interface UpdateNovelData {
   cover_image_url?: string;
   thumbnail_url?: string;
   status: string;
+  is_oneshot?: boolean;
   original_language?: string;
   metadata?: string;
 }
@@ -51,6 +52,10 @@ export interface Novel {
   cover_image_url?: string;
   thumbnail_url?: string;
   status: string;
+  is_oneshot: boolean;
+  genre_ids?: string[];
+  author_ids?: string[];
+  artist_ids?: string[];
   original_language?: string;
   original_title?: string;
   total_volumes: number;

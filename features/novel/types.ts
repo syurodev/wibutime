@@ -129,6 +129,57 @@ export const NovelDetailSchema = z.object({
 export type NovelDetail = z.infer<typeof NovelDetailSchema>;
 
 /**
+ * Novel Schema matching Backend API Response
+ */
+export const NovelBackendSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  slug: z.string(),
+  synopsis: z.any(),
+  cover_image_url: z.string().optional().nullable(),
+  thumbnail_url: z.string().optional().nullable(),
+  status: z.string(),
+  is_oneshot: z.boolean(),
+  genre_ids: z
+    .array(z.string())
+    .nullable()
+    .optional()
+    .transform((val) => val ?? []),
+  author_ids: z
+    .array(z.string())
+    .nullable()
+    .optional()
+    .transform((val) => val ?? []),
+  artist_ids: z
+    .array(z.string())
+    .nullable()
+    .optional()
+    .transform((val) => val ?? []),
+  genres: z
+    .array(z.object({ id: z.string(), name: z.string() }))
+    .nullable()
+    .optional()
+    .transform((val) => val ?? []),
+  authors: z
+    .array(z.object({ id: z.string(), display_name: z.string() }))
+    .nullable()
+    .optional()
+    .transform((val) => val ?? []),
+  artists: z
+    .array(z.object({ id: z.string(), display_name: z.string() }))
+    .nullable()
+    .optional()
+    .transform((val) => val ?? []),
+  original_language: z.string().optional(),
+  original_title: z.string().optional(),
+  metadata: z.string().optional(),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+
+export type NovelBackend = z.infer<typeof NovelBackendSchema>;
+
+/**
  * Array schemas
  */
 export const NovelGenreArraySchema = z.array(NovelGenreSchema);

@@ -49,6 +49,9 @@ interface NovelFormProps {
   readonly description?: string;
   readonly ownerInfo?: React.ReactNode;
   readonly submitLabel?: string;
+  readonly initialSelectedGenres?: { label: string; value: string }[];
+  readonly initialSelectedAuthors?: { label: string; value: string }[];
+  readonly initialSelectedArtists?: { label: string; value: string }[];
 }
 
 export function NovelForm({
@@ -60,6 +63,9 @@ export function NovelForm({
   description,
   ownerInfo,
   submitLabel = "Lưu thay đổi",
+  initialSelectedGenres = [],
+  initialSelectedAuthors = [],
+  initialSelectedArtists = [],
 }: NovelFormProps) {
   const [formData, setFormData] = useState<NovelFormData>(
     initialData || {
@@ -106,13 +112,13 @@ export function NovelForm({
   // But for create, it starts empty.
   const [selectedGenres, setSelectedGenres] = useState<
     { label: string; value: string }[]
-  >([]);
+  >(initialSelectedGenres);
   const [selectedAuthors, setSelectedAuthors] = useState<
     { label: string; value: string }[]
-  >([]);
+  >(initialSelectedAuthors);
   const [selectedArtists, setSelectedArtists] = useState<
     { label: string; value: string }[]
-  >([]);
+  >(initialSelectedArtists);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
