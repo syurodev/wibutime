@@ -86,7 +86,7 @@ export function createAuthenticatedClient(accessToken?: string | null) {
  * Example usage:
  *
  * ```tsx
- * import { useAuth } from "@/lib/hooks/use-auth";
+ * import { useAuth } from "@/hooks/use-auth";
  * import { createAuthenticatedClient } from "@/lib/api/client-auth";
  *
  * function MyComponent() {

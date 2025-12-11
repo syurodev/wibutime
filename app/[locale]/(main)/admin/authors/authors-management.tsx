@@ -5,7 +5,7 @@
  * CRUD interface for authors with URL-synced pagination and search
  */
 
-import { MergeAuthorDialog } from "@/components/features/authors/merge-author-dialog";
+import { MergeAuthorDialog } from "@/features/author/components/merge-author-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";

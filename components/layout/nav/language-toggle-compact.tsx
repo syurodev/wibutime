@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useLanguage } from "@/lib/hooks/use-user-settings";
+import { useLanguage } from "@/hooks/use-user-settings";
 import { useRouter, usePathname } from "@/i18n/routing";
 import { useLocale } from "next-intl";
 import { Languages } from "lucide-react";

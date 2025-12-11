@@ -8,7 +8,7 @@
 import {
   NovelForm,
   NovelFormData,
-} from "@/components/features/novels/novel-form";
+} from "@/features/novel/components/novel-form";
 import { Container } from "@/components/layout/container";
 import { updateNovel } from "@/features/novel/actions";
 import { useRouter } from "@/i18n/routing";

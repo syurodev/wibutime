@@ -1,7 +1,7 @@
 "use client";
 
-import { AccountNavigation } from "@/components/features/account/account-navigation";
-import { ProfileForm } from "@/components/features/account/profile-form";
+import { AccountNavigation } from "@/features/account/components/account-navigation";
+import { ProfileForm } from "@/features/account/components/profile-form";
 import { Container } from "@/components/layout/container";
 import {
   Card,

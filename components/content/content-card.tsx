@@ -3,7 +3,7 @@
 import { MediaSeries } from "@/features/content";
 import { Link } from "@/i18n/routing";
 import { formatNumberAbbreviated } from "@/lib/api/utils/number";
-import { useUiPreferences } from "@/lib/hooks/use-user-settings";
+import { useUiPreferences } from "@/hooks/use-user-settings";
 import { cn } from "@/lib/utils";
 import { getContentBadgeVariant } from "@/lib/utils/get-content-bg";
 import { getImageUrl } from "@/lib/utils/get-image-url";

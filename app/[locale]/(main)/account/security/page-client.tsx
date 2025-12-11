@@ -1,8 +1,8 @@
 "use client";
 
-import { AccountNavigation } from "@/components/features/account/account-navigation";
-import { PasswordForm } from "@/components/features/account/password-form";
-import { SessionList } from "@/components/features/account/session-list";
+import { AccountNavigation } from "@/features/account/components/account-navigation";
+import { PasswordForm } from "@/features/account/components/password-form";
+import { SessionList } from "@/features/account/components/session-list";
 import { Container } from "@/components/layout/container";
 import {
   Card,

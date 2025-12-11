@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useUiPreferences } from "@/lib/hooks/use-user-settings";
+import { useUiPreferences } from "@/hooks/use-user-settings";
 import { Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 

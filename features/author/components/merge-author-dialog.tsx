@@ -1,5 +1,6 @@
 "use client";
 
+import { MergeFlowVisualizer } from "@/features/shared/components/merge-flow-visualizer";
 import { AsyncSelect } from "@/components/ui/async-select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -20,8 +21,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { MultiSelect } from "@/components/ui/multi-select";
-import { mergeGenre, previewMergeGenre } from "@/features/genre/actions";
-import { useGenres } from "@/hooks/use-genres";
+import { useAuthors } from "@/hooks/use-authors";
+import { mergeAuthor, previewMergeAuthor } from "@/features/author/actions";
 import { getImageUrl } from "@/lib/utils/get-image-url";
 import { getInitials } from "@/lib/utils/get-initials";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,51 +32,48 @@ import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import { MergeFlowVisualizer } from "../merge-flow-visualizer";
 
 const formSchema = z.object({
-  targetId: z.string().min(1, "Vui lòng chọn thể loại đích"),
+  targetId: z.string().min(1, "Vui lòng chọn tác giả đích"),
   sourceIds: z
     .array(z.string())
-    .min(1, "Vui lòng chọn ít nhất 1 thể loại nguồn"),
+    .min(1, "Vui lòng chọn ít nhất 1 tác giả nguồn"),
 });
 
-interface MergeGenreDialogProps {
+interface MergeAuthorDialogProps {
   readonly open: boolean;
   readonly onOpenChange: (open: boolean) => void;
-  // genres: Genre[]; // Removed as we fetch internally now
   readonly onSuccess: () => void;
 }
 
-export function MergeGenreDialog({
+export function MergeAuthorDialog({
   open,
   onOpenChange,
-  // genres,
   onSuccess,
-}: MergeGenreDialogProps) {
+}: MergeAuthorDialogProps) {
   const [isPending, startTransition] = useTransition();
 
   // States for search
   const [targetSearch, setTargetSearch] = useState("");
   const [sourceSearch, setSourceSearch] = useState("");
 
-  // Hook for Target Genres
+  // Hook for Target Authors
   const {
-    data: targetGenres,
+    data: targetAuthors,
     isLoading: isLoadingTarget,
     loadMore: loadMoreTarget,
     hasMore: hasMoreTarget,
     isLoadingMore: isLoadingMoreTarget,
-  } = useGenres(targetSearch);
+  } = useAuthors(targetSearch);
 
-  // Hook for Source Genres
+  // Hook for Source Authors
   const {
-    data: sourceGenres,
+    data: sourceAuthors,
     isLoading: isLoadingSource,
     loadMore: loadMoreSource,
     hasMore: hasMoreSource,
     isLoadingMore: isLoadingMoreSource,
-  } = useGenres(sourceSearch);
+  } = useAuthors(sourceSearch);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -101,38 +99,38 @@ export function MergeGenreDialog({
       slug: string;
       cover_image_url?: string | null;
     }[];
-    source_genres?: string[] | null;
+    source_authors?: string[] | null;
   } | null>(null);
 
   // Prepare options
-  const targetOptions = targetGenres.map((g) => ({
-    label: g.name,
-    value: g.id,
+  const targetOptions = targetAuthors.map((a) => ({
+    label: a.name,
+    value: a.id,
   }));
-  const sourceOptions = sourceGenres
-    .map((g) => ({
-      label: g.name,
-      value: g.id,
+  const sourceOptions = sourceAuthors
+    .map((a) => ({
+      label: a.name,
+      value: a.id,
     }))
     .filter((opt) => opt.value !== selectedTarget?.value);
 
   const t = useTranslations("dashboard.merge");
   const tEntities = useTranslations("dashboard.entities");
-  const entityName = tEntities("genre");
-  const entityPlural = tEntities("genres");
+  const entityName = tEntities("author");
+  const entityPlural = tEntities("authors");
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     startTransition(async () => {
       try {
         if (step === 1) {
-          const data = await previewMergeGenre({
+          const data = await previewMergeAuthor({
             target_id: values.targetId,
             source_ids: values.sourceIds,
           });
           setPreviewData(data);
           setStep(2);
         } else {
-          await mergeGenre({
+          await mergeAuthor({
             target_id: values.targetId,
             source_ids: values.sourceIds,
           });
@@ -206,15 +204,13 @@ export function MergeGenreDialog({
                                 field.onChange("");
                                 return;
                               }
-                              // Find label from options if possible, else we might lose it if not careful.
-                              // But since we selected from options, it must exist there.
                               const opt = targetOptions.find(
                                 (o) => o.value === val
                               );
                               if (opt) setSelectedTarget(opt);
                               field.onChange(val);
 
-                              // Remove from sources if present to avoid self-merge
+                              // Remove from sources if present
                               if (val) {
                                 const newSources = selectedSources.filter(
                                   (s) => s.value !== val
@@ -274,7 +270,7 @@ export function MergeGenreDialog({
                     )}
                   />
 
-                  {/* Visual Preview (Simplified for selection step) */}
+                  {/* Visual Preview */}
                   {(selectedTarget || selectedSources.length > 0) && (
                     <div className="flex items-center justify-between gap-2 p-3 bg-muted/20 rounded-lg text-sm">
                       <div className="flex-1">
@@ -296,7 +292,7 @@ export function MergeGenreDialog({
                           </span>
                         ) : (
                           <span className="text-muted-foreground italic">
-                            {tEntities("genre")}?
+                            {tEntities("author")}?
                           </span>
                         )}
                       </div>
@@ -334,7 +330,7 @@ export function MergeGenreDialog({
                                 {getInitials(novel.title)}
                               </AvatarFallback>
                             </Avatar>
-                            <div className="flex-1 min-w-0 w-full overflow-hidden">
+                            <div className="flex-1 min-w-0">
                               <p
                                 className="text-sm font-medium line-clamp-1 break-all"
                                 title={novel.title}

@@ -1,6 +1,6 @@
 "use client";
 
-import { MergeFlowVisualizer } from "@/components/features/merge-flow-visualizer";
+import { MergeFlowVisualizer } from "@/features/shared/components/merge-flow-visualizer";
 import { AsyncSelect } from "@/components/ui/async-select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";

@@ -1,9 +1,9 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Badge } from "../ui/badge";
 
 interface MergeFlowVisualizerProps {
   sources: { label: string; value: string }[];

@@ -3,7 +3,7 @@
 import {
   NovelForm,
   NovelFormData,
-} from "@/components/features/novels/novel-form";
+} from "@/features/novel/components/novel-form";
 import { updateNovel } from "@/features/novel/actions";
 import { type NovelBackend } from "@/features/novel/types";
 import { useRouter } from "@/i18n/routing";

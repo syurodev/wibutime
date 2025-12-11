@@ -8,7 +8,7 @@
 import {
   VolumeForm,
   VolumeFormData,
-} from "@/components/features/volumes/volume-form";
+} from "@/features/novel-volume/components/volume-form";
 import { Container } from "@/components/layout/container";
 import { NovelVolumeService } from "@/features/novel-volume/service";
 import { useRouter } from "@/i18n/routing";

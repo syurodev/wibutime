@@ -5,7 +5,7 @@
  * CRUD interface for artists with URL-synced pagination and search
  */
 
-import { MergeArtistDialog } from "@/components/features/artists/merge-artist-dialog";
+import { MergeArtistDialog } from "@/features/artist/components/merge-artist-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";

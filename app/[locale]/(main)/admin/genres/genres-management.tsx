@@ -5,7 +5,7 @@
  * CRUD interface for genres with URL-synced pagination and search
  */
 
-import { MergeGenreDialog } from "@/components/features/genres/merge-genre-dialog";
+import { MergeGenreDialog } from "@/features/genre/components/merge-genre-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";

@@ -6,7 +6,7 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useAuth } from "@/lib/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth";
 import { getInitials } from "@/lib/utils/get-initials";
 import { MoreHorizontal } from "lucide-react";
 import { NavTriggerItem } from "./nav-trigger-item";

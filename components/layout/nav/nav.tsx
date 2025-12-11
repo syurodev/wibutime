@@ -2,7 +2,7 @@
 
 import { CompactCommentEditor } from "@/features/editor/components/compact-comment-editor";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { useUiPreferences } from "@/lib/hooks/use-user-settings";
+import { useUiPreferences } from "@/hooks/use-user-settings";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";

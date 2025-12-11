@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useTheme } from "@/lib/hooks/use-user-settings";
+import { useTheme } from "@/hooks/use-user-settings";
 import { Moon, Sun, Monitor } from "lucide-react";
 import { cn } from "@/lib/utils";
 
