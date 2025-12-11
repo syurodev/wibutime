@@ -3,8 +3,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { NovelVolume } from "@/features/novel";
 import { NovelVolumeService } from "@/features/novel-volume/service";
+import { NovelVolume } from "@/features/novel/types";
 import { Link } from "@/i18n/routing";
 import { BookText, FileEdit, GripVertical, Trash2 } from "lucide-react";
 import { useState } from "react";

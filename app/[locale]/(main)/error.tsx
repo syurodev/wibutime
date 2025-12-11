@@ -1,10 +1,10 @@
 "use client";
 
+import { Container } from "@/components/layout/container";
 /**
  * Homepage Error Boundary
  */
 
-import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { AlertTriangle, Home, RefreshCw } from "lucide-react";

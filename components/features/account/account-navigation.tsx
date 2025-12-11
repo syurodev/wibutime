@@ -1,6 +1,6 @@
 "use client";
 
-import { useNav } from "@/components/layout/nav/useNav";
+import { useNav } from "@/components/layout/nav/use-nav";
 import { Shield, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";

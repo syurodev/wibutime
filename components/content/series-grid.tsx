@@ -5,7 +5,7 @@
 
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { MediaSeries } from "@/features/content";
-import { ContentCard } from "./ContentCard";
+import { ContentCard } from "./content-card";
 
 export interface SeriesGridProps {
   readonly series: MediaSeries[];

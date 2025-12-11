@@ -3,10 +3,10 @@
  * Displays platform and community achievements
  */
 
-import { Container } from "@/components/layout/Container";
+import { Container } from "@/components/layout/container";
 import { Milestone } from "@/features/community";
 import { getTranslations } from "next-intl/server";
-import { MilestoneCard } from "./MilestoneCard";
+import { MilestoneCard } from "./milestone-card";
 
 export interface CommunityMilestonesSectionProps {
   /**

@@ -4,7 +4,7 @@
  */
 
 import { cn } from "@/lib/utils";
-import { SectionHeader, type SectionHeaderProps } from "./SectionHeader";
+import { SectionHeader, type SectionHeaderProps } from "./section-header";
 
 export interface SectionWrapperProps extends SectionHeaderProps {
   readonly children: React.ReactNode;

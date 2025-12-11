@@ -3,9 +3,9 @@
  * Displays all novels with filters, sorting, and pagination
  */
 
-import { SeriesGrid } from "@/components/content/SeriesGrid";
-import { SeriesGridSkeleton } from "@/components/content/SeriesGridSkeleton";
-import { Container } from "@/components/layout/Container";
+import { SeriesGrid } from "@/components/content/series-grid";
+import { SeriesGridSkeleton } from "@/components/content/series-grid-skeleton";
+import { Container } from "@/components/layout/container";
 import {
   getNovelsServer,
   type BrowseNovelsQuery,
@@ -14,8 +14,8 @@ import { DEFAULT_LIMIT, DEFAULT_PAGE } from "@/lib/constants/default";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
-import { BrowseFilters } from "./BrowseFilters";
-import { BrowseNavigation } from "./BrowseNavigation";
+import { BrowseFilters } from "./browse-filters";
+import { BrowseNavigation } from "./browse-navigation";
 
 export const metadata: Metadata = {
   title: "Browse Novels - WibuTime",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useContext } from "react";
-import { NavContext } from "./NavContext";
+import { NavContext } from "./nav-context";
 
 /**
  * useNav Hook

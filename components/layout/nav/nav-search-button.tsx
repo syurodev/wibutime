@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/tooltip";
 import { motion } from "framer-motion";
 import { SearchNavItem } from "./types";
-import { useNav } from "./useNav";
+import { useNav } from "./use-nav";
 
 interface NavSearchButtonProps {
   readonly item: SearchNavItem;

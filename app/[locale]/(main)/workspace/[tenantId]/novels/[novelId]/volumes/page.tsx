@@ -3,12 +3,12 @@
  * Quản lý volumes của novel trong workspace
  */
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Container } from "@/components/layout/container";
 import { Badge } from "@/components/ui/badge";
-import { Plus, ArrowLeft, FileEdit, Trash2, BookText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/routing";
-import { Container } from "@/components/layout/Container";
+import { ArrowLeft, BookText, FileEdit, Plus, Trash2 } from "lucide-react";
 
 interface Props {
   params: Promise<{
@@ -47,7 +47,9 @@ export default async function NovelVolumesPage({ params }: Props) {
             </p>
           </div>
           <Button asChild>
-            <Link href={`/workspace/${tenantId}/novels/${novelId}/volumes/create`}>
+            <Link
+              href={`/workspace/${tenantId}/novels/${novelId}/volumes/create`}
+            >
               <Plus className="h-4 w-4 mr-2" />
               Tạo Volume mới
             </Link>
@@ -58,7 +60,9 @@ export default async function NovelVolumesPage({ params }: Props) {
       {/* Quick Actions */}
       <div className="flex gap-3">
         <Button asChild variant="outline">
-          <Link href={`/workspace/${tenantId}/novels/${novelId}/chapters/create`}>
+          <Link
+            href={`/workspace/${tenantId}/novels/${novelId}/chapters/create`}
+          >
             <BookText className="h-4 w-4 mr-2" />
             Viết Chapter mới
           </Link>
@@ -75,7 +79,9 @@ export default async function NovelVolumesPage({ params }: Props) {
               Tạo volume đầu tiên để tổ chức chapters
             </p>
             <Button asChild>
-              <Link href={`/workspace/${tenantId}/novels/${novelId}/volumes/create`}>
+              <Link
+                href={`/workspace/${tenantId}/novels/${novelId}/volumes/create`}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Tạo Volume đầu tiên
               </Link>
@@ -93,7 +99,9 @@ export default async function NovelVolumesPage({ params }: Props) {
                       <CardTitle className="text-lg">
                         Volume {volume.volume_number}: {volume.title}
                       </CardTitle>
-                      <Badge variant={volume.is_published ? "default" : "secondary"}>
+                      <Badge
+                        variant={volume.is_published ? "default" : "secondary"}
+                      >
                         {volume.is_published ? "Published" : "Draft"}
                       </Badge>
                     </div>
@@ -113,13 +121,17 @@ export default async function NovelVolumesPage({ params }: Props) {
                   </div>
                   <div className="flex gap-2">
                     <Button asChild variant="outline" size="sm">
-                      <Link href={`/workspace/${tenantId}/novels/${novelId}/volumes/${volume.id}/chapters`}>
+                      <Link
+                        href={`/workspace/${tenantId}/novels/${novelId}/volumes/${volume.id}/chapters`}
+                      >
                         <BookText className="h-4 w-4 mr-2" />
                         Chapters
                       </Link>
                     </Button>
                     <Button asChild variant="outline" size="sm">
-                      <Link href={`/workspace/${tenantId}/novels/${novelId}/volumes/${volume.id}/edit`}>
+                      <Link
+                        href={`/workspace/${tenantId}/novels/${novelId}/volumes/${volume.id}/edit`}
+                      >
                         <FileEdit className="h-4 w-4 mr-2" />
                         Sửa
                       </Link>

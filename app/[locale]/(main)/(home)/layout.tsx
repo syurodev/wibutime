@@ -1,4 +1,4 @@
-import { HomeDataProvider } from "@/features/home/components/HomeDataProvider";
+import { HomeDataProvider } from "@/features/home/components/home-data-provider";
 import { getHomeData } from "@/features/home/queries";
 import type { ReactNode } from "react";
 

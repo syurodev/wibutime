@@ -3,7 +3,7 @@
 import { AccountNavigation } from "@/components/features/account/account-navigation";
 import { PasswordForm } from "@/components/features/account/password-form";
 import { SessionList } from "@/components/features/account/session-list";
-import { Container } from "@/components/layout/Container";
+import { Container } from "@/components/layout/container";
 import {
   Card,
   CardContent,

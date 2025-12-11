@@ -7,7 +7,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { HistoryCard } from "@/features/history/components/HistoryCard";
+import { HistoryCard } from "@/features/history/components/history-card";
 import type { HistoryMedia } from "@/features/history/types";
 
 export interface ContinueCarouselProps {

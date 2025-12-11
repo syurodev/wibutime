@@ -4,7 +4,7 @@ import {
   ChapterForm,
   ChapterFormValues,
 } from "@/components/forms/chapter-form";
-import { Container } from "@/components/layout/Container";
+import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import { ChapterService } from "@/features/novel-chapter/hooks/use-chapters";
 import { useRouter } from "@/i18n/routing";

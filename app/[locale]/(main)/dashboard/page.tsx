@@ -3,7 +3,7 @@
  * Tổng quan workspace cá nhân với thống kê chi tiết và biểu đồ
  */
 
-import { Container } from "@/components/layout/Container";
+import { Container } from "@/components/layout/container";
 
 export default async function DashboardPage() {
   return (

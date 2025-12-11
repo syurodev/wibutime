@@ -48,7 +48,7 @@ Import the `useNav` hook and set nav items in your page:
 "use client";
 
 import { useEffect } from "react";
-import { useNav } from "@/components/layout/nav/useNav";
+import { useNav } from "@/components/layout/nav/use-nav";
 import { Home, Heart } from "lucide-react";
 
 export default function MyPage() {
@@ -89,6 +89,7 @@ Navigate between pages using Next.js Link.
 ```
 
 **Use cases:**
+
 - Page navigation
 - Route changes
 - External links
@@ -114,12 +115,14 @@ Execute async actions (API calls) with loading states.
 ```
 
 **Features:**
+
 - Loading spinner during execution
 - Disabled state while loading
 - Success/error toast notifications
 - Error handling
 
 **Use cases:**
+
 - Follow/unfollow users
 - Like/unlike content
 - Save/bookmark items
@@ -141,6 +144,7 @@ Execute synchronous UI actions (no loading state).
 ```
 
 **Use cases:**
+
 - Open modals/dialogs
 - Open sheets/drawers
 - Toggle UI states
@@ -165,6 +169,7 @@ Toggle expandable search mode.
 ```
 
 **Features:**
+
 - Expands to full-width search bar
 - Hides other nav items when active
 - Auto-focus on open
@@ -178,7 +183,7 @@ Toggle expandable search mode.
 "use client";
 
 import { useEffect } from "react";
-import { useNav } from "@/components/layout/nav/useNav";
+import { useNav } from "@/components/layout/nav/use-nav";
 import { Home, Search, Library } from "lucide-react";
 
 export default function HomePage() {
@@ -220,7 +225,7 @@ export default function HomePage() {
 "use client";
 
 import { useEffect, useState } from "react";
-import { useNav } from "@/components/layout/nav/useNav";
+import { useNav } from "@/components/layout/nav/use-nav";
 import { Home, Heart, Bookmark } from "lucide-react";
 
 export default function ProfilePage() {
@@ -270,7 +275,7 @@ export default function ProfilePage() {
 "use client";
 
 import { useEffect, useState } from "react";
-import { useNav } from "@/components/layout/nav/useNav";
+import { useNav } from "@/components/layout/nav/use-nav";
 import { Home, Settings, Share2 } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
@@ -327,12 +332,12 @@ export default function SettingsPage() {
 
 ```tsx
 const {
-  items,              // Current nav items
-  searchMode,         // Whether search is active
-  loadingItems,       // Set of loading item IDs
-  setNavItems,        // Set nav items for current page
-  toggleSearch,       // Toggle search mode
-  setItemLoading,     // Manually set loading state
+  items, // Current nav items
+  searchMode, // Whether search is active
+  loadingItems, // Set of loading item IDs
+  setNavItems, // Set nav items for current page
+  toggleSearch, // Toggle search mode
+  setItemLoading, // Manually set loading state
 } = useNav();
 ```
 
@@ -374,6 +379,7 @@ type SearchNavItem = NavItemBase & {
 ## Tips & Best Practices
 
 ### 1. Keep nav items in dependency array
+
 ```tsx
 useEffect(() => {
   setNavItems([...]);
@@ -381,12 +387,14 @@ useEffect(() => {
 ```
 
 ### 2. Use meaningful IDs
+
 ```tsx
-id: "follow-user-123" // Good
-id: "item1" // Bad
+id: "follow-user-123"; // Good
+id: "item1"; // Bad
 ```
 
 ### 3. Handle errors in action items
+
 ```tsx
 onClick: async () => {
   try {
@@ -394,10 +402,11 @@ onClick: async () => {
   } catch (error) {
     throw new Error("Meaningful error message");
   }
-}
+};
 ```
 
 ### 4. Clean up state on unmount
+
 ```tsx
 useEffect(() => {
   setNavItems([...]);
@@ -419,34 +428,43 @@ Check out these pages to see the navigation in action:
 ## Customization
 
 ### Styling
+
 Edit the nav component styling in `Nav.tsx`:
+
 ```tsx
-className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
+className = "fixed bottom-6 left-1/2 -translate-x-1/2 z-50";
 ```
 
 ### Search Behavior
+
 Customize search in `NavSearch.tsx`:
+
 ```tsx
 placeholder={item.placeholder || "Search..."}
 ```
 
 ### Toast Messages
+
 Toaster is configured in the layout. Customize in `components/ui/sonner.tsx`.
 
 ## Troubleshooting
 
 **Nav items not showing?**
+
 - Make sure you're calling `setNavItems` in a client component
 - Check that NavProvider wraps your layout
 
 **Loading state not working?**
+
 - Ensure your onClick returns a Promise
 - Check that the item type is "action"
 
 **Search not expanding?**
+
 - Make sure you have a search item in your nav items
 - Check that the item type is "search"
 
 **Toast not appearing?**
+
 - Verify Toaster component is in layout
 - Check console for errors

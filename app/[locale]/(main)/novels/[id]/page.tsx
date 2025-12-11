@@ -5,7 +5,7 @@
  * TODO: Implement API endpoint for novel detail fetching
  */
 
-import { Container } from "@/components/layout/Container";
+import { Container } from "@/components/layout/container";
 import type { Metadata } from "next";
 
 // Type definitions

@@ -1,6 +1,3 @@
-import { ClientProviders } from "@/components/providers/ClientProviders";
-import { SessionHydrator } from "@/components/providers/SessionHydrator";
-import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { type Locale, locales } from "@/i18n/routing";
 import { NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
@@ -32,6 +29,9 @@ function isValidLocale(locale: string): locale is Locale {
  * I18n Provider Component - Wrapped in Suspense boundary
  * Handles async data access (getMessages) within Suspense for Cache Components compatibility
  */
+import { ClientProviders } from "@/components/providers/client-providers";
+import { SessionHydrator } from "@/components/providers/session-hydrator";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 import { loadMessages } from "@/i18n/request";
 import { cacheLife, cacheTag } from "next/cache";
 

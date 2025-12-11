@@ -3,13 +3,13 @@
  * Danh sách novels của tenant
  */
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Container } from "@/components/layout/container";
 import { Badge } from "@/components/ui/badge";
-import { Plus, BookOpen, FileEdit, Trash2 } from "lucide-react";
-import { Link } from "@/i18n/routing";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Container } from "@/components/layout/Container";
+import { Link } from "@/i18n/routing";
+import { BookOpen, FileEdit, Plus, Trash2 } from "lucide-react";
 
 interface Props {
   params: Promise<{
@@ -49,9 +49,7 @@ export default async function WorkspaceNovelsPage({ params }: Props) {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16">
             <BookOpen className="h-16 w-16 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">
-              Chưa có novel nào
-            </h3>
+            <h3 className="text-lg font-semibold mb-2">Chưa có novel nào</h3>
             <p className="text-muted-foreground text-center mb-6 max-w-md">
               Bắt đầu hành trình sáng tạo của team bằng cách tạo novel đầu tiên
             </p>
@@ -72,7 +70,11 @@ export default async function WorkspaceNovelsPage({ params }: Props) {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
                       <CardTitle className="text-xl">{novel.title}</CardTitle>
-                      <Badge variant={novel.status === "published" ? "default" : "secondary"}>
+                      <Badge
+                        variant={
+                          novel.status === "published" ? "default" : "secondary"
+                        }
+                      >
                         {novel.status}
                       </Badge>
                     </div>
@@ -98,13 +100,17 @@ export default async function WorkspaceNovelsPage({ params }: Props) {
                   </div>
                   <div className="flex gap-2">
                     <Button asChild variant="outline" size="sm">
-                      <Link href={`/workspace/${tenantId}/novels/${novel.id}/volumes`}>
+                      <Link
+                        href={`/workspace/${tenantId}/novels/${novel.id}/volumes`}
+                      >
                         <BookOpen className="h-4 w-4 mr-2" />
                         Volumes
                       </Link>
                     </Button>
                     <Button asChild variant="outline" size="sm">
-                      <Link href={`/workspace/${tenantId}/novels/${novel.id}/edit`}>
+                      <Link
+                        href={`/workspace/${tenantId}/novels/${novel.id}/edit`}
+                      >
                         <FileEdit className="h-4 w-4 mr-2" />
                         Chỉnh sửa
                       </Link>

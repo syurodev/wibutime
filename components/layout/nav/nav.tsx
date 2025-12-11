@@ -1,7 +1,7 @@
 "use client";
 
 import { CompactCommentEditor } from "@/features/editor/components/compact-comment-editor";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { useUiPreferences } from "@/lib/hooks/use-user-settings";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
@@ -12,16 +12,16 @@ import {
   DEFAULT_ITEM_IDS,
   defaultItemsEnd,
   defaultItemsStart,
-} from "./defaultNavItems";
-import { NavAccountButton } from "./NavAccountButton";
-import { NavAccountMenuContent } from "./NavAccountMenu";
-import { NavActionItem } from "./NavActionItem";
-import { NavLinkItem } from "./NavLinkItem";
-import { NavPaginationButton } from "./NavPaginationButton";
-import { NavSearch } from "./NavSearch";
-import { NavSearchButton } from "./NavSearchButton";
-import { NavTriggerItem } from "./NavTriggerItem";
-import { useNav } from "./useNav";
+} from "./default-nav-items";
+import { NavAccountButton } from "./nav-account-button";
+import { NavAccountMenuContent } from "./nav-account-menu";
+import { NavActionItem } from "./nav-action-item";
+import { NavLinkItem } from "./nav-link-item";
+import { NavPaginationButton } from "./nav-pagination-button";
+import { NavSearch } from "./nav-search";
+import { NavSearchButton } from "./nav-search-button";
+import { NavTriggerItem } from "./nav-trigger-item";
+import { useNav } from "./use-nav";
 
 /**
  * Main Navigation Component

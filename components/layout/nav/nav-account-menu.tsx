@@ -6,15 +6,15 @@
 
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { LanguageToggleCompact } from "./language-toggle-compact";
+import { ReduceBlurToggle } from "./reduce-blur-toggle";
+import { ThemeToggleCompact } from "./theme-toggle-compact";
 import type { NavItem } from "./types";
-import { UserSection } from "./UserSection";
-import { ThemeToggleCompact } from "./ThemeToggleCompact";
-import { LanguageToggleCompact } from "./LanguageToggleCompact";
-import { ReduceBlurToggle } from "./ReduceBlurToggle";
+import { UserSection } from "./user-section";
 
 export interface NavAccountMenuContentProps {
   /**

@@ -4,7 +4,7 @@
  */
 
 import { NovelList } from "@/components/dashboard/novels/novel-list";
-import { Container } from "@/components/layout/Container";
+import { Container } from "@/components/layout/container";
 import { NovelService } from "@/features/novel/service";
 import { getSession } from "@/lib/auth/session";
 import { DEFAULT_LIMIT } from "@/lib/constants/default";

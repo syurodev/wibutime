@@ -3,7 +3,7 @@
  * Quản lý chapters của volume
  */
 
-import { Container } from "@/components/layout/Container";
+import { Container } from "@/components/layout/container";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

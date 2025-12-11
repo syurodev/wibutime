@@ -8,9 +8,9 @@
 
 "use client";
 
-import { useEffect } from "react";
-import { useNav } from "@/components/layout/nav/useNav";
+import { useNav } from "@/components/layout/nav/use-nav";
 import { Library, User } from "lucide-react";
+import { useEffect } from "react";
 
 export function HomeNavigation() {
   const { setNavItems } = useNav();

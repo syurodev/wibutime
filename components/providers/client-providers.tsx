@@ -1,8 +1,8 @@
 "use client";
 
-import { NavProvider } from "@/components/layout/nav/NavContext";
-import { AuthProvider } from "@/components/providers/AuthProvider";
-import { UserSettingsProvider } from "@/components/providers/UserSettingsProvider";
+import { NavProvider } from "@/components/layout/nav/nav-context";
+import { AuthProvider } from "@/components/providers/auth-provider";
+import { UserSettingsProvider } from "@/components/providers/user-settings-provider";
 
 /**
  * Client Providers Wrapper

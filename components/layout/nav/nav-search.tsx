@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Book, Calendar, Film, SearchX, TrendingUp, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { SearchNavItem } from "./types";
-import { useNav } from "./useNav";
+import { useNav } from "./use-nav";
 
 interface NavSearchProps {
   readonly item: SearchNavItem;

@@ -6,9 +6,9 @@
  * Supports both Server and Client rendering via props
  */
 
-import { Container } from "@/components/layout/Container";
+import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
-import { GenreCard } from "@/features/genre/components/GenreCard";
+import { GenreCard } from "@/features/genre/components/genre-card";
 import type { GenreStats } from "@/features/genre/types";
 import { Link } from "@/i18n/routing";
 import { ArrowRight } from "lucide-react";

@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useNav } from "@/components/layout/nav/useNav";
-import { Home, Settings, Share2, Edit } from "lucide-react";
+import { useNav } from "@/components/layout/nav/use-nav";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -17,7 +16,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
+import { Edit, Home, Settings, Share2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
   const { setNavItems } = useNav();
@@ -142,9 +142,7 @@ export default function ProfilePage() {
         <SheetContent>
           <SheetHeader>
             <SheetTitle>Share Profile</SheetTitle>
-            <SheetDescription>
-              Share your profile with others
-            </SheetDescription>
+            <SheetDescription>Share your profile with others</SheetDescription>
           </SheetHeader>
           <div className="space-y-4 py-4">
             <p className="text-sm text-gray-600">
@@ -176,7 +174,8 @@ export default function ProfilePage() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <p className="text-sm text-gray-600">
-              This dialog was triggered by the Edit nav item (with badge indicator).
+              This dialog was triggered by the Edit nav item (with badge
+              indicator).
             </p>
             <Button onClick={() => setIsEditOpen(false)}>Save Changes</Button>
           </div>

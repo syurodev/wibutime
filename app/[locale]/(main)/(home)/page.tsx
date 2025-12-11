@@ -3,8 +3,8 @@
  * Hero section only, other sections are parallel routes
  */
 
-import { HeroSectionWrapper } from "@/features/home/components/HeroSectionWrapper";
-import { HomeNavigation } from "@/features/home/components/HomeNavigation";
+import { HeroSectionWrapper } from "@/features/home/components/hero-section-wrapper";
+import { HomeNavigation } from "@/features/home/components/home-navigation";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

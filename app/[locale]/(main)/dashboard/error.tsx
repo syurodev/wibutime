@@ -4,7 +4,7 @@
  * Dashboard Error Boundary
  */
 
-import { Container } from "@/components/layout/Container";
+import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { AlertCircle, BarChart3, RefreshCw } from "lucide-react";

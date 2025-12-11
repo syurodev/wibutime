@@ -28,7 +28,7 @@ const EMPTY_HOME_DATA: HomeData = {
 export const getHomeData = cache(async (): Promise<HomeData> => {
   try {
     const response = await serverApi.get<StandardResponse<unknown>>(
-      "/public/home",
+      "/media/home",
       {
         next: {
           revalidate: 60, // Revalidate every 1 minute (backend caches for 10 min)

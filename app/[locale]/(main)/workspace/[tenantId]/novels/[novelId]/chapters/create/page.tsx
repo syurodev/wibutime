@@ -28,7 +28,7 @@ import { Link } from "@/i18n/routing";
 import { ArrowLeft } from "lucide-react";
 
 // Import hooks
-import { Container } from "@/components/layout/Container";
+import { Container } from "@/components/layout/container";
 import { useAutosave } from "@/hooks/use-autosave";
 import { editorNodeIdConfig } from "@/lib/editor/config";
 

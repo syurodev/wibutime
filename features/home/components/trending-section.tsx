@@ -1,7 +1,7 @@
 "use client";
 
-import { ContentCard } from "@/components/content/ContentCard";
-import { Container } from "@/components/layout/Container";
+import { ContentCard } from "@/components/content/content-card";
+import { Container } from "@/components/layout/container";
 import { MediaSeries } from "@/features/content/types";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";

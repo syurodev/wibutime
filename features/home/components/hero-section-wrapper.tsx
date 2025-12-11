@@ -1,7 +1,7 @@
 "use client";
 
-import { HeroSection } from "./HeroSection";
-import { useHomeData } from "./HomeDataProvider";
+import { HeroSection } from "./hero-section";
+import { useHomeData } from "./home-data-provider";
 
 /**
  * Wrapper component that uses useHomeData hook

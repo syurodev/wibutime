@@ -1,4 +1,4 @@
-import { Container } from "@/components/layout/Container";
+import { Container } from "@/components/layout/container";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -7,7 +7,7 @@ import { formatNumberAbbreviated } from "@/lib/api/utils/number";
 import { BookOpen, Eye, Heart, Star, TrendingUp, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { AddToLibraryButton } from "./AddToLibraryButton";
+import { AddToLibraryButton } from "./add-to-library-button";
 
 interface Genre {
   id: string;

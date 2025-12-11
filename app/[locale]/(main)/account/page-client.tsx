@@ -2,7 +2,7 @@
 
 import { AccountNavigation } from "@/components/features/account/account-navigation";
 import { ProfileForm } from "@/components/features/account/profile-form";
-import { Container } from "@/components/layout/Container";
+import { Container } from "@/components/layout/container";
 import {
   Card,
   CardContent,

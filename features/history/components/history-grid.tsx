@@ -4,7 +4,7 @@
  */
 
 import type { HistoryMedia } from "@/features/history/types";
-import { EnhancedHistoryCard } from "./EnhancedHistoryCard";
+import { EnhancedHistoryCard } from "./enhanced-history-card";
 
 export interface HistoryGridProps {
   readonly history: HistoryMedia[];

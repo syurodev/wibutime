@@ -4,7 +4,7 @@
  */
 
 import { DraggableVolumeList } from "@/components/dashboard/novels/draggable-volume-list";
-import { Container } from "@/components/layout/Container";
+import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { NovelVolumeService } from "@/features/novel-volume/service";

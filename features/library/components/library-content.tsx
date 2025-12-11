@@ -3,7 +3,7 @@
  * Async server component for displaying library series
  */
 
-import { SeriesGrid } from "@/components/content/SeriesGrid";
+import { SeriesGrid } from "@/components/content/series-grid";
 import { MediaSeries } from "@/features/content";
 
 export interface LibraryContentProps {

@@ -4,7 +4,7 @@
  * Novel Detail Error Boundary
  */
 
-import { Container } from "@/components/layout/Container";
+import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { AlertCircle, Home, RefreshCw } from "lucide-react";

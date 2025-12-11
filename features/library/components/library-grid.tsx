@@ -3,7 +3,7 @@
  * Displays library content in a responsive grid layout
  */
 
-import { ContentCard } from "@/components/content/ContentCard";
+import { ContentCard } from "@/components/content/content-card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { MediaSeries } from "@/features/content";
 

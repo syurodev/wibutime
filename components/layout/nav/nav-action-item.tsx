@@ -10,7 +10,7 @@ import {
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { ActionNavItem } from "./types";
-import { useNav } from "./useNav";
+import { useNav } from "./use-nav";
 
 interface NavActionItemProps {
   readonly item: ActionNavItem;

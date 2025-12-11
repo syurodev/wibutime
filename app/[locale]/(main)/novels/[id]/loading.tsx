@@ -2,7 +2,7 @@
  * Novel Detail Loading State
  */
 
-import { Container } from "@/components/layout/Container";
+import { Container } from "@/components/layout/container";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function NovelDetailLoading() {

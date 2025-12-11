@@ -9,7 +9,7 @@ import {
   VolumeForm,
   VolumeFormData,
 } from "@/components/features/volumes/volume-form";
-import { Container } from "@/components/layout/Container";
+import { Container } from "@/components/layout/container";
 import { NovelVolumeService } from "@/features/novel-volume/service";
 import { useRouter } from "@/i18n/routing";
 import { useEffect, useState } from "react";

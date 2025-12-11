@@ -1,10 +1,10 @@
 /**
- * Latest Updates Section Component
- * Displays recently updated series in a grid layout
+ * New Series Section Component
+ * Displays recently added series in a grid layout
  */
 
-import { ContentCard } from "@/components/content/ContentCard";
-import { Container } from "@/components/layout/Container";
+import { ContentCard } from "@/components/content/content-card";
+import { Container } from "@/components/layout/container";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { MediaSeries } from "@/features/content";
@@ -12,13 +12,11 @@ import { Link } from "@/i18n/routing";
 import { ArrowRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
-export interface LatestUpdatesSectionProps {
+export interface NewSeriesSectionProps {
   readonly series: MediaSeries[];
 }
 
-export async function LatestUpdatesSection({
-  series,
-}: LatestUpdatesSectionProps) {
+export async function NewSeriesSection({ series }: NewSeriesSectionProps) {
   const t = await getTranslations("home");
 
   if (!series || series.length === 0) {
@@ -32,14 +30,14 @@ export async function LatestUpdatesSection({
         <div className="mb-8 flex items-end justify-between">
           <div className="space-y-2">
             <h2 className="text-3xl font-bold tracking-tight">
-              {t("latest.title")}
+              {t("newSeries.title")}
             </h2>
-            <p className="text-muted-foreground">{t("latest.subtitle")}</p>
+            <p className="text-muted-foreground">{t("newSeries.subtitle")}</p>
           </div>
 
           {/* See All Link */}
           <Button variant="ghost" className="group gap-2" asChild>
-            <Link href="/latest">
+            <Link href="/new">
               {t("common.seeAll")}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>

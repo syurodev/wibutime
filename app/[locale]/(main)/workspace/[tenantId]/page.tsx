@@ -3,7 +3,7 @@
  * Tổng quan workspace của tenant với thống kê chi tiết và biểu đồ
  */
 
-import { Container } from "@/components/layout/Container";
+import { Container } from "@/components/layout/container";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { getTranslations } from "next-intl/server";
 

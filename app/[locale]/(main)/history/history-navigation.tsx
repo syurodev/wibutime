@@ -1,24 +1,24 @@
 /**
- * Browse Navigation
- * Client component for pagination
+ * History Page Navigation
+ * Client component that configures bottom navigation with pagination
  */
 
 "use client";
 
-import { useNav } from "@/components/layout/nav/useNav";
+import { useNav } from "@/components/layout/nav/use-nav";
 import { Clock } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
-interface BrowseNavigationProps {
+interface HistoryNavigationProps {
   readonly currentPage: number;
   readonly totalPages: number;
 }
 
-export function BrowseNavigation({
+export function HistoryNavigation({
   currentPage,
   totalPages,
-}: BrowseNavigationProps) {
+}: HistoryNavigationProps) {
   const { setNavItems } = useNav();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -34,7 +34,7 @@ export function BrowseNavigation({
   useEffect(() => {
     setNavItems([
       {
-        id: "browse-pagination",
+        id: "history-pagination",
         type: "pagination",
         icon: <Clock className="h-5 w-5" />,
         label: "Page",
@@ -43,7 +43,7 @@ export function BrowseNavigation({
         onPageChange: handlePageChange,
       },
     ]);
-  }, [currentPage, totalPages, searchParams, setNavItems]);
+  }, [currentPage, totalPages, searchParams]);
 
   return null;
 }

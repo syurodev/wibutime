@@ -1,8 +1,8 @@
 "use client";
 
 import type { GenreStats } from "@/features/genre/types";
-import { GenreHubSection } from "@/features/home/components/GenreHubSection";
-import { useHomeData } from "@/features/home/components/HomeDataProvider";
+import { GenreHubSection } from "@/features/home/components/genre-hub-section";
+import { useHomeData } from "@/features/home/components/home-data-provider";
 
 export default function GenreHubSlot() {
   const { genres } = useHomeData();

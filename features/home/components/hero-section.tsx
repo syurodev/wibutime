@@ -1,6 +1,6 @@
 "use client";
 
-import { Container } from "@/components/layout/Container";
+import { Container } from "@/components/layout/container";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";

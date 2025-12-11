@@ -3,8 +3,8 @@
  * Displays user's viewing history with content type filters, sorting and pagination
  */
 
-import { Container } from "@/components/layout/Container";
-import { type HistorySortOption } from "@/features/history/components/HistoryFilters";
+import { Container } from "@/components/layout/container";
+import { HistorySortOption } from "@/features/history/components/history-filters";
 import type { MEDIA_TYPE } from "@/lib/constants/default";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";

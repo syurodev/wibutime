@@ -5,7 +5,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { NovelVolume } from "@/features/novel";
+import { NovelVolume } from "@/features/novel/types";
 import { Link } from "@/i18n/routing";
 import { formatNumberAbbreviated } from "@/lib/api/utils/number";
 import { ChevronRight, Clock, Eye, Lock } from "lucide-react";

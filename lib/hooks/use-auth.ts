@@ -7,10 +7,8 @@
 
 "use client";
 
-import { AuthContext } from "@/components/providers/AuthProvider";
+import { AuthContext } from "@/components/providers/auth-provider";
 import { useContext } from "react";
-
-export type { AuthUser } from "@/components/providers/AuthProvider";
 
 /**
  * Auth Hook - Context-based session management

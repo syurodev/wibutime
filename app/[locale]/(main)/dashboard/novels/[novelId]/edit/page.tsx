@@ -3,7 +3,7 @@
  * Form chỉnh sửa novel cá nhân
  */
 
-import { Container } from "@/components/layout/Container";
+import { Container } from "@/components/layout/container";
 import { getNovelById } from "@/features/novel/queries";
 import { EditNovelClient } from "./client";
 
