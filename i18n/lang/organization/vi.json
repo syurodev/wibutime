@@ -1,0 +1,94 @@
+{
+  "list": {
+    "title": "Tổ chức",
+    "description": "Quản lý các tổ chức bạn sở hữu và tham gia",
+    "owned_workspace": "Tổ chức sở hữu",
+    "joined_workspaces": "Tổ chức đã tham gia",
+    "no_joined_workspaces": "Bạn chưa tham gia tổ chức nào.",
+    "status_flagged": "Bị gắn cờ",
+    "stat_members": "Thành viên",
+    "stat_projects": "Dự án",
+    "stat_translations": "Bản dịch",
+    "enter_workspace": "Vào tổ chức",
+    "settings": "Cài đặt",
+    "enter": "Vào",
+    "create_workspace_title": "Tạo tổ chức của riêng bạn",
+    "create_workspace_desc": "Bắt đầu đội dịch thuật của riêng bạn và quản lý dự án hiệu quả.",
+    "create_button": "Tạo tổ chức",
+    "create_modal": {
+      "trigger_label": "Tạo tổ chức",
+      "title": "Tạo tổ chức",
+      "description": "Tạo một tổ chức mới để quản lý tiểu thuyết và thành viên của bạn.",
+      "labels": {
+        "name": "Tên tổ chức",
+        "slug": "Tên định danh",
+        "description": "Mô tả"
+      },
+      "placeholders": {
+        "name": "Team dịch thuật của tôi",
+        "description": "Mô tả ngắn về team của bạn..."
+      },
+      "hints": {
+        "slug": "ID duy nhất dùng trong URL (vd: wibusystem.com/org/my-team)"
+      },
+      "cancel": "Hủy",
+      "submit": "Tạo tổ chức",
+      "creating": "Đang tạo..."
+    }
+  },
+  "title": "Team Workspace",
+  "description": "Tổng quan hoạt động xuất bản của team",
+  "teamContent": "Nội dung của team",
+  "stats": {
+    "totalNovels": "Tổng Novels",
+    "totalChapters": "Tổng Chapters",
+    "totalViews": "Tổng lượt xem",
+    "averageRating": "Đánh giá TB"
+  },
+  "novels": {
+    "title": "Novels của Team",
+    "description": "Quản lý novels thuộc sở hữu của team",
+    "createNew": "Tạo Novel mới",
+    "empty": {
+      "title": "Chưa có novel nào",
+      "description": "Bắt đầu hành trình sáng tạo của team bằng cách tạo novel đầu tiên"
+    }
+  },
+  "createNovel": {
+    "title": "Tạo Novel mới",
+    "description": "Tạo novel cho team",
+    "backToList": "Quay lại",
+    "form": {
+      "owner": "Chủ sở hữu:",
+      "ownerTeam": "Team",
+      "ownerHint": "Novel này sẽ được tạo dưới quyền sở hữu của team"
+    }
+  },
+  "volumes": {
+    "title": "Quản lý Volumes",
+    "backToList": "Quay lại danh sách",
+    "createNew": "Tạo Volume mới"
+  },
+  "createVolume": {
+    "title": "Tạo Volume mới",
+    "description": "Thêm volume mới cho novel"
+  },
+  "createChapter": {
+    "title": "Viết Chapter mới",
+    "backToList": "Quay lại danh sách"
+  },
+  "sidebar": {
+    "overview": "Tổng quan",
+    "teamNovels": "Novels của team",
+    "members": "Thành viên",
+    "analytics": "Thống kê",
+    "settings": "Cài đặt",
+    "quickActions": "Hành động nhanh"
+  },
+  "quickActions": {
+    "createNovel": "Tạo Novel mới",
+    "createNovelDesc": "Bắt đầu novel mới cho team",
+    "manageNovels": "Quản lý Novels",
+    "manageNovelsDesc": "Xem và chỉnh sửa novels của team"
+  }
+}

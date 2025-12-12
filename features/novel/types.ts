@@ -291,3 +291,111 @@ export interface GetNovelsParams {
   sort_order?: "asc" | "desc";
   token?: string; // Optional auth token for server-side calls
 }
+
+// ============================================================================
+// Novel Full Response - Cho trang chi tiết novel (/novels/[slug]/full)
+// ============================================================================
+
+/**
+ * Owner Info Schema
+ */
+export const OwnerInfoSchema = z.object({
+  id: z.string(),
+  display_name: z.string(),
+  username: z.string().optional(),
+  avatar_url: z.string().nullable().optional(),
+});
+
+export type OwnerInfo = z.infer<typeof OwnerInfoSchema>;
+
+/**
+ * Genre Info Schema
+ */
+export const GenreInfoSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+});
+
+export type GenreInfo = z.infer<typeof GenreInfoSchema>;
+
+/**
+ * Chapter Summary Schema - không có content
+ */
+export const ChapterSummarySchema = z.object({
+  id: z.string(),
+  volume_id: z.string().nullable().optional(),
+  chapter_number: z.number(),
+  title: z.string(),
+  slug: z.string(),
+  display_order: z.number(),
+  status: z.string(),
+  published_at: z.string().nullable().optional(),
+});
+
+export type ChapterSummary = z.infer<typeof ChapterSummarySchema>;
+
+/**
+ * Volume with Chapters Schema
+ */
+export const VolumeWithChaptersSchema = z.object({
+  id: z.string(),
+  volume_number: z.number(),
+  title: z.string(),
+  slug: z.string(),
+  cover_image_url: z.string().nullable().optional(),
+  display_order: z.number(),
+  is_published: z.boolean(),
+  published_at: z.string().nullable().optional(),
+  chapters: z.array(ChapterSummarySchema).default([]),
+});
+
+export type VolumeWithChapters = z.infer<typeof VolumeWithChaptersSchema>;
+
+/**
+ * Novel Full Response Schema - Response từ /novels/:slug/full
+ */
+export const NovelFullResponseSchema = z.object({
+  // Basic Info
+  id: z.string(),
+  title: z.string(),
+  slug: z.string(),
+  synopsis: z.any(), // JSON content
+  cover_image_url: z.string().nullable().optional(),
+  thumbnail_url: z.string().nullable().optional(),
+  status: z.string(),
+  is_oneshot: z.boolean(),
+  original_language: z.string().nullable().optional(),
+  original_title: z.string().nullable().optional(),
+
+  // Relations
+  genre_ids: z.array(z.string()).default([]),
+  author_ids: z.array(z.string()).default([]),
+  artist_ids: z.array(z.string()).default([]),
+  genres: z.array(GenreInfoSchema).default([]),
+  authors: z.array(OwnerInfoSchema).default([]),
+  artists: z.array(OwnerInfoSchema).default([]),
+  owner: OwnerInfoSchema,
+
+  // Stats
+  total_volumes: z.number().default(0),
+  total_chapters: z.number().default(0),
+  total_words: z.number().default(0),
+  view_count: z.number().default(0),
+  favorite_count: z.number().default(0),
+  rating_average: z.number().default(0),
+  rating_count: z.number().default(0),
+
+  // Metadata
+  metadata: z.string().nullable().optional(),
+  first_published_at: z.string().nullable().optional(),
+  last_chapter_at: z.string().nullable().optional(),
+  completed_at: z.string().nullable().optional(),
+  created_at: z.string(),
+  updated_at: z.string(),
+
+  // Volumes and Chapters
+  volumes: z.array(VolumeWithChaptersSchema).default([]),
+  chapters: z.array(ChapterSummarySchema).default([]), // chapters không thuộc volume nào
+});
+
+export type NovelFullResponse = z.infer<typeof NovelFullResponseSchema>;

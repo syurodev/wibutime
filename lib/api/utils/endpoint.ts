@@ -146,4 +146,10 @@ export const endpoints = {
   // Creator endpoints
   creators: (params?: Record<string, any>) =>
     endpoint("creators", params || {}),
+
+  // Organization endpoints
+  organizations: (params?: Record<string, any>) =>
+    endpoint("organizations", params || {}),
+  organization: (identifier: string) => endpoint("organizations", identifier),
+  myOrganizations: () => endpoint("organizations", "me"),
 } as const;

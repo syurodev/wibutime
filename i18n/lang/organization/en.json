@@ -1,0 +1,95 @@
+{
+  "list": {
+    "title": "Organizations",
+    "description": "Manage your owned and joined organizations",
+    "owned_workspace": "Owned Organizations",
+    "joined_workspaces": "Joined Organizations",
+    "no_joined_workspaces": "You haven't joined any workspaces yet.",
+    "status_flagged": "Flagged",
+    "stat_members": "Members",
+    "stat_projects": "Projects",
+    "stat_translations": "Translations",
+    "enter_workspace": "Enter Workspace",
+    "settings": "Settings",
+    "enter": "Enter",
+    "create_workspace_title": "Create your own organization",
+    "create_workspace_desc": "Start your own translation team and manage projects efficiently.",
+    "create_button": "Create Organization",
+    "create_modal": {
+      "trigger_label": "Create Organization",
+      "title": "Create Organization",
+      "description": "Create a new organization to manage your novels and team members.",
+      "labels": {
+        "name": "Organization Name",
+        "slug": "Organization Identifier",
+        "description": "Description"
+      },
+      "placeholders": {
+        "name": "My Translation Team",
+        "description": "Brief description of your team..."
+      },
+      "hints": {
+        "slug": "Unique ID used in URLs (e.g. wibusystem.com/org/my-team)"
+      },
+      "cancel": "Cancel",
+      "submit": "Create Organization",
+      "creating": "Creating..."
+    },
+    "create_failed": "Failed to create organization"
+  },
+  "title": "Team Workspace",
+  "description": "Overview of team publishing activities",
+  "teamContent": "Team content",
+  "stats": {
+    "totalNovels": "Total Novels",
+    "totalChapters": "Total Chapters",
+    "totalViews": "Total Views",
+    "averageRating": "Avg Rating"
+  },
+  "novels": {
+    "title": "Team Novels",
+    "description": "Manage novels owned by the team",
+    "createNew": "Create New Novel",
+    "empty": {
+      "title": "No novels yet",
+      "description": "Start your team's creative journey by creating the first novel"
+    }
+  },
+  "createNovel": {
+    "title": "Create New Novel",
+    "description": "Create novel for team",
+    "backToList": "Go back",
+    "form": {
+      "owner": "Owner:",
+      "ownerTeam": "Team",
+      "ownerHint": "This novel will be created under team ownership"
+    }
+  },
+  "volumes": {
+    "title": "Manage Volumes",
+    "backToList": "Back to list",
+    "createNew": "Create New Volume"
+  },
+  "createVolume": {
+    "title": "Create New Volume",
+    "description": "Add new volume to novel"
+  },
+  "createChapter": {
+    "title": "Write New Chapter",
+    "backToList": "Back to list"
+  },
+  "sidebar": {
+    "overview": "Overview",
+    "teamNovels": "Team Novels",
+    "members": "Members",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "quickActions": "Quick Actions"
+  },
+  "quickActions": {
+    "createNovel": "Create New Novel",
+    "createNovelDesc": "Start a new novel for the team",
+    "manageNovels": "Manage Novels",
+    "manageNovelsDesc": "View and edit team novels"
+  }
+}

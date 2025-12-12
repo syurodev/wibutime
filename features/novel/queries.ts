@@ -9,6 +9,12 @@ import { isSuccessResponse, type StandardResponse } from "@/lib/api/types";
 import { endpoint } from "@/lib/api/utils/endpoint";
 import { ApiParser } from "@/lib/api/utils/parsers";
 import { cache } from "react";
+import {
+  NovelBackendSchema,
+  NovelFullResponseSchema,
+  type NovelBackend,
+  type NovelFullResponse,
+} from "./types";
 
 /**
  * Browse novels query parameters
@@ -88,7 +94,6 @@ export const getNovelsServer = cache(
  * Get novel by ID
  * Cached with React cache for deduplication
  */
-import { NovelBackendSchema, type NovelBackend } from "./types";
 
 export const getNovelById = cache(async (id: string): Promise<NovelBackend> => {
   const url = endpoint("novels", id);
@@ -108,3 +113,28 @@ export const getNovelById = cache(async (id: string): Promise<NovelBackend> => {
 
   return ApiParser.parse(NovelBackendSchema, response);
 });
+
+/**
+ * Get novel full data by slug
+ * Calls /api/v1/novels/:slug/full
+ * Returns complete novel data including volumes and chapters
+ */
+
+export const getNovelFull = cache(
+  async (slug: string): Promise<NovelFullResponse> => {
+    const url = endpoint("novels", slug, "full");
+
+    const response = await serverApi.get<StandardResponse<unknown>>(url, {
+      next: {
+        revalidate: 60, // Cache 1 minute
+        tags: [`novel-${slug}`, `novel-full-${slug}`, "novels"],
+      },
+    });
+
+    if (!isSuccessResponse(response)) {
+      throw new Error(response.message || "Failed to fetch novel");
+    }
+
+    return ApiParser.parse(NovelFullResponseSchema, response);
+  }
+);

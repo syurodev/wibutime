@@ -8,8 +8,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useRouter } from "@/i18n/routing";
 import { useAuth } from "@/hooks/use-auth";
+import { useRouter } from "@/i18n/routing";
 import { getInitials } from "@/lib/utils/get-initials";
 import {
   LayoutDashboard,
@@ -59,9 +59,8 @@ export function UserSection({ onActionClick }: UserSectionProps) {
   };
 
   const handleWorkspace = () => {
-    // TODO: If user has multiple tenants, show a selector
-    // For now, navigate to a tenant selector or first tenant
-    router.push("/workspace/demo-tenant"); // Replace with actual tenant selection
+    // Navigate to organizations list
+    router.push("/organizations");
     onActionClick?.();
   };
 
@@ -135,7 +134,7 @@ export function UserSection({ onActionClick }: UserSectionProps) {
           onClick={handleWorkspace}
         >
           <Users className="h-4 w-4 mr-2" />
-          <span className="text-sm">Team Workspace</span>
+          <span className="text-sm">Organizations</span>
         </Button>
 
         {isAdmin && (

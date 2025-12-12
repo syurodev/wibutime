@@ -18,7 +18,8 @@ export async function loadMessages(locale: Locale) {
   const library = (await import(`./lang/library/${locale}.json`)).default;
   const history = (await import(`./lang/history/${locale}.json`)).default;
   const dashboard = (await import(`./lang/dashboard/${locale}.json`)).default;
-  const workspace = (await import(`./lang/workspace/${locale}.json`)).default;
+  const organization = (await import(`./lang/organization/${locale}.json`))
+    .default;
   const account = (await import(`./lang/account/${locale}.json`)).default;
 
   return {
@@ -31,7 +32,7 @@ export async function loadMessages(locale: Locale) {
     library,
     history,
     dashboard,
-    workspace,
+    organization,
     account,
   };
 }
