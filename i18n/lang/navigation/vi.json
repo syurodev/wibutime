@@ -3,5 +3,17 @@
   "about": "Giới thiệu",
   "contact": "Liên hệ",
   "dashboard": "Bảng điều khiển",
-  "settings": "Cài đặt"
+  "settings": "Cài đặt",
+  "userSection": {
+    "notSignedIn": "Chưa đăng nhập",
+    "signInDescription": "Đăng nhập để truy cập thư viện của bạn",
+    "signIn": "Đăng nhập",
+    "accountSettings": "Cài đặt tài khoản",
+    "viewProfile": "Xem hồ sơ",
+    "settings": "Cài đặt",
+    "signOut": "Đăng xuất",
+    "myDashboard": "Bảng điều khiển",
+    "organizations": "Tổ chức",
+    "adminPanel": "Trang quản trị"
+  }
 }

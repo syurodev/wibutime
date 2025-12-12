@@ -7,6 +7,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
+import { getImageUrl } from "@/lib/utils/get-image-url";
 import { getInitials } from "@/lib/utils/get-initials";
 import { MoreHorizontal } from "lucide-react";
 import { NavTriggerItem } from "./nav-trigger-item";
@@ -40,7 +41,7 @@ export function NavAccountButton({
         icon:
           isLoggedIn && user ? (
             <Avatar className="h-6 w-6">
-              <AvatarImage src={user.image} alt={user.name} />
+              <AvatarImage src={getImageUrl(user.image)} alt={user.name} />
               <AvatarFallback className="text-xs">
                 {getInitials(user.name)}
               </AvatarFallback>

@@ -13,7 +13,7 @@ export function NovelSkeleton() {
         <Container className="py-8 lg:py-12">
           <div className="flex flex-col md:flex-row gap-6 lg:gap-8">
             {/* Cover Skeleton */}
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <Skeleton className="w-48 h-72 md:w-56 md:h-80 rounded-lg mx-auto md:mx-0" />
             </div>
 

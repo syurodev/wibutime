@@ -3,5 +3,17 @@
   "about": "About",
   "contact": "Contact",
   "dashboard": "Dashboard",
-  "settings": "Settings"
+  "settings": "Settings",
+  "userSection": {
+    "notSignedIn": "Not Signed In",
+    "signInDescription": "Sign in to access your library",
+    "signIn": "Sign In",
+    "accountSettings": "Account Settings",
+    "viewProfile": "View Profile",
+    "settings": "Settings",
+    "signOut": "Sign Out",
+    "myDashboard": "My Dashboard",
+    "organizations": "Organizations",
+    "adminPanel": "Admin Panel"
+  }
 }
