@@ -30,7 +30,7 @@ export const UserSettingsService = {
    */
   async updateSettings(data: Partial<UserSettings>): Promise<UserSettings> {
     const url = endpoint("users", "me", "settings");
-    const response = await api.put<StandardResponse<UserSettings>>(url, data);
+    const response = await api.patch<StandardResponse<UserSettings>>(url, data);
 
     if (!isSuccessResponse(response)) {
       throw new Error(response.message || "Failed to update user settings");
