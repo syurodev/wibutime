@@ -6,7 +6,6 @@ import { useUiPreferences } from "@/hooks/use-user-settings";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
-import type { TNode } from "platejs";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   DEFAULT_ITEM_IDS,
@@ -23,26 +22,18 @@ import { NavSearchButton } from "./nav-search-button";
 import { NavTriggerItem } from "./nav-trigger-item";
 import { useNav } from "./use-nav";
 
-/**
- * Main Navigation Component
- *
- * Renders a bottom navigation bar that dynamically displays items based on
- * the current page's configuration. Supports search mode where the nav expands
- * to show a search bar.
- *
- * Both nav items and search content animate with slide-from-bottom effect.
- */
+// --- PHYSICS (Snappy & Smooth) ---
+const SPRING_PHYSICS = {
+  type: "spring" as const,
+  stiffness: 300,
+  damping: 30,
+  mass: 0.8,
+};
+
 const Nav = () => {
-  // Get current pathname (without query params) to avoid re-render on query changes
   const fullPathname = usePathname();
-  // Strip query params to only track actual route changes
-  const pathname = useMemo(() => {
-    const basePath = fullPathname.split("?")[0];
-
-    return basePath;
-  }, [fullPathname]);
-
-  // Get nav state from context
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const pathname = useMemo(() => fullPathname.split("?")[0], [fullPathname]);
   const {
     items,
     searchMode,
@@ -54,39 +45,19 @@ const Nav = () => {
     loadingItems,
     setItemLoading,
   } = useNav();
-
-  // Get current breakpoint for responsive behavior
   const { breakpoint } = useMediaQuery();
-
-  // Get UI preferences for blur effect
   const { preferences } = useUiPreferences();
-
-  // Track if initial animation has already run to prevent re-animation on re-renders
   const [hasAnimated, setHasAnimated] = useState(false);
-
   useEffect(() => {
-    if (!hasAnimated) {
-      setHasAnimated(true);
-    }
+    if (!hasAnimated) setHasAnimated(true);
   }, [hasAnimated]);
   const reduceBlur = preferences.reduce_blur;
 
-  /**
-   * Merge default navigation items with page-specific items
-   * - defaultItemsStart appear FIRST (e.g., Home)
-   * - Page items appear in the MIDDLE
-   * - defaultItemsEnd appear LAST (e.g., Search)
-   *
-   * Filter out:
-   * - Items with IDs that conflict with defaults
-   * - Search items from pages (we use default search)
-   */
+  // --- LOGIC GỘP ITEMS (FIXED ORDER) ---
   const pageItems = useMemo(
     () =>
       items.filter(
-        (item) =>
-          !DEFAULT_ITEM_IDS.has(item.id) && // No default ID conflicts
-          item.type !== "search" // No page-specific search (use default)
+        (item) => !DEFAULT_ITEM_IDS.has(item.id) && item.type !== "search"
       ),
     [items]
   );
@@ -96,285 +67,107 @@ const Nav = () => {
     [pageItems]
   );
 
-  // Separate search and pagination items from other nav items
-  // Search item is handled specially (can expand to full width)
-  // Pagination items are hidden when search mode is active
   const searchItem = mergedItems.find((item) => item.type === "search");
+
+  // Logic Pagination
   const paginationItems = mergedItems.filter(
     (item) => item.type === "pagination"
   );
-  const otherItems = mergedItems.filter(
+  // --- FIX: Thêm lại biến này (đã bị thiếu ở phiên bản trước) ---
+  const visiblePaginationItems = searchMode ? [] : paginationItems;
+
+  const navListItems = mergedItems.filter(
     (item) => item.type !== "search" && item.type !== "pagination"
   );
 
-  // Hide pagination items when search mode is active (per user requirement)
-  const visiblePaginationItems = searchMode ? [] : paginationItems;
-
-  // Calculate max visible items based on breakpoint
   const getMaxVisibleItems = () => {
     switch (breakpoint) {
       case "mobile":
-        return 3; // Show 3 items + More button on mobile
+        return 3;
       case "tablet":
-        return 4; // Show 4 items + More button on tablet
+        return 4;
       default:
-        return Infinity; // Show all items on desktop
+        return Infinity;
     }
   };
-
   const maxVisibleItems = getMaxVisibleItems();
 
-  // Auto-prioritize items: Links first, then Actions/Triggers
-  const prioritizeItems = (items: typeof otherItems) => {
-    const linkItems = items.filter((item) => item.type === "link");
-    const otherItemTypes = items.filter((item) => item.type !== "link");
-    return [...linkItems, ...otherItemTypes];
-  };
-
-  const prioritizedItems = prioritizeItems(otherItems);
-
-  // Split into visible and overflow items
-  const hasOverflow = prioritizedItems.length > maxVisibleItems;
+  const hasOverflow = navListItems.length > maxVisibleItems;
   const visibleItems = hasOverflow
-    ? prioritizedItems.slice(0, maxVisibleItems)
-    : prioritizedItems;
-  const overflowItems = hasOverflow
-    ? prioritizedItems.slice(maxVisibleItems)
-    : [];
+    ? navListItems.slice(0, maxVisibleItems)
+    : navListItems;
+  const overflowItems = hasOverflow ? navListItems.slice(maxVisibleItems) : [];
 
-  // Calculate total nav items for dynamic container duration
-  // This ensures container resize matches stagger animation timing
-  const totalNavItems =
-    visibleItems.length +
-    visiblePaginationItems.length +
-    (searchItem ? 1 : 0) +
-    (hasOverflow ? 1 : 0);
-
-  // Dynamic container duration: base (400ms) + stagger delay (30ms per item)
-  const baseDuration = 0.3; // 300ms base exit animation (smoother height transitions)
-  const staggerPerItem = 0.03; // 30ms stagger between items
-  const containerDuration = baseDuration + totalNavItems * staggerPerItem;
-
-  // State to store measured nav width for smooth transitions
   const [navWidth, setNavWidth] = useState<number | null>(null);
-
-  // Initial mount state for entry animation (square → width)
   const [isInitialMount, setIsInitialMount] = useState(true);
 
-  // Compute container expansion state directly (no delay needed)
   const containerExpanded = searchMode || commentMode || accountMenuOpen;
 
-  // Track hover and focus state for scale animation
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-
-  // Timeout refs for delayed scale-down animation
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const focusTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Hidden ref container for measuring natural width without affecting visible layout
   const measureContainerRef = useRef<HTMLDivElement>(null);
-
-  // Ref for nav container to detect click outside
   const navRef = useRef<HTMLDivElement>(null);
 
-  // Initial mount animation: start as square, then expand to measured width
   useEffect(() => {
     if (isInitialMount && navWidth !== null) {
-      // Delay to show square state before expanding
-      const timer = setTimeout(() => {
-        setIsInitialMount(false);
-      }, 200); // 200ms to see the square shape
-
+      const timer = setTimeout(() => setIsInitialMount(false), 200);
       return () => clearTimeout(timer);
     }
   }, [isInitialMount, navWidth]);
 
-  // Measure nav content width when items change
-  // Measure immediately so width transition happens simultaneously with item animations
   useEffect(() => {
-    if (searchMode || commentMode || accountMenuOpen) {
-      return;
-    }
-
-    // Use requestAnimationFrame for smoother measurement sync with render cycle
-    const rafId = requestAnimationFrame(() => {
+    if (searchMode || commentMode || accountMenuOpen) return;
+    let rafId: number;
+    const measure = () => {
       if (measureContainerRef.current) {
-        // Measure the hidden container width (already includes padding from inline style)
-        // getBoundingClientRect() returns total width including padding
         const totalWidth =
           measureContainerRef.current.getBoundingClientRect().width;
-
-        // Only set width if it's reasonable (> 100px)
-        if (totalWidth > 100 && totalWidth !== navWidth) {
+        if (totalWidth > 100 && totalWidth !== navWidth)
           setNavWidth(totalWidth);
-        }
       }
-    });
-
-    return () => {
-      cancelAnimationFrame(rafId);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchMode, commentMode, accountMenuOpen, items]);
+    rafId = requestAnimationFrame(measure);
+    return () => cancelAnimationFrame(rafId);
+  }, [searchMode, commentMode, accountMenuOpen, items, navWidth]);
 
-  // Handlers for hover with delay
   const handleMouseEnter = () => {
-    // Clear any pending timeout
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
-      hoverTimeoutRef.current = null;
-    }
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
     setIsHovered(true);
   };
-
   const handleMouseLeave = () => {
-    // Delay scale-down by 300ms
-    hoverTimeoutRef.current = setTimeout(() => {
-      setIsHovered(false);
-    }, 300);
+    hoverTimeoutRef.current = setTimeout(() => setIsHovered(false), 300);
   };
-
-  // Handlers for focus with delay
   const handleFocus = () => {
-    // Clear any pending timeout
-    if (focusTimeoutRef.current) {
-      clearTimeout(focusTimeoutRef.current);
-      focusTimeoutRef.current = null;
-    }
+    if (focusTimeoutRef.current) clearTimeout(focusTimeoutRef.current);
     setIsFocused(true);
   };
-
   const handleBlur = () => {
-    // Delay scale-down by 300ms
-    focusTimeoutRef.current = setTimeout(() => {
-      setIsFocused(false);
-    }, 300);
+    focusTimeoutRef.current = setTimeout(() => setIsFocused(false), 300);
   };
-
-  // Detect scroll to collapse nav
   useEffect(() => {
-    let lastScrollY = window.scrollY;
-
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-
-      // If scrolling (position changed)
-      if (currentScrollY !== lastScrollY) {
-        // Clear hover and focus states when scrolling
-        setIsHovered(false);
-        setIsFocused(false);
-
-        // Clear existing timeout
-        if (scrollTimeoutRef.current) {
-          clearTimeout(scrollTimeoutRef.current);
-        }
-      }
-
-      lastScrollY = currentScrollY;
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  // Cleanup timeouts on unmount
-  useEffect(() => {
-    return () => {
-      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-      if (focusTimeoutRef.current) clearTimeout(focusTimeoutRef.current);
-      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
-    };
-  }, []);
-
-  // Handle click outside to close search mode
-  useEffect(() => {
-    if (!searchMode) return;
-
     const handleClickOutside = (event: MouseEvent) => {
-      // Check if click is outside nav container
       if (navRef.current && !navRef.current.contains(event.target as Node)) {
-        toggleSearch();
+        if (searchMode) toggleSearch();
+        else if (commentMode) toggleComment();
+        else if (accountMenuOpen) toggleAccountMenu();
       }
     };
-
-    // Add event listener
-    document.addEventListener("mousedown", handleClickOutside);
-
-    // Clean up
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [searchMode, toggleSearch]);
-
-  // Handle click outside to close comment mode
-  useEffect(() => {
-    if (!commentMode) return;
-
-    const handleClickOutside = (event: MouseEvent) => {
-      // Check if click is outside nav container
-      if (navRef.current && !navRef.current.contains(event.target as Node)) {
-        toggleComment();
-      }
-    };
-
-    // Add event listener
-    document.addEventListener("mousedown", handleClickOutside);
-
-    // Clean up
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [commentMode, toggleComment]);
-
-  // Handle click outside to close account menu
-  useEffect(() => {
-    if (!accountMenuOpen) return;
-
-    const handleClickOutside = (event: MouseEvent) => {
-      // Check if click is outside nav container
-      if (navRef.current && !navRef.current.contains(event.target as Node)) {
-        toggleAccountMenu();
-      }
-    };
-
-    // Add event listener
-    document.addEventListener("mousedown", handleClickOutside);
-
-    // Clean up
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [accountMenuOpen, toggleAccountMenu]);
-
-  // Handle ESC key to close search, comment, or account menu
+    if (containerExpanded)
+      document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [containerExpanded, toggleSearch, toggleComment, toggleAccountMenu]);
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        if (searchMode) {
-          toggleSearch();
-        } else if (commentMode) {
-          toggleComment();
-        } else if (accountMenuOpen) {
-          toggleAccountMenu();
-        }
+        if (searchMode) toggleSearch();
+        else if (commentMode) toggleComment();
+        else if (accountMenuOpen) toggleAccountMenu();
       }
     };
-
-    // Add event listener
     document.addEventListener("keydown", handleEscKey);
-
-    // Clean up
-    return () => {
-      document.removeEventListener("keydown", handleEscKey);
-    };
+    return () => document.removeEventListener("keydown", handleEscKey);
   }, [
     searchMode,
     commentMode,
@@ -384,323 +177,236 @@ const Nav = () => {
     toggleAccountMenu,
   ]);
 
-  // Determine if nav should be expanded (full size)
-  const isExpanded =
-    isHovered || isFocused || searchMode || commentMode || accountMenuOpen;
+  const isExpanded = isHovered || isFocused || containerExpanded;
 
-  // Calculate container width based on current state
-  const getContainerWidth = () => {
+  const getContainerWidthValue = () => {
     if (containerExpanded) {
-      // Responsive width: full width on mobile with margins, 400px on desktop
-      if (breakpoint === "mobile") {
-        return "calc(100vw - 32px)"; // 16px margin on each side
-      }
-      return "400px";
+      if (breakpoint === "mobile") return "calc(100vw - 32px)";
+      return 400;
     }
-    if (isInitialMount) {
-      return "56px"; // Initial: square (width = height)
-    }
-    if (navWidth) {
-      return `${navWidth}px`;
-    }
+    if (isInitialMount) return 56;
+    if (navWidth) return navWidth;
     return "auto";
   };
 
-  const commentModeNav = () => {
-    return (
-      <motion.div
-        key="comment-content"
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -15 }}
-        transition={{
-          duration: 0.2,
-          ease: [0.4, 0, 0.2, 1],
-        }}
-        className="w-full"
-      >
-        <CompactCommentEditor
-          onSubmit={(content: TNode[]) => {
-            // Handle comment submission
-            // TODO: Add your comment submission logic here
-            toggleComment(); // Close after submit
-          }}
-          onCancel={() => {
-            toggleComment(); // Close on cancel
-          }}
-          placeholder="Write a comment..."
-          autoFocus={true}
-        />
-      </motion.div>
-    );
-  };
+  // --- RENDER HELPERS ---
 
-  const navDefault = () => {
-    return (
-      <ul className="flex items-center gap-2">
-        <AnimatePresence mode="popLayout">
-          {/* Render each visible nav item based on its type with index for stagger */}
-          {visibleItems.map((item, index) => {
-            switch (item.type) {
-              case "link":
-                // Link item: navigate to another page
-                return (
-                  <NavLinkItem
-                    key={item.id}
-                    item={item}
-                    index={index}
-                    hasAnimated={hasAnimated}
-                  />
-                );
-              case "action":
-                // Action item: async operation (API calls)
-                return (
-                  <NavActionItem
-                    key={item.id}
-                    item={item}
-                    index={index}
-                    hasAnimated={hasAnimated}
-                  />
-                );
-              case "trigger":
-                // Trigger item: sync UI action (open modal)
-                return (
-                  <NavTriggerItem
-                    key={item.id}
-                    item={item}
-                    index={index}
-                    hasAnimated={hasAnimated}
-                  />
-                );
-              default:
-                return null;
-            }
-          })}
-          {/* Render pagination items (hidden during search mode) */}
-          {visiblePaginationItems.map((item, index) => (
-            <motion.li
-              key={item.id}
-              layout
-              initial={hasAnimated ? false : { opacity: 0, scale: 0.8, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.8, y: 20 }}
-              transition={{
-                duration: 0.2,
-                delay: (visibleItems.length + index) * 0.05,
-                ease: [0.4, 0, 0.2, 1],
-              }}
-            >
-              <NavPaginationButton
-                currentPage={item.currentPage}
-                totalPages={item.totalPages}
-                onPageChange={item.onPageChange}
-                isActive={false}
-              />
-            </motion.li>
-          ))}
-          {/* Render search button when not in search mode */}
-          {searchItem?.type === "search" && (
-            <NavSearchButton
-              key="search-button"
-              item={searchItem}
-              index={visibleItems.length}
-              hasAnimated={hasAnimated}
+  const navDefault = () => (
+    <motion.ul
+      key="nav-default"
+      initial={{ opacity: 0, scale: 0.9, filter: "blur(5px)" }}
+      animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+      exit={{
+        opacity: 0,
+        scale: 0.95,
+        filter: "blur(5px)",
+        transition: { duration: 0.2 },
+      }}
+      transition={{ duration: 0.2 }}
+      className={cn(
+        !containerExpanded ? "absolute inset-0 m-auto" : "relative",
+        "flex items-center gap-2 justify-center",
+        "whitespace-nowrap flex-nowrap",
+        "h-[56px] w-full"
+      )}
+      style={{ willChange: "transform, opacity" }}
+    >
+      <AnimatePresence mode="popLayout">
+        {visibleItems.map((item, index) => {
+          switch (item.type) {
+            case "link":
+              return (
+                <NavLinkItem
+                  key={item.id}
+                  item={item}
+                  index={index}
+                  hasAnimated={hasAnimated}
+                />
+              );
+            case "action":
+              return (
+                <NavActionItem
+                  key={item.id}
+                  item={item}
+                  index={index}
+                  hasAnimated={hasAnimated}
+                />
+              );
+            case "trigger":
+              return (
+                <NavTriggerItem
+                  key={item.id}
+                  item={item}
+                  index={index}
+                  hasAnimated={hasAnimated}
+                />
+              );
+            default:
+              return null;
+          }
+        })}
+        {visiblePaginationItems.map((item, index) => (
+          <motion.li
+            key={item.id}
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <NavPaginationButton
+              currentPage={item.currentPage}
+              totalPages={item.totalPages}
+              onPageChange={item.onPageChange}
+              isActive={false}
             />
-          )}
-          {/* Render Account button (always visible, part of default items) */}
-          <NavAccountButton
-            index={visibleItems.length + (searchItem ? 1 : 0)}
-            overflowCount={overflowItems.length}
-          />
-        </AnimatePresence>
-      </ul>
-    );
-  };
-
-  const navSearchMode = () => {
-    return (
-      <motion.div
-        key="search-content"
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -15 }}
-        transition={{
-          duration: 0.2,
-          ease: [0.4, 0, 0.2, 1],
-        }}
-        className="w-full"
-      >
+          </motion.li>
+        ))}
         {searchItem?.type === "search" && (
-          <NavSearch
+          <NavSearchButton
+            key="search-button"
             item={searchItem}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
+            index={visibleItems.length}
+            hasAnimated={hasAnimated}
           />
         )}
-      </motion.div>
-    );
-  };
-
-  const navAccountMenuMode = () => {
-    return (
-      <motion.div
-        key="account-menu-content"
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -15 }}
-        transition={{
-          duration: 0.2,
-          ease: [0.4, 0, 0.2, 1],
-        }}
-        className="w-full"
-      >
-        <NavAccountMenuContent
-          onClose={toggleAccountMenu}
-          items={overflowItems}
-          loadingItems={loadingItems}
-          setItemLoading={setItemLoading}
+        <NavAccountButton
+          index={visibleItems.length + (searchItem ? 1 : 0)}
+          overflowCount={overflowItems.length}
         />
-      </motion.div>
-    );
-  };
+      </AnimatePresence>
+    </motion.ul>
+  );
 
-  const renderNavContent = () => {
-    if (searchMode) {
-      // Search mode: show search input with results (dynamic height)
-      return navSearchMode();
-    }
-
-    if (commentMode) {
-      // Comment mode: show compact comment editor (dynamic height)
-      return commentModeNav();
-    }
-
-    if (accountMenuOpen) {
-      // Account menu mode: show user info, overflow items, settings (dynamic height)
-      return navAccountMenuMode();
-    }
-
-    // Nav mode: show navigation items
-    // Exit duration matches nav items (200ms) for uniform animation
-    return navDefault();
-  };
+  const navExpandedContent = (children: React.ReactNode, key: string) => (
+    <motion.div
+      key={key}
+      initial={{ opacity: 0, filter: "blur(10px)", scale: 0.98 }}
+      animate={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
+      exit={{
+        opacity: 0,
+        filter: "blur(10px)",
+        scale: 0.98,
+        position: "absolute",
+        inset: 0,
+        transition: { duration: 0.15 },
+      }}
+      transition={SPRING_PHYSICS}
+      className={cn("w-[400px] max-w-[calc(100vw-64px)]", "origin-top")}
+      style={{ willChange: "transform, opacity" }}
+    >
+      {children}
+    </motion.div>
+  );
 
   return (
-    // Fixed position at bottom center of screen
     <nav
       className={cn(
         "fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-300",
         isExpanded ? "bottom-6" : "bottom-4"
       )}
     >
-      {/* Initial mount animation wrapper with hover/focus scale effect */}
       <motion.div
         ref={navRef}
         initial={{ scale: 0.8, opacity: 0 }}
-        animate={{
-          scale: isExpanded ? 1 : 0.6,
-          opacity: 1,
-        }}
-        transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+        animate={{ scale: isExpanded ? 1 : 0.6, opacity: 1 }}
+        transition={SPRING_PHYSICS}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {/*
-        Nav container with glass morphism effect
-        Uses CSS transition for width animation
-        Width transitions smoothly between measured nav width and search width (400px)
-      */}
-        <div
+        <motion.div
+          layout
           className={cn(
-            "relative shadow-lg rounded-2xl",
-            isInitialMount && "overflow-hidden",
-            // Reduce blur mode: solid background, no blur
-            reduceBlur && "bg-background",
-            // Full quality mode: glass morphism with backdrop blur
+            "relative shadow-2xl rounded-2xl overflow-hidden",
+            reduceBlur && "bg-background border border-border",
             !reduceBlur &&
               (isExpanded
-                ? "backdrop-blur-xl bg-background/80"
-                : "backdrop-blur-md bg-background/40")
+                ? "backdrop-blur-xl bg-background/80 saturate-150 border border-white/20"
+                : "backdrop-blur-md bg-background/50 border border-white/10")
           )}
+          animate={{
+            width: getContainerWidthValue(),
+          }}
+          transition={SPRING_PHYSICS}
           style={{
-            minHeight: "56px",
-            width: getContainerWidth(),
-            transition: `all ${containerDuration}s ease-in-out`,
+            minHeight: 56,
+            transform: "translateZ(0)",
           }}
         >
-          {/*
-          Content wrapper with dynamic height
-          Nav mode: Fixed at 56px total (32px content + 24px padding)
-          Search mode: Expands smoothly up to 600px max
-          Comment mode: No overflow-hidden to allow floating toolbar to render outside
-          Using max-height for smooth CSS transition (height: auto doesn't transition)
-        */}
-          <div
+          <motion.div
+            layout="position"
             className={cn(
-              "relative flex items-center",
-              !commentMode && "overflow-hidden"
+              "relative flex justify-center w-full",
+              containerExpanded ? "items-start" : "items-center"
             )}
             style={{
-              height: containerExpanded ? "auto" : "56px",
-              maxHeight: containerExpanded ? "600px" : "56px",
-              padding: "12px 16px",
-              transition: `all ${containerDuration}s ease-in-out`,
+              padding: containerExpanded ? "12px 16px" : "0 16px",
+              minHeight: 56,
             }}
           >
-            {/* AnimatePresence for smooth transitions between modes */}
-            {/* mode="wait" ensures exit completes before enter starts */}
-            <AnimatePresence initial={false} mode="wait">
-              {renderNavContent()}
+            <AnimatePresence mode="popLayout" initial={false}>
+              {searchMode &&
+                navExpandedContent(
+                  <NavSearch
+                    item={searchItem!}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                  />,
+                  "search"
+                )}
+              {commentMode &&
+                navExpandedContent(
+                  <CompactCommentEditor
+                    onSubmit={() => toggleComment()}
+                    onCancel={() => toggleComment()}
+                    placeholder="Write a comment..."
+                    autoFocus
+                  />,
+                  "comment"
+                )}
+              {accountMenuOpen &&
+                navExpandedContent(
+                  <NavAccountMenuContent
+                    onClose={toggleAccountMenu}
+                    items={overflowItems}
+                    loadingItems={loadingItems}
+                    setItemLoading={setItemLoading}
+                  />,
+                  "account"
+                )}
+              {!containerExpanded && navDefault()}
             </AnimatePresence>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </motion.div>
-
-      {/* Hidden measurement container - always renders with width: auto for accurate measurement */}
-      {!searchMode && !commentMode && !accountMenuOpen && (
+      {!containerExpanded && (
         <div
           ref={measureContainerRef}
           className="fixed pointer-events-none opacity-0 left-0 top-0"
-          style={{
-            width: "auto",
-            padding: "12px 16px",
-          }}
+          style={{ width: "auto", padding: "0 16px" }}
           aria-hidden="true"
         >
           <ul className="flex items-center gap-2">
-            {visibleItems.map((item) => {
-              // Render simplified item structure for measurement (no animations/tooltips)
-              return (
-                <li key={item.id} className="p-3">
-                  {item.icon}
-                </li>
-              );
-            })}
-            {/* Include pagination items in measurement */}
-            {paginationItems.map((item) => (
-              <li key={item.id} className="rounded-full px-3 py-2">
-                <div className="flex items-center gap-1">
-                  <div className="h-6 w-6" />
-                  <div className="px-1 text-sm">
-                    <span className="hidden sm:inline">Page</span>
-                    <span>{item.currentPage}</span>
-                    <span>/</span>
-                    <span>{item.totalPages}</span>
-                  </div>
-                  <div className="h-6 w-6" />
-                </div>
+            {visibleItems.map((item) => (
+              <li key={item.id} className="p-3">
+                {item.icon}
               </li>
             ))}
-            {searchItem && <li className="p-3">{searchItem.icon}</li>}
-            {/* Account button always visible */}
+            {paginationItems.map((item) => (
+              <li key={item.id} className="p-3">
+                <div className="h-6 w-6" />
+              </li>
+            ))}
+            {searchItem && (
+              <li className="p-3">
+                <div className="h-6 w-6" />
+              </li>
+            )}
             <li className="p-3">
               <div className="h-6 w-6" />
             </li>
           </ul>
         </div>
       )}
-
-      {/* Account Menu is now integrated inline as dropdown */}
     </nav>
   );
 };
