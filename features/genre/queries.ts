@@ -36,7 +36,10 @@ export const getGenres = cache(
     const response = await serverApi.get<StandardResponse<unknown>>(url, {
       next: {
         revalidate: 300, // Cache 5 minutes
-        tags: ["genres"],
+        tags: [
+          "genres",
+          `genres-${params?.search}-${params?.page}-${params?.limit}-${params?.sort_by}-${params?.sort_order}-${params?.active_only}`,
+        ],
       },
     });
 

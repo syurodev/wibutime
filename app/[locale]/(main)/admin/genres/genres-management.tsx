@@ -3,9 +3,9 @@
 /**
  * Genres Management Component - Client Component with URL State
  * CRUD interface for genres with URL-synced pagination and search
+ * Data fetching is handled by server component (page.tsx)
  */
 
-import { MergeGenreDialog } from "@/features/genre/components/merge-genre-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -27,6 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { MergeGenreDialog } from "@/features/genre/components/merge-genre-dialog";
 import { GenreService } from "@/features/genre/hooks/use-genres";
 import {
   type CreateGenreRequest,
@@ -52,7 +53,17 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 
-export function GenresManagement() {
+interface GenresManagementProps {
+  data: {
+    items: Genre[];
+    page: number;
+    limit: number;
+    total_items: number;
+    total_pages: number;
+  };
+}
+
+export function GenresManagement({ data }: GenresManagementProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -60,12 +71,6 @@ export function GenresManagement() {
   // Get state from URL
   const currentPage = Number(searchParams.get("page")) || DEFAULT_PAGE;
   const currentSearch = searchParams.get("search") || "";
-
-  // Data state
-  const [genres, setGenres] = useState<Genre[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
 
   // Local search input state (for debouncing)
   const [searchInput, setSearchInput] = useState(currentSearch);
@@ -86,7 +91,7 @@ export function GenresManagement() {
   });
   const [submitting, setSubmitting] = useState(false);
 
-  // URL update helpers
+  // URL update helpers - triggers server component re-fetch via Soft Navigation
   const updateURL = (updates: { page?: number; search?: string }) => {
     const params = new URLSearchParams(searchParams.toString());
 
@@ -112,46 +117,12 @@ export function GenresManagement() {
     });
   };
 
-  // Fetch genres function
-  const fetchGenres = async () => {
-    try {
-      setLoading(true);
-      const result = await GenreService.getList({
-        page: currentPage,
-        limit: DEFAULT_LIMIT,
-        search: currentSearch || undefined,
-        sort_by: "created",
-        sort_order: "desc",
-      });
-      setGenres(result.items);
-      setTotalPages(result.total_pages);
-      setTotalItems(result.total_items);
-    } catch (error) {
-      const message =
-        error instanceof ApiError
-          ? error.message
-          : "Không thể tải danh sách thể loại";
-      toast.error(message);
-      setGenres([]);
-      setTotalPages(1);
-      setTotalItems(0);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Fetch when URL params change
-  useEffect(() => {
-    fetchGenres();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, currentSearch]);
-
   // Sync search input with URL (when navigating back/forward)
   useEffect(() => {
     setSearchInput(currentSearch);
   }, [currentSearch]);
 
-  // Debounced search
+  // Debounced search - updates URL which triggers server re-fetch
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchInput !== currentSearch) {
@@ -160,29 +131,20 @@ export function GenresManagement() {
     }, 500);
 
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchInput]);
 
-  // Handlers
+  // CRUD Handlers - after mutation, refresh to re-fetch from server
   const handleCreate = async () => {
     try {
       setSubmitting(true);
-      const newGenre = await GenreService.create(
-        formData as CreateGenreRequest
-      );
+      await GenreService.create(formData as CreateGenreRequest);
       toast.success("Đã tạo thể loại thành công");
       setCreateDialogOpen(false);
       setFormData({ name: "", description: "" });
 
-      // Optimistic update if on first page
-      if (currentPage === 1 && !currentSearch) {
-        // Add to top of list, keep only DEFAULT_LIMIT items
-        setGenres([newGenre, ...genres.slice(0, DEFAULT_LIMIT - 1)]);
-        setTotalItems(totalItems + 1);
-        setTotalPages(Math.ceil((totalItems + 1) / DEFAULT_LIMIT));
-      } else {
-        // Refetch if not on first page or has search filter
-        await fetchGenres();
-      }
+      // Trigger server component re-fetch
+      router.refresh();
     } catch (error) {
       const message =
         error instanceof ApiError ? error.message : "Không thể tạo thể loại";
@@ -196,7 +158,7 @@ export function GenresManagement() {
     if (!selectedGenre) return;
     try {
       setSubmitting(true);
-      const updatedGenre = await GenreService.update(
+      await GenreService.update(
         selectedGenre.id,
         formData as UpdateGenreRequest
       );
@@ -205,12 +167,8 @@ export function GenresManagement() {
       setSelectedGenre(null);
       setFormData({ name: "", description: "" });
 
-      // Optimistic update: replace item in current list
-      setGenres(
-        genres.map((genre) =>
-          genre.id === selectedGenre.id ? updatedGenre : genre
-        )
-      );
+      // Trigger server component re-fetch
+      router.refresh();
     } catch (error) {
       const message =
         error instanceof ApiError
@@ -231,15 +189,12 @@ export function GenresManagement() {
       setDeleteDialogOpen(false);
       setSelectedGenre(null);
 
-      // Optimistic update: remove from list
-      const newGenres = genres.filter((genre) => genre.id !== selectedGenre.id);
-      setGenres(newGenres);
-      setTotalItems(totalItems - 1);
-      setTotalPages(Math.ceil((totalItems - 1) / DEFAULT_LIMIT));
-
       // If current page becomes empty and not first page, go to previous page
-      if (newGenres.length === 0 && currentPage > 1) {
+      if (data.items.length === 1 && currentPage > 1) {
         updateURL({ page: currentPage - 1 });
+      } else {
+        // Trigger server component re-fetch
+        router.refresh();
       }
     } catch (error) {
       const message =
@@ -290,15 +245,7 @@ export function GenresManagement() {
 
   // Helper function to render table content based on state
   const renderTableContent = () => {
-    if (loading) {
-      return (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="size-6 animate-spin text-muted-foreground" />
-        </div>
-      );
-    }
-
-    if (genres.length === 0) {
+    if (data.items.length === 0) {
       return (
         <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
           <AlertCircle className="size-12 mb-4" />
@@ -323,7 +270,7 @@ export function GenresManagement() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {genres.map((genre) => (
+            {data.items.map((genre) => (
               <TableRow key={genre.id}>
                 <TableCell className="font-medium">{genre.name}</TableCell>
                 <TableCell className="text-muted-foreground">
@@ -375,7 +322,8 @@ export function GenresManagement() {
         <div className="flex items-center justify-between border-t px-4 py-3">
           <p className="text-sm text-muted-foreground">
             Hiển thị {(currentPage - 1) * DEFAULT_LIMIT + 1}-
-            {Math.min(currentPage * DEFAULT_LIMIT, totalItems)} / {totalItems}
+            {Math.min(currentPage * DEFAULT_LIMIT, data.total_items)} /{" "}
+            {data.total_items}
           </p>
           <div className="flex gap-2">
             <Button
@@ -387,12 +335,12 @@ export function GenresManagement() {
               Trước
             </Button>
             <span className="flex items-center px-3 text-sm">
-              Trang {currentPage} / {totalPages}
+              Trang {currentPage} / {data.total_pages}
             </span>
             <Button
               variant="outline"
               size="sm"
-              disabled={currentPage === totalPages || isPending}
+              disabled={currentPage === data.total_pages || isPending}
               onClick={() => updateURL({ page: currentPage + 1 })}
             >
               Sau
@@ -417,6 +365,9 @@ export function GenresManagement() {
                 onChange={(e) => setSearchInput(e.target.value)}
                 className="pl-10"
               />
+              {isPending && (
+                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 size-4 animate-spin text-muted-foreground" />
+              )}
             </div>
             <div className="flex gap-2">
               <Button
@@ -577,7 +528,7 @@ export function GenresManagement() {
         open={mergeDialogOpen}
         onOpenChange={setMergeDialogOpen}
         onSuccess={() => {
-          fetchGenres(); // Reload data after merge
+          router.refresh(); // Re-fetch from server after merge
         }}
       />
     </div>

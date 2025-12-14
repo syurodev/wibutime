@@ -3,6 +3,8 @@
  * Quản lý thể loại (genres)
  */
 
+import { getGenres } from "@/features/genre/queries";
+import { DEFAULT_LIMIT, DEFAULT_PAGE } from "@/lib/constants/default";
 import type { Metadata } from "next";
 import { GenresManagement } from "./genres-management";
 
@@ -11,7 +13,24 @@ export const metadata: Metadata = {
   description: "Quản lý các thể loại truyện",
 };
 
-export default function AdminGenresPage() {
+export default async function AdminGenresPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const params = await searchParams;
+  const page = Number(params.page) || DEFAULT_PAGE;
+  const search = typeof params.search === "string" ? params.search : "";
+
+  // Fetch genres on server-side
+  const initialData = await getGenres({
+    page,
+    limit: DEFAULT_LIMIT,
+    search: search || undefined,
+    sort_by: "created",
+    sort_order: "desc",
+  });
+
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="mb-8">
@@ -20,7 +39,7 @@ export default function AdminGenresPage() {
           Thêm, sửa và xóa các thể loại truyện
         </p>
       </div>
-      <GenresManagement />
+      <GenresManagement data={initialData} />
     </div>
   );
 }
