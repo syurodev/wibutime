@@ -277,11 +277,12 @@ export function GenresManagement({ data }: GenresManagementProps) {
                   {genre.slug}
                 </TableCell>
                 <TableCell>
-                  {genre.is_active ? (
-                    <Badge variant="default">Active</Badge>
-                  ) : (
-                    <Badge variant="secondary">Inactive</Badge>
-                  )}
+                  <Badge
+                    variant={genre.is_active ? "active" : "inactive"}
+                    className="border-teal-400 bg-transparent"
+                  >
+                    {genre.is_active ? "Active" : "Inactive"}
+                  </Badge>
                 </TableCell>
                 <TableCell>
                   {renderTrendBadge(genre.trend || "stable")}
