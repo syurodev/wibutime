@@ -51,7 +51,7 @@ const Nav = () => {
   useEffect(() => {
     if (!hasAnimated) setHasAnimated(true);
   }, [hasAnimated]);
-  const reduceBlur = preferences.reduce_blur;
+  const reduceBlur = preferences.glass_effect === "reduce";
 
   // --- LOGIC GỘP ITEMS (FIXED ORDER) ---
   const pageItems = useMemo(

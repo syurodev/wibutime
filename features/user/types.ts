@@ -6,11 +6,17 @@
 import { z } from "zod";
 
 /**
+ * Glass Effect types
+ */
+export const GlassEffectValues = ["normal", "reduce", "liquid"] as const;
+export type GlassEffect = (typeof GlassEffectValues)[number];
+
+/**
  * UI Preferences Schema
  * Các settings cho giao diện người dùng
  */
 export const UiPreferencesSchema = z.object({
-  reduce_blur: z.boolean().default(false),
+  glass_effect: z.enum(GlassEffectValues).default("normal"),
   auto_play_video: z.boolean().default(false),
   show_mature_content: z.boolean().default(false),
   compact_view: z.boolean().default(false),
@@ -29,7 +35,7 @@ export const UserSettingsSchema = z.object({
   notifications_enabled: z.boolean().default(true),
   content_filters: z.array(z.string()).default([]),
   ui_preferences: UiPreferencesSchema.default(() => ({
-    reduce_blur: false,
+    glass_effect: "normal" as GlassEffect,
     auto_play_video: false,
     show_mature_content: false,
     compact_view: false,

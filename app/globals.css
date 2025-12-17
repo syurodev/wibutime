@@ -60,7 +60,7 @@
   --muted-foreground: oklch(0.552 0.016 285.938);
   --accent: oklch(0.967 0.001 286.375);
   --accent-foreground: oklch(0.21 0.006 285.885);
-  --destructive: oklch(0.577 0.245 27.325);
+  --destructive: oklch(61.743% 0.24304 19.39);
   --border: oklch(0.92 0.004 286.32);
   --input: oklch(0.92 0.004 286.32);
   --ring: oklch(0.705 0.015 286.067);
@@ -95,7 +95,7 @@
   --muted-foreground: oklch(0.705 0.015 286.067);
   --accent: oklch(0.274 0.006 286.033);
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
+  --destructive: oklch(63.492% 0.23375 19.41);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.552 0.016 285.938);
@@ -189,5 +189,57 @@
   /* Smooth transitions cho tất cả translation nodes */
   .translation-node {
     transition: all 0.2s ease-in-out;
+  }
+}
+
+/* Liquid Glass Effect - Auto-enabled based on user setting */
+@layer components {
+  /* When glass effect is set to "liquid", apply liquid styles to buttons with data-liquid="auto" */
+  html[data-glass-effect="liquid"] [data-liquid="auto"] {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    transition: all 300ms ease-out;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4),
+      0 8px 32px rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(20px) url(#liquid-glass-filter-light);
+    -webkit-backdrop-filter: blur(20px) url(#liquid-glass-filter-light);
+  }
+
+  html[data-glass-effect="liquid"] [data-liquid="auto"]:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.5),
+      0 16px 48px rgba(0, 0, 0, 0.15);
+    transform: scale(1.02);
+  }
+
+  html[data-glass-effect="liquid"] [data-liquid="auto"]:active {
+    transform: scale(0.98);
+  }
+
+  /* Gradient overlay for liquid buttons */
+  html[data-glass-effect="liquid"] [data-liquid="auto"]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -10;
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
+    pointer-events: none;
+  }
+
+  /* Dark mode adjustments */
+  .dark[data-glass-effect="liquid"] [data-liquid="auto"],
+  html.dark[data-glass-effect="liquid"] [data-liquid="auto"] {
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .dark[data-glass-effect="liquid"] [data-liquid="auto"]:hover,
+  html.dark[data-glass-effect="liquid"] [data-liquid="auto"]:hover {
+    border-color: rgba(255, 255, 255, 0.3);
   }
 }

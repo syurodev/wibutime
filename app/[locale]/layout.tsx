@@ -29,6 +29,8 @@ function isValidLocale(locale: string): locale is Locale {
  * I18n Provider Component - Wrapped in Suspense boundary
  * Handles async data access (getMessages) within Suspense for Cache Components compatibility
  */
+import { GlassEffectApplier } from "@/components/effects/glass-effect-applier";
+import { LiquidGlassFilter } from "@/components/effects/liquid-glass-filter";
 import { ClientProviders } from "@/components/providers/client-providers";
 import { SessionHydrator } from "@/components/providers/session-hydrator";
 import { ThemeProvider } from "@/components/providers/theme-provider";
@@ -89,6 +91,8 @@ export default async function LocaleLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground min-h-screen`}
       >
         <ThemeProvider>
+          <LiquidGlassFilter />
+          <GlassEffectApplier />
           <Suspense fallback={null}>
             <SessionHydrator />
           </Suspense>

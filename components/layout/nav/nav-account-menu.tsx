@@ -11,7 +11,7 @@ import { Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { LanguageToggleCompact } from "./language-toggle-compact";
-import { ReduceBlurToggle } from "./reduce-blur-toggle";
+import { GlassEffectToggle } from "./reduce-blur-toggle";
 import { ThemeToggleCompact } from "./theme-toggle-compact";
 import type { NavItem } from "./types";
 import { UserSection } from "./user-section";
@@ -147,8 +147,8 @@ export function NavAccountMenuContent({
       {/* Language Toggle */}
       <LanguageToggleCompact />
 
-      {/* Reduce Blur Toggle */}
-      <ReduceBlurToggle />
+      {/* Glass Effect Toggle */}
+      <GlassEffectToggle />
     </div>
   );
 }

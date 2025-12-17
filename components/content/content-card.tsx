@@ -1,9 +1,9 @@
 "use client";
 
 import { MediaSeries } from "@/features/content";
+import { useUiPreferences } from "@/hooks/use-user-settings";
 import { Link } from "@/i18n/routing";
 import { formatNumberAbbreviated } from "@/lib/api/utils/number";
-import { useUiPreferences } from "@/hooks/use-user-settings";
 import { cn } from "@/lib/utils";
 import { getContentBadgeVariant } from "@/lib/utils/get-content-bg";
 import { getImageUrl } from "@/lib/utils/get-image-url";
@@ -25,7 +25,8 @@ export const ContentCard = memo(function ContentCard({
   className,
 }: ContentCardProps) {
   const { preferences } = useUiPreferences();
-  const reduceBlur = preferences.reduce_blur;
+  // Use reduced visuals when glass_effect is 'reduce'
+  const reduceBlur = preferences.glass_effect === "reduce";
 
   return (
     <div className="rounded-[20px] border-4 border-secondary bg-secondary shadow-sm group transition-all duration-300 hover:shadow-lg hover:border-primary/30 transform-gpu">
@@ -63,7 +64,7 @@ export const ContentCard = memo(function ContentCard({
             {/* --- OPTIMIZATION LOGIC START --- */}
 
             {/* REDUCED OVERLAY (HIỆU NĂNG CAO)
-              - Hiện khi reduce_blur = true
+              - Shows when glass_effect = 'reduce'
               - Dùng gradient đơn giản, không blur, không mask.
               - from-black/95: Đủ đậm để text trắng dễ đọc.
           */}
@@ -75,7 +76,7 @@ export const ContentCard = memo(function ContentCard({
             )}
 
             {/* FULL QUALITY OVERLAY (VISUAL CAO CẤP)
-              - Hiện khi reduce_blur = false
+              - Shows when glass_effect = 'normal' or 'liquid'
               - Giữ nguyên Blur, Mask Image, Gradient Protection
           */}
             {!reduceBlur && (

@@ -7,7 +7,7 @@
 
 "use client";
 
-import type { UiPreferences } from "@/features/user/types";
+import type { GlassEffect, UiPreferences } from "@/features/user/types";
 import { useUserSettingsStore } from "@/lib/stores/user-settings.store";
 
 /**
@@ -75,7 +75,8 @@ export function useUiPreferences() {
   );
 
   // Convenience methods for common preferences
-  const setReduceBlur = (value: boolean) => setPreference("reduce_blur", value);
+  const setGlassEffect = (value: GlassEffect) =>
+    setPreference("glass_effect", value);
   const setAutoPlayVideo = (value: boolean) =>
     setPreference("auto_play_video", value);
   const setShowMatureContent = (value: boolean) =>
@@ -87,7 +88,7 @@ export function useUiPreferences() {
     preferences,
     setPreference,
     updatePreferences,
-    setReduceBlur,
+    setGlassEffect,
     setAutoPlayVideo,
     setShowMatureContent,
     setCompactView,
