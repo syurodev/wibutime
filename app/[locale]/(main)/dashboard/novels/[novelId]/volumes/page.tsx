@@ -29,7 +29,7 @@ export default async function NovelVolumesPage({ params }: Props) {
     // Fetch volumes
     const data = await NovelVolumeService.getByNovel(novelId);
 
-    console.log(data);
+    console.log("data", data);
 
     // Parse new response structure
     if (data) {

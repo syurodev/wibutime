@@ -124,12 +124,15 @@ export const getNovelFull = cache(
   async (slug: string): Promise<NovelFullResponse> => {
     const url = endpoint("novels", slug, "full");
 
-    const response = await serverApi.get<StandardResponse<unknown>>(url, {
-      next: {
-        revalidate: 60, // Cache 1 minute
-        tags: [`novel-${slug}`, `novel-full-${slug}`, "novels"],
-      },
-    });
+    const response = await serverApi.get<StandardResponse<NovelFullResponse>>(
+      url,
+      {
+        next: {
+          revalidate: 60, // Cache 1 minute
+          tags: [`novel-${slug}`, `novel-full-${slug}`, "novels"],
+        },
+      }
+    );
 
     if (!isSuccessResponse(response)) {
       throw new Error(response.message || "Failed to fetch novel");

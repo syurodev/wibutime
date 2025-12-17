@@ -56,6 +56,7 @@ export async function generateMetadata({
 async function NovelContent({ slug }: { slug: string }) {
   try {
     const novel = await getNovelFull(slug);
+    console.log(novel);
     return (
       <>
         <NovelHero novel={novel} />

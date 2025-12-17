@@ -24,12 +24,12 @@ import { BookOpen, ChevronRight, List } from "lucide-react";
 import Link from "next/link";
 
 interface NovelChaptersProps {
-  novel: NovelFullResponse;
+  readonly novel: NovelFullResponse;
 }
 
 interface ChapterItemProps {
-  chapter: ChapterSummary;
-  novelSlug: string;
+  readonly chapter: ChapterSummary;
+  readonly novelSlug: string;
 }
 
 function ChapterItem({ chapter, novelSlug }: ChapterItemProps) {
@@ -50,9 +50,9 @@ function ChapterItem({ chapter, novelSlug }: ChapterItemProps) {
 }
 
 interface VolumeAccordionProps {
-  volume: VolumeWithChapters;
-  novelSlug: string;
-  defaultOpen?: boolean;
+  readonly volume: VolumeWithChapters;
+  readonly novelSlug: string;
+  readonly defaultOpen?: boolean;
 }
 
 function VolumeAccordion({

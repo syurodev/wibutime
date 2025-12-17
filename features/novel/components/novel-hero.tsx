@@ -7,14 +7,17 @@ import { Container } from "@/components/layout/container";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ImageWithFallback } from "@/components/ui/image-with-fallback";
+import { BasicStaticEditorView } from "@/features/editor/components/basic-static-editor-view";
 import type { NovelFullResponse } from "@/features/novel/types";
+import { Link } from "@/i18n/routing";
 import { getImageUrl } from "@/lib/utils/get-image-url";
 import { getInitials } from "@/lib/utils/get-initials";
 import { BookOpen, Bookmark, Eye, Heart, Star, User } from "lucide-react";
-import Image from "next/image";
 
 interface NovelHeroProps {
-  novel: NovelFullResponse;
+  readonly novel: NovelFullResponse;
 }
 
 const statusMap: Record<
@@ -48,35 +51,29 @@ export function NovelHero({ novel }: NovelHeroProps) {
       {/* Background blur */}
       {novel.cover_image_url && (
         <div className="absolute inset-0 overflow-hidden">
-          <Image
+          <ImageWithFallback
             src={getImageUrl(novel.cover_image_url)}
-            alt=""
+            alt={novel.title}
             fill
             className="object-cover blur-3xl opacity-20 scale-110"
-            priority
+            fallback={getInitials(novel.title)}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/80 to-background" />
+          <div className="absolute inset-0 bg-linear-to-b from-background/50 via-background/80 to-background" />
         </div>
       )}
 
-      <Container className="relative py-8 lg:py-12">
+      <Container className="relative py-8 lg:py-12 space-y-6">
         <div className="flex flex-col md:flex-row gap-6 lg:gap-8">
           {/* Cover Image */}
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <div className="relative w-48 h-72 md:w-56 md:h-80 rounded-lg overflow-hidden shadow-2xl mx-auto md:mx-0">
-              {novel.cover_image_url ? (
-                <Image
-                  src={getImageUrl(novel.cover_image_url)}
-                  alt={novel.title}
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              ) : (
-                <div className="w-full h-full bg-muted flex items-center justify-center">
-                  <BookOpen className="w-16 h-16 text-muted-foreground" />
-                </div>
-              )}
+              <ImageWithFallback
+                src={getImageUrl(novel.cover_image_url)}
+                alt={novel.title}
+                fill
+                className="object-cover"
+                fallback={getInitials(novel.title)}
+              />
             </div>
           </div>
 
@@ -112,21 +109,42 @@ export function NovelHero({ novel }: NovelHeroProps) {
                   <User className="w-4 h-4" />
                   <span className="text-muted-foreground">Tác giả:</span>
                   <span className="font-medium">
-                    {novel.authors.map((a) => a.display_name).join(", ")}
+                    {novel.authors.map((a, index) => (
+                      <span key={a.id}>
+                        {a.slug ? (
+                          <Link
+                            href={`/authors/${a.slug}`}
+                            className="hover:underline hover:text-primary"
+                          >
+                            {a.name}
+                          </Link>
+                        ) : (
+                          a.name
+                        )}
+                        {index < novel.authors.length - 1 && ", "}
+                      </span>
+                    ))}
                   </span>
                 </div>
               )}
-              <div className="flex items-center gap-2">
+              <Link
+                href={`/users/${
+                  novel.owner.slug || novel.owner.username || novel.owner.id
+                }`}
+                className="flex items-center gap-2 hover:opacity-80"
+              >
                 <Avatar className="w-6 h-6">
                   <AvatarImage src={getImageUrl(novel.owner.avatar_url)} />
                   <AvatarFallback>
-                    {getInitials(novel.owner.display_name)}
+                    {getInitials(
+                      novel.owner.display_name || novel.owner.name || ""
+                    )}
                   </AvatarFallback>
                 </Avatar>
-                <span className="text-sm text-muted-foreground">
-                  {novel.owner.display_name}
+                <span className="text-sm text-muted-foreground hover:underline">
+                  {novel.owner.display_name || novel.owner.name}
                 </span>
-              </div>
+              </Link>
             </div>
 
             {/* Stats */}
@@ -178,6 +196,15 @@ export function NovelHero({ novel }: NovelHeroProps) {
             </div>
           </div>
         </div>
+
+        <Card className="gap-0">
+          <CardHeader>
+            <CardTitle className="text-lg">Giới thiệu</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <BasicStaticEditorView content={novel.synopsis} maxLines={99} />
+          </CardContent>
+        </Card>
       </Container>
     </div>
   );

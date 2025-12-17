@@ -301,19 +301,19 @@ export interface GetNovelsParams {
  */
 export const OwnerInfoSchema = z.object({
   id: z.string(),
-  display_name: z.string(),
+  name: z.string().optional(),
+  display_name: z.string().optional(), // for owner (uploader)
   username: z.string().optional(),
   avatar_url: z.string().nullable().optional(),
+  slug: z.string().optional(),
 });
 
 export type OwnerInfo = z.infer<typeof OwnerInfoSchema>;
 
-/**
- * Genre Info Schema
- */
 export const GenreInfoSchema = z.object({
   id: z.string(),
   name: z.string(),
+  slug: z.string(),
 });
 
 export type GenreInfo = z.infer<typeof GenreInfoSchema>;

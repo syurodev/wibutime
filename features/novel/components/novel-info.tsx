@@ -6,10 +6,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { NovelFullResponse } from "@/features/novel/types";
+import { Link } from "@/i18n/routing";
 import { Calendar, FileText, Languages, User } from "lucide-react";
 
 interface NovelInfoProps {
-  novel: NovelFullResponse;
+  readonly novel: NovelFullResponse;
 }
 
 function formatDate(dateString: string | null | undefined): string {
@@ -30,7 +31,7 @@ function formatWords(words: number): string {
 /**
  * Render synopsis content (JSON or string)
  */
-function SynopsisContent({ synopsis }: { synopsis: unknown }) {
+function SynopsisContent({ synopsis }: { readonly synopsis: unknown }) {
   if (!synopsis) {
     return <p className="text-muted-foreground">Chưa có mô tả</p>;
   }
@@ -88,16 +89,6 @@ function SynopsisContent({ synopsis }: { synopsis: unknown }) {
 export function NovelInfo({ novel }: NovelInfoProps) {
   return (
     <div className="space-y-6">
-      {/* Synopsis */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Giới thiệu</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <SynopsisContent synopsis={novel.synopsis} />
-        </CardContent>
-      </Card>
-
       {/* Metadata */}
       <Card>
         <CardHeader>
@@ -111,7 +102,21 @@ export function NovelInfo({ novel }: NovelInfoProps) {
               <div>
                 <p className="text-sm text-muted-foreground">Tác giả</p>
                 <p className="text-sm font-medium">
-                  {novel.authors.map((a) => a.display_name).join(", ")}
+                  {novel.authors.map((a, index) => (
+                    <span key={a.id}>
+                      {a.slug ? (
+                        <Link
+                          href={`/authors/${a.slug}`}
+                          className="hover:underline hover:text-primary"
+                        >
+                          {a.name}
+                        </Link>
+                      ) : (
+                        a.name
+                      )}
+                      {index < novel.authors.length - 1 && ", "}
+                    </span>
+                  ))}
                 </p>
               </div>
             </div>
@@ -126,7 +131,21 @@ export function NovelInfo({ novel }: NovelInfoProps) {
                 <div>
                   <p className="text-sm text-muted-foreground">Họa sĩ</p>
                   <p className="text-sm font-medium">
-                    {novel.artists.map((a) => a.display_name).join(", ")}
+                    {novel.artists.map((a, index) => (
+                      <span key={a.id}>
+                        {a.slug ? (
+                          <Link
+                            href={`/artists/${a.slug}`}
+                            className="hover:underline hover:text-primary"
+                          >
+                            {a.name}
+                          </Link>
+                        ) : (
+                          a.name
+                        )}
+                        {index < novel.artists.length - 1 && ", "}
+                      </span>
+                    ))}
                   </p>
                 </div>
               </div>

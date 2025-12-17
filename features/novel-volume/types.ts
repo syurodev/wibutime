@@ -18,7 +18,7 @@ export interface ListVolumesResponse {
 export const CreateVolumeSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
-  cover_image_url: z.string().url().optional(),
+  cover_image_url: z.string().optional(),
   display_order: z.number().int().optional(),
   is_published: z.boolean().default(false),
 });
