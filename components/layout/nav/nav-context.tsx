@@ -40,6 +40,9 @@ export function NavProvider({ children }: NavProviderProps) {
   // Whether Account menu dropdown is open
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
 
+  // Whether Settings menu is open (new)
+  const [settingsMenuOpen, setSettingsMenuOpen] = useState(false);
+
   // Set of item IDs that are currently in loading state (for action items)
   const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());
 
@@ -57,8 +60,11 @@ export function NavProvider({ children }: NavProviderProps) {
    */
   const toggleSearch = useCallback(() => {
     setSearchMode((prev) => !prev);
-    // Close comment mode when opening search
-    if (!searchMode) setCommentMode(false);
+    // Close other modes
+    if (!searchMode) {
+      setCommentMode(false);
+      setSettingsMenuOpen(false);
+    }
   }, [searchMode]);
 
   /**
@@ -67,8 +73,11 @@ export function NavProvider({ children }: NavProviderProps) {
    */
   const toggleComment = useCallback(() => {
     setCommentMode((prev) => !prev);
-    // Close search mode when opening comment
-    if (!commentMode) setSearchMode(false);
+    // Close other modes
+    if (!commentMode) {
+      setSearchMode(false);
+      setSettingsMenuOpen(false);
+    }
   }, [commentMode]);
 
   /**
@@ -76,7 +85,23 @@ export function NavProvider({ children }: NavProviderProps) {
    */
   const toggleAccountMenu = useCallback(() => {
     setAccountMenuOpen((prev) => !prev);
-  }, []);
+    if (!accountMenuOpen) {
+      setSettingsMenuOpen(false); // Close settings when opening account
+    }
+  }, [accountMenuOpen]);
+
+  /**
+   * Toggle Settings menu on/off (new)
+   */
+  const toggleSettingsMenu = useCallback(() => {
+    setSettingsMenuOpen((prev) => !prev);
+    // Close other modes
+    if (!settingsMenuOpen) {
+      setSearchMode(false);
+      setCommentMode(false);
+      setAccountMenuOpen(false);
+    }
+  }, [settingsMenuOpen]);
 
   /**
    * Set loading state for a specific nav item
@@ -101,11 +126,13 @@ export function NavProvider({ children }: NavProviderProps) {
       searchMode,
       commentMode,
       accountMenuOpen,
+      settingsMenuOpen,
       loadingItems,
       setNavItems,
       toggleSearch,
       toggleComment,
       toggleAccountMenu,
+      toggleSettingsMenu,
       setItemLoading,
     }),
     [
@@ -113,11 +140,13 @@ export function NavProvider({ children }: NavProviderProps) {
       searchMode,
       commentMode,
       accountMenuOpen,
+      settingsMenuOpen,
       loadingItems,
       setNavItems,
       toggleSearch,
       toggleComment,
       toggleAccountMenu,
+      toggleSettingsMenu,
       setItemLoading,
     ]
   );

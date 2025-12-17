@@ -83,6 +83,9 @@ export function useUiPreferences() {
     setPreference("show_mature_content", value);
   const setCompactView = (value: boolean) =>
     setPreference("compact_view", value);
+  const setReadingTheme = (
+    value: "light" | "sepia" | "dark" | "black" | "group_system"
+  ) => setPreference("reading_theme", value);
 
   return {
     preferences,
@@ -92,6 +95,7 @@ export function useUiPreferences() {
     setAutoPlayVideo,
     setShowMatureContent,
     setCompactView,
+    setReadingTheme,
   } as const;
 }
 

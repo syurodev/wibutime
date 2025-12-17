@@ -19,6 +19,7 @@ import { NavLinkItem } from "./nav-link-item";
 import { NavPaginationButton } from "./nav-pagination-button";
 import { NavSearch } from "./nav-search";
 import { NavSearchButton } from "./nav-search-button";
+import { NavSettingsMenuContent } from "./nav-settings-menu";
 import { NavTriggerItem } from "./nav-trigger-item";
 import { useNav } from "./use-nav";
 
@@ -42,6 +43,8 @@ const Nav = () => {
     toggleComment,
     accountMenuOpen,
     toggleAccountMenu,
+    settingsMenuOpen,
+    toggleSettingsMenu,
     loadingItems,
     setItemLoading,
   } = useNav();
@@ -101,7 +104,8 @@ const Nav = () => {
   const [navWidth, setNavWidth] = useState<number | null>(null);
   const [isInitialMount, setIsInitialMount] = useState(true);
 
-  const containerExpanded = searchMode || commentMode || accountMenuOpen;
+  const containerExpanded =
+    searchMode || commentMode || accountMenuOpen || settingsMenuOpen;
 
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -118,7 +122,8 @@ const Nav = () => {
   }, [isInitialMount, navWidth]);
 
   useEffect(() => {
-    if (searchMode || commentMode || accountMenuOpen) return;
+    if (searchMode || commentMode || accountMenuOpen || settingsMenuOpen)
+      return;
     let rafId: number;
     const measure = () => {
       if (measureContainerRef.current) {
@@ -130,7 +135,14 @@ const Nav = () => {
     };
     rafId = requestAnimationFrame(measure);
     return () => cancelAnimationFrame(rafId);
-  }, [searchMode, commentMode, accountMenuOpen, items, navWidth]);
+  }, [
+    searchMode,
+    commentMode,
+    accountMenuOpen,
+    settingsMenuOpen,
+    items,
+    navWidth,
+  ]);
 
   const handleMouseEnter = () => {
     if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
@@ -152,18 +164,30 @@ const Nav = () => {
         if (searchMode) toggleSearch();
         else if (commentMode) toggleComment();
         else if (accountMenuOpen) toggleAccountMenu();
+        else if (settingsMenuOpen) toggleSettingsMenu();
       }
     };
     if (containerExpanded)
       document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [containerExpanded, toggleSearch, toggleComment, toggleAccountMenu]);
+  }, [
+    containerExpanded,
+    toggleSearch,
+    toggleComment,
+    toggleAccountMenu,
+    toggleSettingsMenu,
+    searchMode,
+    commentMode,
+    accountMenuOpen,
+    settingsMenuOpen,
+  ]);
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         if (searchMode) toggleSearch();
         else if (commentMode) toggleComment();
         else if (accountMenuOpen) toggleAccountMenu();
+        else if (settingsMenuOpen) toggleSettingsMenu();
       }
     };
     document.addEventListener("keydown", handleEscKey);
@@ -172,9 +196,11 @@ const Nav = () => {
     searchMode,
     commentMode,
     accountMenuOpen,
+    settingsMenuOpen,
     toggleSearch,
     toggleComment,
     toggleAccountMenu,
+    toggleSettingsMenu,
   ]);
 
   const isExpanded = isHovered || isFocused || containerExpanded;
@@ -372,6 +398,11 @@ const Nav = () => {
                     setItemLoading={setItemLoading}
                   />,
                   "account"
+                )}
+              {settingsMenuOpen &&
+                navExpandedContent(
+                  <NavSettingsMenuContent onClose={toggleSettingsMenu} />,
+                  "settings"
                 )}
               {!containerExpanded && navDefault()}
             </AnimatePresence>

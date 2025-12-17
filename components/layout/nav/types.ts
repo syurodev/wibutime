@@ -151,10 +151,12 @@ export type NavContextType = {
   searchMode: boolean; // Whether search mode is active
   commentMode: boolean; // Whether comment mode is active
   accountMenuOpen: boolean; // Whether Account menu dropdown is open
+  settingsMenuOpen: boolean; // Whether Settings menu is open (new)
   loadingItems: Set<string>; // Set of item IDs in loading state
   setNavItems: (items: NavItem[]) => void; // Set nav items for current page
   toggleSearch: () => void; // Toggle search mode on/off
   toggleComment: () => void; // Toggle comment mode on/off
   toggleAccountMenu: () => void; // Toggle Account menu dropdown on/off
+  toggleSettingsMenu: () => void; // Toggle Settings menu on/off (new)
   setItemLoading: (itemId: string, loading: boolean) => void; // Set loading state for an item
 };

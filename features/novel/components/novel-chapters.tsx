@@ -20,8 +20,8 @@ import type {
   NovelFullResponse,
   VolumeWithChapters,
 } from "@/features/novel/types";
+import { Link } from "@/i18n/routing";
 import { BookOpen, ChevronRight, List } from "lucide-react";
-import Link from "next/link";
 
 interface NovelChaptersProps {
   readonly novel: NovelFullResponse;
@@ -39,12 +39,12 @@ function ChapterItem({ chapter, novelSlug }: ChapterItemProps) {
       className="flex items-center justify-between p-3 hover:bg-muted/50 rounded-md transition-colors group"
     >
       <div className="flex items-center gap-3 min-w-0">
-        <span className="text-sm font-medium text-muted-foreground w-12 flex-shrink-0">
+        <span className="text-sm font-medium text-muted-foreground w-12 shrink-0">
           #{chapter.chapter_number}
         </span>
         <span className="text-sm truncate">{chapter.title}</span>
       </div>
-      <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+      <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
     </Link>
   );
 }

@@ -25,6 +25,16 @@ export interface StaticEditorViewProps {
    * @default "default"
    */
   readonly variant?: "default" | "compact" | "fullWidth";
+
+  /**
+   * Custom font family to apply
+   */
+  readonly fontFamily?: string;
+
+  /**
+   * Additional inline styles
+   */
+  readonly style?: React.CSSProperties;
 }
 
 /**
@@ -53,6 +63,8 @@ export function StaticEditorView({
   content,
   className,
   variant = "default",
+  fontFamily,
+  style,
 }: StaticEditorViewProps) {
   // Get variant-specific classes
   const getVariantClasses = () => {
@@ -60,7 +72,7 @@ export function StaticEditorView({
       case "compact":
         return "px-4 py-2 text-sm";
       case "fullWidth":
-        return "px-8 py-4";
+        return "p-2 md:p-4";
       default:
         return "px-16 py-4 sm:px-[max(64px,calc(50%-350px))]";
     }
@@ -148,6 +160,10 @@ export function StaticEditorView({
         "[&_code]:rounded [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-sm [&_code]:font-mono",
         className
       )}
+      style={{
+        fontFamily: fontFamily,
+        ...style,
+      }}
     >
       {renderedNodes}
     </div>

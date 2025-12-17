@@ -20,6 +20,14 @@ export const UiPreferencesSchema = z.object({
   auto_play_video: z.boolean().default(false),
   show_mature_content: z.boolean().default(false),
   compact_view: z.boolean().default(false),
+  // Reading preferences
+  font_family: z.string().optional().default("sans"),
+  font_size: z.number().min(12).max(32).optional().default(16),
+  text_align: z.enum(["left", "center", "justify"]).optional().default("left"),
+  reading_theme: z
+    .enum(["light", "sepia", "dark", "black", "group_system"])
+    .optional()
+    .default("group_system"),
 });
 
 export type UiPreferences = z.infer<typeof UiPreferencesSchema>;
@@ -39,6 +47,15 @@ export const UserSettingsSchema = z.object({
     auto_play_video: false,
     show_mature_content: false,
     compact_view: false,
+    font_family: "sans",
+    font_size: 16,
+    text_align: "left" as "left" | "center" | "justify",
+    reading_theme: "group_system" as
+      | "light"
+      | "sepia"
+      | "dark"
+      | "black"
+      | "group_system",
   })),
   created_at: z.string().default(() => new Date().toISOString()),
   updated_at: z.string().default(() => new Date().toISOString()),
