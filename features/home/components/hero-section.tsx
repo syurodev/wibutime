@@ -232,7 +232,6 @@ function HeroSlide({
               <Button
                 className={cn(getContentBg({ type: series.type, blur: false }))}
                 asChild
-                variant={"destructive"}
               >
                 <Link href={`/series/${series.slug}`}>
                   <Play className="fill-current h-5 w-5 md:h-6 md:w-6" />
