@@ -20,6 +20,7 @@ import {
 import { Link, usePathname } from "@/i18n/routing";
 import {
   BookOpen,
+  CreditCard,
   LayoutDashboard,
   Palette,
   Settings,
@@ -51,6 +52,11 @@ export function AdminSidebar() {
       name: "Hoạ sĩ",
       href: "/admin/artists",
       icon: Palette,
+    },
+    {
+      name: "Thanh toán",
+      href: "/admin/payment/config",
+      icon: CreditCard,
     },
     {
       name: "Truyện",
