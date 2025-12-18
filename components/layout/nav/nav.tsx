@@ -114,6 +114,64 @@ const Nav = () => {
   const measureContainerRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
 
+  // State to delay menu expansion until scale animation completes (mobile fix)
+  const [delayedExpansion, setDelayedExpansion] = useState(false);
+  // On mobile, touch triggers hover, so we track based on containerExpanded instead
+  const wasCollapsedRef = useRef(true);
+
+  // Track when we need to delay expansion (going from scaled-down to expanded)
+  useEffect(() => {
+    console.log("[NAV DEBUG] useEffect triggered", {
+      containerExpanded,
+      breakpoint,
+      wasCollapsed: wasCollapsedRef.current,
+      isHovered,
+      isFocused,
+    });
+
+    if (containerExpanded) {
+      // On mobile, always delay since touch triggers hover simultaneously
+      // On desktop, only delay if nav was in collapsed state (not hovered/focused)
+      const shouldDelay =
+        breakpoint === "mobile"
+          ? wasCollapsedRef.current
+          : wasCollapsedRef.current && !isHovered && !isFocused;
+
+      if (shouldDelay) {
+        console.log("[NAV DEBUG] Delaying expansion for 200ms (scale first)");
+        const timer = setTimeout(() => {
+          console.log(
+            "[NAV DEBUG] Delay complete, setting delayedExpansion = true"
+          );
+          setDelayedExpansion(true);
+        }, 200); // Wait for scale animation to complete
+        return () => clearTimeout(timer);
+      } else {
+        // Already expanded (hovered/focused), no delay needed
+        console.log(
+          "[NAV DEBUG] No delay needed, setting delayedExpansion = true immediately"
+        );
+        setDelayedExpansion(true);
+      }
+    } else {
+      console.log("[NAV DEBUG] Container collapsed, resetting");
+      setDelayedExpansion(false);
+      // Reset wasCollapsed when menu closes
+      wasCollapsedRef.current = true;
+    }
+  }, [containerExpanded, breakpoint, isHovered, isFocused]);
+
+  // Use delayedExpansion for content rendering on mobile
+  const shouldShowExpandedContent =
+    breakpoint === "mobile" ? delayedExpansion : containerExpanded;
+
+  console.log("[NAV DEBUG] Current state:", {
+    containerExpanded,
+    delayedExpansion,
+    shouldShowExpandedContent,
+    breakpoint,
+  });
+
   useEffect(() => {
     if (isInitialMount && navWidth !== null) {
       const timer = setTimeout(() => setIsInitialMount(false), 200);
@@ -203,10 +261,40 @@ const Nav = () => {
     toggleSettingsMenu,
   ]);
 
+  // Close all menus and collapse nav on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      // Close any open menu
+      if (searchMode) toggleSearch();
+      else if (commentMode) toggleComment();
+      else if (accountMenuOpen) toggleAccountMenu();
+      else if (settingsMenuOpen) toggleSettingsMenu();
+
+      // Also collapse the nav (remove hover state)
+      setIsHovered(false);
+      setIsFocused(false);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [
+    searchMode,
+    commentMode,
+    accountMenuOpen,
+    settingsMenuOpen,
+    toggleSearch,
+    toggleComment,
+    toggleAccountMenu,
+    toggleSettingsMenu,
+  ]);
+
   const isExpanded = isHovered || isFocused || containerExpanded;
 
   const getContainerWidthValue = () => {
-    if (containerExpanded) {
+    // On mobile, use delayed expansion to let scale animation complete first
+    const shouldExpand =
+      breakpoint === "mobile" ? shouldShowExpandedContent : containerExpanded;
+    if (shouldExpand) {
       if (breakpoint === "mobile") return "calc(100vw - 32px)";
       return 400;
     }
@@ -370,7 +458,8 @@ const Nav = () => {
             }}
           >
             <AnimatePresence mode="popLayout" initial={false}>
-              {searchMode &&
+              {shouldShowExpandedContent &&
+                searchMode &&
                 navExpandedContent(
                   <NavSearch
                     item={searchItem!}
@@ -379,7 +468,8 @@ const Nav = () => {
                   />,
                   "search"
                 )}
-              {commentMode &&
+              {shouldShowExpandedContent &&
+                commentMode &&
                 navExpandedContent(
                   <CompactCommentEditor
                     onSubmit={() => toggleComment()}
@@ -389,7 +479,8 @@ const Nav = () => {
                   />,
                   "comment"
                 )}
-              {accountMenuOpen &&
+              {shouldShowExpandedContent &&
+                accountMenuOpen &&
                 navExpandedContent(
                   <NavAccountMenuContent
                     onClose={toggleAccountMenu}
@@ -399,7 +490,8 @@ const Nav = () => {
                   />,
                   "account"
                 )}
-              {settingsMenuOpen &&
+              {shouldShowExpandedContent &&
+                settingsMenuOpen &&
                 navExpandedContent(
                   <NavSettingsMenuContent onClose={toggleSettingsMenu} />,
                   "settings"

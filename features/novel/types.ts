@@ -161,12 +161,24 @@ export const NovelBackendSchema = z.object({
     .optional()
     .transform((val) => val ?? []),
   authors: z
-    .array(z.object({ id: z.string(), display_name: z.string() }))
+    .array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        slug: z.string().optional(),
+      })
+    )
     .nullable()
     .optional()
     .transform((val) => val ?? []),
   artists: z
-    .array(z.object({ id: z.string(), display_name: z.string() }))
+    .array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        slug: z.string().optional(),
+      })
+    )
     .nullable()
     .optional()
     .transform((val) => val ?? []),

@@ -90,14 +90,6 @@ function HeroSlide({
     <div className="relative w-full overflow-hidden bg-zinc-950 transform-gpu will-change-transform backface-hidden">
       {/* --- BACKGROUND (Giữ nguyên) --- */}
       <div className="absolute inset-0 w-full h-[calc(100%+100px)] top-[-50px] z-0">
-        {/* <Image
-          src={getImageUrl(series.cover_url)}
-          alt={series.title}
-          fill
-          quality={60}
-          sizes="100vw"
-          className="object-cover opacity-100 scale-105 blur-3xl saturate-150 translate-z-0 brightness-70"
-        /> */}
         <ImageWithFallback
           src={getImageUrl(series.cover_url)}
           alt={series.title}

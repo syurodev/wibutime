@@ -6,10 +6,10 @@
 "use client";
 
 import { useLanguage } from "@/hooks/use-user-settings";
-import { useRouter, usePathname } from "@/i18n/routing";
-import { useLocale } from "next-intl";
-import { Languages } from "lucide-react";
+import { usePathname, useRouter } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
+import { Languages } from "lucide-react";
+import { useLocale } from "next-intl";
 
 export function LanguageToggleCompact() {
   const { setLanguage } = useLanguage();
@@ -21,12 +21,10 @@ export function LanguageToggleCompact() {
     {
       value: "en" as const,
       label: "English",
-      flag: "🇺🇸",
     },
     {
       value: "vi" as const,
       label: "Tiếng Việt",
-      flag: "🇻🇳",
     },
   ];
 
@@ -45,7 +43,7 @@ export function LanguageToggleCompact() {
         Language
       </label>
       <div className="flex gap-1">
-        {languages.map(({ value, label, flag }) => (
+        {languages.map(({ value, label }) => (
           <button
             key={value}
             onClick={() => handleLanguageChange(value)}
@@ -57,7 +55,6 @@ export function LanguageToggleCompact() {
             )}
             aria-label={`Set language to ${label}`}
           >
-            <span className="text-sm">{flag}</span>
             <span>{label}</span>
           </button>
         ))}

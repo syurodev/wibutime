@@ -16,7 +16,6 @@ interface LanguageSelectProps {
   readonly excludeLanguages?: string[]; // Languages to exclude from options
   readonly className?: string;
   readonly disabled?: boolean;
-  readonly showFlags?: boolean; // Whether to show flag emojis
 }
 
 export function LanguageSelect({
@@ -26,7 +25,6 @@ export function LanguageSelect({
   excludeLanguages = [],
   className,
   disabled = false,
-  showFlags = true,
 }: LanguageSelectProps) {
   const filteredOptions = LANGUAGE_OPTIONS.filter(
     (lang) => !excludeLanguages.includes(lang.value)
@@ -40,7 +38,6 @@ export function LanguageSelect({
       <SelectContent>
         {filteredOptions.map((lang) => (
           <SelectItem key={lang.value} value={lang.value}>
-            {showFlags && <span className="mr-2">{lang.flag}</span>}
             {lang.label}
           </SelectItem>
         ))}

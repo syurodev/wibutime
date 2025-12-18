@@ -1,10 +1,10 @@
 "use client";
 
+import { updateNovel } from "@/features/novel/actions";
 import {
   NovelForm,
   NovelFormData,
 } from "@/features/novel/components/novel-form";
-import { updateNovel } from "@/features/novel/actions";
 import { type NovelBackend } from "@/features/novel/types";
 import { useRouter } from "@/i18n/routing";
 import { useState } from "react";
@@ -78,11 +78,11 @@ export function EditNovelClient({ novelId, initialData }: Props) {
         value: g.id,
       }))}
       initialSelectedAuthors={initialData.authors.map((a) => ({
-        label: a.display_name,
+        label: a.name,
         value: a.id,
       }))}
       initialSelectedArtists={initialData.artists.map((a) => ({
-        label: a.display_name,
+        label: a.name,
         value: a.id,
       }))}
     />

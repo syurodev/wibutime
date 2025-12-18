@@ -61,10 +61,39 @@
   "novels": {
     "title": "My Novels",
     "description": "Manage personal novels (owner: you)",
+    "countSubtitle": "Manage {count} novel(s)",
     "createNew": "Create New Novel",
+    "createFirst": "Create First Novel",
     "empty": {
       "title": "No novels yet",
       "description": "Start your creative journey by creating your first novel"
+    },
+    "table": {
+      "cover": "Cover",
+      "info": "Info",
+      "language": "Language",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "stats": {
+      "views": "{count} views",
+      "favorites": "{count} favorites"
+    },
+    "actionMenu": {
+      "title": "Actions",
+      "edit": "Edit",
+      "viewVolumes": "View Volumes",
+      "changeStatus": "Change Status",
+      "delete": "Delete",
+      "currentStatus": "Current"
+    },
+    "languages": {
+      "ja": "JA",
+      "en": "EN",
+      "ko": "KR",
+      "zh": "ZH",
+      "vi": "VI",
+      "unknown": "{code}"
     },
     "actions": {
       "edit": "Edit",
@@ -108,16 +137,45 @@
   },
   "volumes": {
     "title": "Manage Volumes",
-    "backToList": "Back to list",
+    "subtitle": "Manage volumes and chapters",
+    "countSubtitle": "Managing {count} volume(s)",
+    "backToNovels": "Back to Novels",
     "createNew": "Create New Volume",
+    "createFirst": "Create First Volume",
+    "writeChapter": "Write New Chapter",
     "empty": {
       "title": "No volumes yet",
-      "description": "Create the first volume for this novel"
+      "description": "Create the first volume to organize your chapters"
     },
+    "error": {
+      "title": "Error loading data",
+      "backToList": "Back to novels list"
+    },
+    "table": {
+      "cover": "Cover",
+      "info": "Info",
+      "chapters": "Chapters",
+      "words": "Words",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "volumeNumber": "Volume {number}",
     "stats": {
-      "chapters": "chapters",
-      "words": "words"
-    }
+      "chapters": "{count} chapters",
+      "words": "{count} words"
+    },
+    "actions": {
+      "viewChapters": "Chapters",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "status": {
+      "published": "Published",
+      "draft": "Draft"
+    },
+    "dragHint": "Drag to reorder",
+    "orderUpdated": "Volume order updated",
+    "orderError": "Failed to update volume order"
   },
   "createVolume": {
     "title": "Create New Volume",
@@ -157,9 +215,11 @@
   },
   "status": {
     "draft": "Draft",
+    "published": "Published",
     "ongoing": "Ongoing",
     "completed": "Completed",
     "hiatus": "Hiatus",
+    "cancelled": "Cancelled",
     "dropped": "Dropped"
   },
   "common": {

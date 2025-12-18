@@ -274,7 +274,6 @@ export function TranslationEditor({
                 onValueChange={onTargetLanguageChange}
                 excludeLanguages={[sourceLanguage]}
                 className="h-8 w-[180px]"
-                showFlags={true}
               />
             </div>
           )}

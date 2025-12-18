@@ -6,7 +6,7 @@
     "totalChapters": "Tổng Chapters",
     "totalViews": "Tổng lượt xem",
     "averageRating": "Đánh giá TB",
-    "activeNovels": "Novels đang ra",
+    "activeNovels": "Novels Đang tiến hành",
     "trends": {
       "vsLastMonth": "so với tháng trước",
       "favorites": "yêu thích"
@@ -61,10 +61,39 @@
   "novels": {
     "title": "Novels của tôi",
     "description": "Quản lý novels cá nhân (owner: bạn)",
+    "countSubtitle": "Quản lý {count} novel",
     "createNew": "Tạo Novel mới",
+    "createFirst": "Tạo Novel đầu tiên",
     "empty": {
       "title": "Chưa có novel nào",
       "description": "Bắt đầu hành trình sáng tạo của bạn bằng cách tạo novel đầu tiên"
+    },
+    "table": {
+      "cover": "Ảnh bìa",
+      "info": "Thông tin",
+      "language": "Ngôn ngữ",
+      "status": "Trạng thái",
+      "actions": "Thao tác"
+    },
+    "stats": {
+      "views": "{count} lượt xem",
+      "favorites": "{count} yêu thích"
+    },
+    "actionMenu": {
+      "title": "Thao tác",
+      "edit": "Chỉnh sửa",
+      "viewVolumes": "Xem Volumes",
+      "changeStatus": "Chuyển trạng thái",
+      "delete": "Xoá",
+      "currentStatus": "Hiện tại"
+    },
+    "languages": {
+      "ja": "JA",
+      "en": "EN",
+      "ko": "KR",
+      "zh": "ZH",
+      "vi": "VI",
+      "unknown": "{code}"
     },
     "actions": {
       "edit": "Chỉnh sửa",
@@ -108,16 +137,45 @@
   },
   "volumes": {
     "title": "Quản lý Volumes",
-    "backToList": "Quay lại danh sách",
+    "subtitle": "Quản lý volumes và chapters",
+    "countSubtitle": "Quản lý {count} volume",
+    "backToNovels": "Quay lại Novels",
     "createNew": "Tạo Volume mới",
+    "createFirst": "Tạo Volume đầu tiên",
+    "writeChapter": "Viết Chapter mới",
     "empty": {
       "title": "Chưa có volume nào",
-      "description": "Tạo volume đầu tiên cho novel này"
+      "description": "Tạo volume đầu tiên để tổ chức chapters của bạn"
     },
+    "error": {
+      "title": "Lỗi tải dữ liệu",
+      "backToList": "Quay lại danh sách novels"
+    },
+    "table": {
+      "cover": "Ảnh bìa",
+      "info": "Thông tin",
+      "chapters": "Chapters",
+      "words": "Từ",
+      "status": "Trạng thái",
+      "actions": "Thao tác"
+    },
+    "volumeNumber": "Volume {number}",
     "stats": {
-      "chapters": "chương",
-      "words": "từ"
-    }
+      "chapters": "{count} chương",
+      "words": "{count} từ"
+    },
+    "actions": {
+      "viewChapters": "Chapters",
+      "edit": "Sửa",
+      "delete": "Xoá"
+    },
+    "status": {
+      "published": "Đã xuất bản",
+      "draft": "Nháp"
+    },
+    "dragHint": "Kéo để sắp xếp lại",
+    "orderUpdated": "Đã cập nhật thứ tự volume",
+    "orderError": "Không thể cập nhật thứ tự volume"
   },
   "createVolume": {
     "title": "Tạo Volume mới",
@@ -157,9 +215,11 @@
   },
   "status": {
     "draft": "Nháp",
-    "ongoing": "Đang ra",
+    "published": "Đã xuất bản",
+    "ongoing": "Đang tiến hành",
     "completed": "Hoàn thành",
     "hiatus": "Tạm ngưng",
+    "cancelled": "Đã huỷ",
     "dropped": "Đã bỏ"
   },
   "common": {

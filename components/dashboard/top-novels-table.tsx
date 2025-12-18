@@ -24,16 +24,16 @@ import { formatNumber, formatRating } from "@/lib/utils/format-number";
 import { ArrowUpRight, Eye, Heart, Star } from "lucide-react";
 
 export interface TopNovelsTableProps {
-  data: TopNovel[];
-  title?: string;
-  viewAllHref?: string;
-  isLoading?: boolean;
-  ownerType: "user" | "tenant";
+  readonly data: TopNovel[];
+  readonly title?: string;
+  readonly viewAllHref?: string;
+  readonly isLoading?: boolean;
+  readonly ownerType: "user" | "tenant";
 }
 
 const STATUS_LABELS = {
   draft: { label: "Nháp", variant: "secondary" as const },
-  ongoing: { label: "Đang ra", variant: "default" as const },
+  ongoing: { label: "Đang tiến hành", variant: "default" as const },
   completed: { label: "Hoàn thành", variant: "outline" as const },
   hiatus: { label: "Tạm ngưng", variant: "secondary" as const },
   dropped: { label: "Đã bỏ", variant: "destructive" as const },

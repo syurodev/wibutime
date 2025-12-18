@@ -2,22 +2,32 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { NovelVolumeService } from "@/features/novel-volume/service";
 import { NovelVolume } from "@/features/novel/types";
 import { Link } from "@/i18n/routing";
+import { getImageUrl } from "@/lib/utils/get-image-url";
+import { getInitials } from "@/lib/utils/get-initials";
 import { BookText, FileEdit, GripVertical, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { toast } from "sonner";
 
 interface DraggableVolumeListProps {
-  initialVolumes: NovelVolume[];
-  novelId: string;
+  readonly initialVolumes: NovelVolume[];
+  readonly novelId: string;
 }
 
-interface DraggableVolumeCardProps {
+interface DraggableVolumeRowProps {
   readonly volume: NovelVolume;
   readonly index: number;
   readonly novelId: string;
@@ -25,15 +35,43 @@ interface DraggableVolumeCardProps {
   readonly onOrderUpdate: (volumeId: string, newOrder: number) => Promise<void>;
 }
 
-const ITEM_TYPE = "VOLUME_CARD";
+const ITEM_TYPE = "VOLUME_ROW";
 
-function DraggableVolumeCard({
+// Volume Cover Component - using native img for drag preview compatibility
+function VolumeCover({ volume }: { readonly volume: NovelVolume }) {
+  const coverUrl = getImageUrl(volume.cover_image_url);
+  const hasCover = coverUrl && coverUrl !== "";
+
+  return (
+    <div
+      className="relative overflow-hidden rounded-lg border bg-muted flex items-center justify-center"
+      style={{ width: 50, height: 75 }}
+    >
+      {hasCover ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={coverUrl}
+          alt={volume.title}
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <span className="text-xs font-bold text-muted-foreground">
+          {getInitials(volume.title)}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function DraggableVolumeRow({
   volume,
   index,
   novelId,
   moveVolume,
   onOrderUpdate,
-}: DraggableVolumeCardProps) {
+}: DraggableVolumeRowProps) {
+  const t = useTranslations("dashboard.volumes");
+
   const [{ isDragging }, drag] = useDrag({
     type: ITEM_TYPE,
     item: { index, volumeId: volume.id },
@@ -42,8 +80,7 @@ function DraggableVolumeCard({
     }),
     end: async (item, monitor) => {
       if (monitor.didDrop()) {
-        // Update display order when drop is successful
-        const newOrder = index + 1; // display_order is 1-indexed
+        const newOrder = index + 1;
         await onOrderUpdate(item.volumeId, newOrder);
       }
     },
@@ -63,72 +100,75 @@ function DraggableVolumeCard({
   });
 
   return (
-    <div
+    <TableRow
       ref={(node) => {
         drag(drop(node));
       }}
+      style={{
+        opacity: isDragging ? 0.5 : 1,
+        cursor: "grab",
+      }}
+      className={isOver ? "bg-accent/50" : ""}
     >
-      <Card
-        style={{
-          opacity: isDragging ? 0.5 : 1,
-          cursor: "grab",
-        }}
-        className={
-          isOver ? "border-primary shadow-lg transition-all" : "transition-all"
-        }
-      >
-        <CardHeader>
-          <div className="flex items-start justify-between">
-            <div className="flex items-start gap-3 flex-1">
-              <div className="mt-1">
-                <GripVertical className="h-5 w-5 text-muted-foreground" />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <CardTitle className="text-lg">
-                    Volume {volume.volume_number}: {volume.title}
-                  </CardTitle>
-                  <Badge
-                    variant={volume.is_published ? "default" : "secondary"}
-                  >
-                    {volume.is_published ? "Published" : "Draft"}
-                  </Badge>
-                </div>
-              </div>
-            </div>
+      {/* Drag Handle + Cover */}
+      <TableCell>
+        <div className="flex items-center gap-3">
+          <GripVertical className="h-5 w-5 text-muted-foreground shrink-0" />
+          <VolumeCover volume={volume} />
+        </div>
+      </TableCell>
+
+      {/* Info */}
+      <TableCell>
+        <div className="space-y-1">
+          <div className="font-medium">{volume.title}</div>
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span>{t("stats.chapters", { count: volume.chapter_count })}</span>
+            <span>•</span>
+            <span>
+              {t("stats.words", { count: volume.word_count.toLocaleString() })}
+            </span>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between">
-            <div className="flex gap-4 text-sm text-muted-foreground">
-              <span>{volume.chapter_count} chapters</span>
-              <span>{volume.word_count.toLocaleString()} words</span>
-            </div>
-            <div className="flex gap-2">
-              <Button asChild variant="outline" size="sm">
-                <Link
-                  href={`/dashboard/novels/${novelId}/volumes/${volume.id}/chapters`}
-                >
-                  <BookText className="h-4 w-4 mr-2" />
-                  Chapters
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="sm">
-                <Link
-                  href={`/dashboard/novels/${novelId}/volumes/${volume.id}/edit`}
-                >
-                  <FileEdit className="h-4 w-4 mr-2" />
-                  Sửa
-                </Link>
-              </Button>
-              <Button variant="outline" size="sm">
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </TableCell>
+
+      {/* Status */}
+      <TableCell>
+        <Badge variant={volume.is_published ? "default" : "secondary"}>
+          {volume.is_published ? t("status.published") : t("status.draft")}
+        </Badge>
+      </TableCell>
+
+      {/* Actions - Direct buttons instead of dropdown */}
+      <TableCell>
+        <div className="flex items-center gap-1">
+          <Button asChild variant="ghost" size="icon" className="h-8 w-8">
+            <Link
+              href={`/dashboard/novels/${novelId}/volumes/${volume.id}/chapters`}
+              title={t("actions.viewChapters")}
+            >
+              <BookText className="h-4 w-4" />
+            </Link>
+          </Button>
+          <Button asChild variant="ghost" size="icon" className="h-8 w-8">
+            <Link
+              href={`/dashboard/novels/${novelId}/volumes/${volume.id}/edit`}
+              title={t("actions.edit")}
+            >
+              <FileEdit className="h-4 w-4" />
+            </Link>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-destructive hover:text-destructive"
+            title={t("actions.delete")}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </TableCell>
+    </TableRow>
   );
 }
 
@@ -137,6 +177,8 @@ export function DraggableVolumeList({
   novelId,
 }: DraggableVolumeListProps) {
   const [volumes, setVolumes] = useState<NovelVolume[]>(initialVolumes);
+  const t = useTranslations("dashboard.volumes");
+  const tTable = useTranslations("dashboard.volumes.table");
 
   const moveVolume = (dragIndex: number, hoverIndex: number) => {
     const draggedVolume = volumes[dragIndex];
@@ -149,28 +191,39 @@ export function DraggableVolumeList({
   const handleOrderUpdate = async (volumeId: string, newOrder: number) => {
     try {
       await NovelVolumeService.updateDisplayOrder(volumeId, newOrder);
-      toast.success("Đã cập nhật thứ tự volume");
+      toast.success(t("orderUpdated"));
     } catch (error) {
       console.error("Failed to update volume order:", error);
-      toast.error("Không thể cập nhật thứ tự volume");
-      // Revert to initial order on error
+      toast.error(t("orderError"));
       setVolumes(initialVolumes);
     }
   };
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="grid gap-4">
-        {volumes.map((volume, index) => (
-          <DraggableVolumeCard
-            key={volume.id}
-            volume={volume}
-            index={index}
-            novelId={novelId}
-            moveVolume={moveVolume}
-            onOrderUpdate={handleOrderUpdate}
-          />
-        ))}
+      <div className="border rounded-lg overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[120px]">{tTable("cover")}</TableHead>
+              <TableHead>{tTable("info")}</TableHead>
+              <TableHead className="w-[120px]">{tTable("status")}</TableHead>
+              <TableHead className="w-[120px]">{tTable("actions")}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {volumes.map((volume, index) => (
+              <DraggableVolumeRow
+                key={volume.id}
+                volume={volume}
+                index={index}
+                novelId={novelId}
+                moveVolume={moveVolume}
+                onOrderUpdate={handleOrderUpdate}
+              />
+            ))}
+          </TableBody>
+        </Table>
       </div>
     </DndProvider>
   );

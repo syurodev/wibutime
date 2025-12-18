@@ -324,7 +324,6 @@ export function NovelForm({
                         setFormData({ ...formData, original_language: value })
                       }
                       placeholder="Chọn ngôn ngữ"
-                      showFlags={true}
                     />
                   </div>
 
