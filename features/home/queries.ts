@@ -16,6 +16,10 @@ const EMPTY_HOME_DATA: HomeData = {
   trending: [],
   creators: [],
   genres: [],
+  most_active_creators: [],
+  active_organizations: [],
+  rising_stars: [],
+  fresh_updates: [],
 };
 
 /**

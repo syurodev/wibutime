@@ -175,7 +175,9 @@
     },
     "dragHint": "Drag to reorder",
     "orderUpdated": "Volume order updated",
-    "orderError": "Failed to update volume order"
+    "orderError": "Failed to update volume order",
+    "statusUpdated": "Volume status updated",
+    "statusError": "Failed to update volume status"
   },
   "createVolume": {
     "title": "Create New Volume",

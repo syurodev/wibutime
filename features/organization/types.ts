@@ -17,6 +17,11 @@ export const OrganizationSchema = z.object({
     })
     .nullable()
     .optional(),
+
+  // Rank Comparison (Optional)
+  current_rank: z.number().int().optional(),
+  previous_rank: z.number().int().optional().nullable(),
+  rank_change: z.number().int().optional().nullable(),
 });
 
 // ... existing code ...

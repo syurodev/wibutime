@@ -175,7 +175,9 @@
     },
     "dragHint": "Kéo để sắp xếp lại",
     "orderUpdated": "Đã cập nhật thứ tự volume",
-    "orderError": "Không thể cập nhật thứ tự volume"
+    "orderError": "Không thể cập nhật thứ tự volume",
+    "statusUpdated": "Đã cập nhật trạng thái volume",
+    "statusError": "Lỗi khi cập nhật trạng thái"
   },
   "createVolume": {
     "title": "Tạo Volume mới",

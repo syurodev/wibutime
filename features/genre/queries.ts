@@ -15,6 +15,48 @@ import { ApiParser } from "@/lib/api/utils/parsers";
 import { cache } from "react";
 
 /**
+ * Get top genres by views with optional rank comparison
+ * Cached with React cache for deduplication
+ *
+ * @example
+ * const genres = await getTopGenres({ limit: 10, period: "week", include_rank_change: true })
+ */
+export const getTopGenres = cache(
+  async (params?: {
+    limit?: number;
+    period?: string;
+    include_rank_change?: boolean;
+    offset?: 0 | 1;
+  }): Promise<Genre[]> => {
+    const url = endpoint("genres", "top", {
+      limit: params?.limit || 10,
+      period: params?.period || "week",
+      include_rank_change: params?.include_rank_change || false,
+      offset: params?.offset || 0,
+    });
+
+    const response = await serverApi.get<StandardResponse<Genre>>(url, {
+      next: {
+        revalidate: 300,
+        tags: [
+          "genres",
+          "top-genres",
+          `top-genres-${params?.period}-${params?.limit}-${params?.include_rank_change}-${params?.offset}`,
+        ],
+      },
+    });
+
+    console.log("response top genres", response);
+
+    if (!isSuccessResponse(response)) {
+      throw new Error(response.message || "Failed to fetch top genres");
+    }
+
+    return ApiParser.parseResponseArray(GenreSchema, response);
+  }
+);
+
+/**
  * Get list of genres with pagination
  * Cached with React cache for deduplication
  *

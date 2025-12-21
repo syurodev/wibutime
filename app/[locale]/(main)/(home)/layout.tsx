@@ -1,58 +1,40 @@
-import { HomeDataProvider } from "@/features/home/components/home-data-provider";
-import { getHomeData } from "@/features/home/queries";
+/**
+ * Home Layout
+ * Uses parallel routes with bento grid layout
+ */
+
+import { Container } from "@/components/layout/container";
+import { HomeBentoGrid } from "@/features/home/components/home-bento-grid";
 import type { ReactNode } from "react";
 
 interface HomeLayoutProps {
   children: ReactNode;
-  trending: ReactNode;
-  genre_hub: ReactNode;
-  community: ReactNode;
-  latest: ReactNode;
-  newSeries: ReactNode;
-  milestones: ReactNode;
   continue: ReactNode;
+  top_creator: ReactNode;
+  top_genre: ReactNode;
+  top_organization: ReactNode;
+  top_view: ReactNode;
 }
 
 export default async function HomeLayout({
   children,
-  trending,
-  genre_hub,
-  community,
-  latest,
-  newSeries,
-  milestones,
-  continue: continueReading,
+  continue: continueSection,
+  top_creator,
+  top_genre,
+  top_organization,
+  top_view,
 }: HomeLayoutProps) {
-  // Fetch all home data in one API call (cached by backend for 10 min)
-  const homeDataPromise = getHomeData();
-
   return (
-    <HomeDataProvider homeDataPromise={homeDataPromise}>
-      <div className="min-h-screen pb-24">
-        {/* Hero Section - from page.tsx */}
-        {children}
-
-        {/* Continue Reading */}
-        {continueReading}
-
-        {/* Trending Content */}
-        {trending}
-
-        {/* Genre Hub */}
-        {genre_hub}
-
-        {/* Community Engagement */}
-        {community}
-
-        {/* Latest Updates */}
-        {latest}
-
-        {/* New Series */}
-        {newSeries}
-
-        {/* Community Milestones */}
-        {milestones}
-      </div>
-    </HomeDataProvider>
+    <Container maxWidth="2xl">
+      {/* Bento Grid Layout - children is the event section */}
+      <HomeBentoGrid
+        eventSection={children}
+        continueSection={continueSection}
+        topCreatorSection={top_creator}
+        topGenreSection={top_genre}
+        topOrganizationSection={top_organization}
+        topViewSection={top_view}
+      />
+    </Container>
   );
 }

@@ -3,6 +3,12 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Table,
   TableBody,
   TableCell,
@@ -33,6 +39,10 @@ interface DraggableVolumeRowProps {
   readonly novelId: string;
   readonly moveVolume: (dragIndex: number, hoverIndex: number) => void;
   readonly onOrderUpdate: (volumeId: string, newOrder: number) => Promise<void>;
+  readonly onStatusChange: (
+    volumeId: string,
+    isPublished: boolean
+  ) => Promise<void>;
 }
 
 const ITEM_TYPE = "VOLUME_ROW";
@@ -69,6 +79,7 @@ function DraggableVolumeRow({
   novelId,
   moveVolume,
   onOrderUpdate,
+  onStatusChange,
 }: DraggableVolumeRowProps) {
   const t = useTranslations("dashboard.volumes");
 
@@ -134,9 +145,27 @@ function DraggableVolumeRow({
 
       {/* Status */}
       <TableCell>
-        <Badge variant={volume.is_published ? "default" : "secondary"}>
-          {volume.is_published ? t("status.published") : t("status.draft")}
-        </Badge>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-auto p-0 hover:bg-transparent">
+              <Badge
+                variant={volume.is_published ? "default" : "secondary"}
+                className="cursor-pointer"
+              >
+                {volume.is_published
+                  ? t("status.published")
+                  : t("status.draft")}
+              </Badge>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onClick={() => onStatusChange(volume.id, !volume.is_published)}
+            >
+              {volume.is_published ? t("status.draft") : t("status.published")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </TableCell>
 
       {/* Actions - Direct buttons instead of dropdown */}
@@ -199,6 +228,27 @@ export function DraggableVolumeList({
     }
   };
 
+  const handleStatusChange = async (volumeId: string, isPublished: boolean) => {
+    try {
+      if (isPublished) {
+        await NovelVolumeService.publish(volumeId);
+      } else {
+        await NovelVolumeService.unpublish(volumeId);
+      }
+
+      setVolumes(
+        volumes.map((v) =>
+          v.id === volumeId ? { ...v, is_published: isPublished } : v
+        )
+      );
+
+      toast.success(t("statusUpdated"));
+    } catch (error) {
+      console.error("Failed to update volume status:", error);
+      toast.error(t("statusError"));
+    }
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="border rounded-lg overflow-hidden">
@@ -220,6 +270,7 @@ export function DraggableVolumeList({
                 novelId={novelId}
                 moveVolume={moveVolume}
                 onOrderUpdate={handleOrderUpdate}
+                onStatusChange={handleStatusChange}
               />
             ))}
           </TableBody>

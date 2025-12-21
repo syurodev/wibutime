@@ -3,6 +3,11 @@ import { z } from "zod";
 
 export type NovelVolume = z.infer<typeof NovelVolumeSchema>;
 
+export enum NovelVolumeStatus {
+  DRAFT = "draft",
+  PUBLISHED = "published",
+}
+
 /**
  * List volumes response wrapper
  */

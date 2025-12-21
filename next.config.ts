@@ -21,6 +21,7 @@ const nextConfig: NextConfig = {
   experimental: {
     viewTransition: true,
     taint: true,
+    authInterrupts: true,
   },
   // Custom cache profiles for different content types
   cacheLife: {

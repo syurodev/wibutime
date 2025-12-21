@@ -1,19 +1,25 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
+/**
+ * Loading state for Continue section
+ * Horizontal card layout for watching/reading progress
+ */
 export default function ContinueLoading() {
   return (
-    <section className="container mx-auto px-4 py-8">
-      <Skeleton className="h-7 w-40 mb-4" />
-      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        {Array.from({ length: 12 }, (_, i) => `continue-loading-${i}`).map(
-          (key) => (
-            <div key={key} className="space-y-2">
-              <Skeleton className="aspect-2/3 w-full rounded-lg" />
-              <Skeleton className="h-3 w-3/4" />
-            </div>
-          )
-        )}
+    <div className="h-full space-y-3 p-4">
+      {/* Section title */}
+      <Skeleton className="h-5 w-32" />
+
+      {/* Horizontal scroll items */}
+      <div className="flex gap-3 overflow-hidden">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="shrink-0 w-24 space-y-2">
+            <Skeleton className="aspect-[3/4] w-full rounded-lg" />
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-2 w-2/3" />
+          </div>
+        ))}
       </div>
-    </section>
+    </div>
   );
 }

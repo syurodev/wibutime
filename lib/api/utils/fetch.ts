@@ -3,7 +3,6 @@
  * Tập trung xử lý tất cả API calls với logging, error handling, và caching
  */
 
-import { toast } from "sonner";
 import {
   clearAuthToken,
   getClientAuthToken,
@@ -258,7 +257,8 @@ let refreshTokenPromise: Promise<string | null> | null = null;
 function handleSessionExpiry(): void {
   clearAuthToken();
   if (globalThis.window) {
-    toast.error("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.");
+    // Redirect to unauthorized page for consistent UX
+    globalThis.window.location.href = "/unauthorized";
   }
 }
 

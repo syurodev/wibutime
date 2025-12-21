@@ -1,21 +1,13 @@
-import { Skeleton } from "@/components/ui/skeleton";
+// Fake loading - delay 3 seconds then show content
+async function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
-export default async function ContinueSlot() {
-  // TODO: Fetch history data
-  // const historyItems = await getCachedHistory(12);
-  // return <ContinueSection history={historyItems} />;
+export default async function ContinueSection() {
+  await delay(3000); // 3 second delay to show loading state
 
-  return (
-    <section className="container mx-auto px-4 py-8">
-      <h2 className="text-xl font-semibold mb-4">Continue Reading</h2>
-      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        {Array.from({ length: 12 }, (_, i) => `continue-${i}`).map((key) => (
-          <div key={key} className="space-y-2">
-            <Skeleton className="aspect-2/3 w-full rounded-lg" />
-            <Skeleton className="h-3 w-3/4" />
-          </div>
-        ))}
-      </div>
-    </section>
-  );
+  // Uncomment to test error state:
+  // throw new Error("Failed to fetch continue watching data");
+
+  return <div className="p-4">Continue Section - Loaded!</div>;
 }

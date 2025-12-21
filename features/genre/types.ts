@@ -30,6 +30,11 @@ export const GenreSchema = z.object({
   // Timestamps
   created_at: z.string().optional(),
   updated_at: z.string().optional(),
+
+  // Rank Comparison (Optional)
+  current_rank: z.number().int().optional(),
+  previous_rank: z.number().int().optional().nullable(),
+  rank_change: z.number().int().optional().nullable(),
 });
 
 export type Genre = z.infer<typeof GenreSchema>;
