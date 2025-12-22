@@ -1,3 +1,4 @@
+import { getTopCreators } from "@/features/creator/queries";
 import { Creator, CreatorUtils } from "@/features/creator/types";
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
@@ -61,52 +62,11 @@ function RankChangeIndicator({ rankChange }: { rankChange?: number | null }) {
 export default async function TopCreatorSection() {
   const MIN_ITEMS = 3;
 
-  // Mock data for testing UI
-  const data: Partial<Creator>[] = [
-    {
-      id: "1",
-      display_name: "Akira Toriyama",
-      username: "akira_toriyama",
-      avatar_url: "",
-      follower_count: 125000,
-      works_count: 42,
-      total_views: 1500000,
-      is_verified: true,
-      rank_change: 2,
-      popular_work_title: "Dragon Ball Z",
-    },
-    {
-      id: "2",
-      display_name: "Eiichiro Oda",
-      username: "oda_sensei",
-      avatar_url: "",
-      follower_count: 89000,
-      works_count: 15,
-      total_views: 980000,
-      is_verified: true,
-      rank_change: -1,
-      popular_work_title: "One Piece",
-    },
-    {
-      id: "3",
-      display_name: "Masashi Kishimoto",
-      username: "kishimoto_m",
-      avatar_url: undefined,
-      follower_count: 67000,
-      works_count: 28,
-      total_views: 750000,
-      is_verified: false,
-      rank_change: 1,
-      popular_work_title: "Naruto Shippuden",
-    },
-  ];
-
-  // Uncomment to use real API:
-  // const data: Creator[] = await getTopCreators({
-  //   limit: MIN_ITEMS,
-  //   include_rank_change: true,
-  //   period: "week",
-  // });
+  const data: Creator[] = await getTopCreators({
+    limit: MIN_ITEMS,
+    include_rank_change: true,
+    period: "week",
+  });
 
   // Ensure we always have 5 items, pad with null for placeholders
   const displayData: (Partial<Creator> | null)[] = [
@@ -144,30 +104,37 @@ export default async function TopCreatorSection() {
         if (isPlaceholder) {
           return (
             <div
-              className="relative overflow-hidden rounded-xl p-3 bg-background/80 backdrop-blur-sm border border-white/5"
+              className="relative overflow-hidden rounded-xl p-3 bg-background/80 backdrop-blur-sm border border-dashed border-white/10"
               key={`placeholder-${index}`}
             >
               <div className="flex items-start gap-3">
+                {/* Rank Number */}
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-bold text-sm bg-muted/30 text-muted-foreground/50 mt-0.5">
                   {rank}
                 </div>
-                <div className="size-10 rounded-full bg-muted/30 animate-pulse shrink-0" />
+
+                {/* Avatar placeholder */}
+                <div className="size-10 shrink-0 rounded-full bg-muted/30 flex items-center justify-center">
+                  <Users className="size-5 text-muted-foreground/30" />
+                </div>
+
+                {/* Content skeleton */}
                 <div className="flex-1 min-w-0">
                   {/* Name & Username */}
                   <div className="flex items-center justify-between gap-2">
                     <div className="min-w-0">
-                      <div className="h-4 w-24 bg-muted/30 rounded animate-pulse" />
-                      <div className="h-3 w-16 bg-muted/20 rounded animate-pulse mt-1" />
+                      <div className="h-4 w-24 bg-muted/30 rounded" />
+                      <div className="h-3 w-16 bg-muted/20 rounded mt-1" />
                     </div>
                     <div className="h-5 w-8 bg-muted/20 rounded-full" />
                   </div>
                   {/* Popular Work */}
-                  <div className="mt-1 h-3 w-28 bg-muted/20 rounded animate-pulse" />
+                  <div className="mt-1.5 h-3 w-28 bg-muted/20 rounded" />
                   {/* Stats */}
-                  <div className="mt-1.5 flex items-center gap-3">
-                    <div className="h-3 w-12 bg-muted/20 rounded animate-pulse" />
-                    <div className="h-3 w-12 bg-muted/20 rounded animate-pulse" />
-                    <div className="h-3 w-16 bg-muted/20 rounded animate-pulse" />
+                  <div className="mt-2 flex items-center gap-3">
+                    <div className="h-3 w-12 bg-muted/20 rounded" />
+                    <div className="h-3 w-12 bg-muted/20 rounded" />
+                    <div className="h-3 w-16 bg-muted/20 rounded" />
                   </div>
                 </div>
               </div>

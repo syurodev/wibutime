@@ -1,3 +1,4 @@
+import { getTopGenres } from "@/features/genre/queries";
 import { Genre } from "@/features/genre/types";
 import { Link } from "@/i18n/routing";
 import { Trend } from "@/lib/constants/trend";
@@ -66,49 +67,13 @@ function RankChangeIndicator({ rankChange }: { rankChange?: number | null }) {
 export default async function TopGenreSection() {
   const MIN_ITEMS = 3;
 
-  // Mock data for testing UI
-  const data: Partial<Genre>[] = [
-    {
-      id: "1",
-      name: "Romance",
-      slug: "romance",
-      description: "Love stories and relationships",
-      series_count: 1250,
-      total_views: 2500000,
-      rank_change: 2,
-      trend: Trend.RISING,
-    },
-    {
-      id: "2",
-      name: "Fantasy",
-      slug: "fantasy",
-      description: "Magic and mythical worlds",
-      series_count: 980,
-      total_views: 1800000,
-      rank_change: -1,
-      trend: Trend.STABLE,
-    },
-    {
-      id: "3",
-      name: "Action",
-      slug: "action",
-      description: "Thrilling adventures",
-      series_count: 750,
-      total_views: 1200000,
-      rank_change: 1,
-      trend: Trend.RISING,
-    },
-  ];
+  const data: Genre[] = await getTopGenres({
+    limit: MIN_ITEMS,
+    include_rank_change: true,
+    period: "week",
+    offset: 1,
+  });
 
-  // Uncomment to use real API:
-  // const data: Genre[] = await getTopGenres({
-  //   limit: MIN_ITEMS,
-  //   include_rank_change: true,
-  //   period: "week",
-  //   offset: 1,
-  // });
-
-  // Ensure we always have 3 items, pad with null for placeholders
   const displayData: (Partial<Genre> | null)[] = [
     ...data,
     ...new Array(Math.max(0, MIN_ITEMS - data.length)).fill(null),
@@ -144,26 +109,35 @@ export default async function TopGenreSection() {
         if (isPlaceholder) {
           return (
             <div
-              className="relative overflow-hidden rounded-xl p-3 bg-background/80 backdrop-blur-sm border border-white/5"
+              className="relative overflow-hidden rounded-xl p-3 bg-background/80 backdrop-blur-sm border border-dashed border-white/10"
               key={`placeholder-${index}`}
             >
               <div className="flex items-start gap-3">
+                {/* Rank Number - same position as real */}
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-bold text-sm bg-muted/30 text-muted-foreground/50 mt-0.5">
                   {rank}
                 </div>
-                <div className="size-10 rounded-full bg-muted/30 animate-pulse shrink-0" />
+
+                {/* Genre Icon placeholder */}
+                <div className="size-10 shrink-0 rounded-full bg-muted/30 flex items-center justify-center">
+                  <Tags className="size-5 text-muted-foreground/30" />
+                </div>
+
+                {/* Content skeleton */}
                 <div className="flex-1 min-w-0">
-                  {/* Name & Rank */}
+                  {/* Name & Rank Change */}
                   <div className="flex items-center justify-between gap-2">
-                    <div className="h-4 w-20 bg-muted/30 rounded animate-pulse" />
+                    <div className="h-4 w-20 bg-muted/30 rounded" />
                     <div className="h-5 w-8 bg-muted/20 rounded-full" />
                   </div>
                   {/* Description */}
-                  <div className="h-3 w-24 bg-muted/20 rounded animate-pulse mt-1" />
-                  {/* Stats */}
-                  <div className="mt-1.5 flex items-center gap-3">
-                    <div className="h-3 w-16 bg-muted/20 rounded animate-pulse" />
-                    <div className="h-3 w-14 bg-muted/20 rounded animate-pulse" />
+                  <div className="h-3 w-24 bg-muted/20 rounded mt-1" />
+                  {/* Trend */}
+                  <div className="h-3 w-12 bg-muted/20 rounded mt-1.5" />
+                  {/* Stats Row */}
+                  <div className="mt-2 flex items-center gap-3">
+                    <div className="h-3 w-16 bg-muted/20 rounded" />
+                    <div className="h-3 w-14 bg-muted/20 rounded" />
                   </div>
                 </div>
               </div>

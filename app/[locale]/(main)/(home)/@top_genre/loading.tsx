@@ -16,7 +16,7 @@ export default function TopGenreLoading() {
           <Skeleton
             key={i}
             className="h-7 rounded-full"
-            style={{ width: `${60 + Math.random() * 40}px` }}
+            style={{ width: `60px` }}
           />
         ))}
       </div>

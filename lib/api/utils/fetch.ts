@@ -62,6 +62,14 @@ export interface FetchOptions extends Omit<RequestInit, "body"> {
   timeout?: number;
 
   /**
+   * Skip redirect to /unauthorized on 401 (just clear session and throw error)
+   * Useful for background API calls that shouldn't interrupt user flow
+   * Default: false (will redirect to /unauthorized)
+   * Set to true to skip redirect
+   */
+  skipAuthRedirect?: boolean;
+
+  /**
    * Internal: Retry count for 401 handling
    */
   _retryCount?: number;
@@ -252,13 +260,17 @@ let refreshTokenPromise: Promise<string | null> | null = null;
  * Handle 401 Unauthorized responses
  */
 /**
- * Handle session expiry - show toast and clear auth
+ * Handle session expiry - clear auth and optionally redirect
+ * @param skipRedirect - If true, only clear session without redirecting
  */
-function handleSessionExpiry(): void {
+function handleSessionExpiry(skipRedirect: boolean = false): void {
   clearAuthToken();
-  if (globalThis.window) {
-    // Redirect to unauthorized page for consistent UX
-    globalThis.window.location.href = "/unauthorized";
+  if (globalThis.window && !skipRedirect) {
+    // Get current locale from URL path (e.g., /en/page -> en)
+    const pathParts = globalThis.window.location.pathname.split("/");
+    const locale = pathParts[1] || "en"; // Default to 'en' if no locale found
+    // Redirect to unauthorized page with locale prefix
+    globalThis.window.location.href = `/${locale}/unauthorized`;
   }
 }
 
@@ -286,7 +298,7 @@ async function performTokenRefresh<T>(
     const newToken = await refreshTokenPromise;
 
     if (!newToken) {
-      handleSessionExpiry();
+      handleSessionExpiry(options?.skipAuthRedirect ?? false);
       throw new ApiError("Session expired", 401, ErrorCode.AuthInvalidToken);
     }
 
@@ -333,14 +345,14 @@ async function handleUnauthorized<T>(
 ): Promise<T> {
   // Prevent infinite loop if refresh endpoint itself returns 401
   if (fullURL.includes("/auth/refresh")) {
-    handleSessionExpiry();
+    handleSessionExpiry(options?.skipAuthRedirect ?? false);
     throw new ApiError("Session expired", 401, ErrorCode.AuthInvalidToken);
   }
 
   // Check retry count to prevent infinite loops
   const retryCount = options?._retryCount || 0;
   if (retryCount >= 1) {
-    handleSessionExpiry();
+    handleSessionExpiry(options?.skipAuthRedirect ?? false);
     throw new ApiError("Session expired", 401, ErrorCode.AuthInvalidToken);
   }
 
@@ -348,7 +360,7 @@ async function handleUnauthorized<T>(
   if (refreshTokenPromise) {
     const newToken = await refreshTokenPromise;
     if (!newToken) {
-      handleSessionExpiry();
+      handleSessionExpiry(options?.skipAuthRedirect ?? false);
       throw new ApiError("Session expired", 401, ErrorCode.AuthInvalidToken);
     }
     return retryRequest<T>(url, options, newToken);
@@ -397,7 +409,8 @@ function handleFetchError(
 async function handleApiError<T>(
   response: Response,
   method: string,
-  fullURL: string
+  fullURL: string,
+  options?: FetchOptions
 ): Promise<T> {
   const error = await parseApiError(response);
 
@@ -408,7 +421,7 @@ async function handleApiError<T>(
     error.message?.includes("token")
   ) {
     console.warn("🔒 Token error detected:", error.message);
-    handleSessionExpiry();
+    handleSessionExpiry(options?.skipAuthRedirect ?? false);
     throw error;
   }
 
@@ -491,7 +504,7 @@ export async function apiFetch<T = unknown>(
 
     // Handle errors
     if (!response.ok) {
-      return await handleApiError<T>(response, method, fullURL);
+      return await handleApiError<T>(response, method, fullURL, options);
     }
 
     // Return raw response if requested

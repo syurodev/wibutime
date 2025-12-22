@@ -16,7 +16,9 @@ export const UserSettingsService = {
    */
   async getSettings(): Promise<UserSettings> {
     const url = endpoint("users", "me", "settings");
-    const response = await api.get<StandardResponse<UserSettings>>(url);
+    const response = await api.get<StandardResponse<UserSettings>>(url, {
+      skipAuthRedirect: true, // Don't redirect to /unauthorized on 401
+    });
 
     if (!isSuccessResponse(response)) {
       throw new Error(response.message || "Failed to fetch user settings");

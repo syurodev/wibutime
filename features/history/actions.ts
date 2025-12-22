@@ -3,92 +3,155 @@
 /**
  * History Actions - Server Actions for mutations
  * Use these from Client Components
+ *
+ * Backend API:
+ * - POST /api/v1/history - Update progress
+ * - DELETE /api/v1/history/:id - Delete history item
+ * - POST /api/v1/history/clear - Clear all history
+ * - POST /api/v1/progress/:type/:id/units/:uid/complete - Mark chapter as read
  */
 
-import {
-  HistoryMediaSchema,
-  type HistoryMedia,
-  type NovelBookmark,
-} from "@/features/history/types";
 import { serverApi } from "@/lib/api/server";
 import { isSuccessResponse, type StandardResponse } from "@/lib/api/types";
-import { endpoint } from "@/lib/api/utils/endpoint";
 import { ApiParser } from "@/lib/api/utils/parsers";
 import { updateTag } from "next/cache";
+import {
+  HistoryItem,
+  HistoryItemSchema,
+  type UpdateHistoryInput,
+} from "./types";
+
+// =============================================================================
+// UPDATE PROGRESS
+// =============================================================================
 
 /**
- * Update history data
- */
-export interface UpdateHistoryData {
-  content_id: string;
-  latest_unit_id?: string;
-  novel_last_read_info?: NovelBookmark;
-  anime_last_episode_time_viewed?: string;
-  manga_last_page_read?: number;
-}
-
-/**
- * Add or update history entry
+ * Add or update reading/watching progress
+ * API: POST /api/v1/history
+ *
+ * Called when user reads a chapter or watches an episode.
  *
  * @example
- * const history = await updateHistory({
- *   content_id: "123",
- *   latest_unit_id: "456",
- *   novel_last_read_info: { node_id: "abc", preview: "..." }
+ * // Update novel reading progress
+ * await updateHistory({
+ *   content_id: "novel-uuid",
+ *   media_type: "novel",
+ *   latest_unit_id: "chapter-uuid",
+ *   novel_last_read_info: { node_id: "para-123", preview: "Subaru..." }
+ * })
+ *
+ * // Update manga reading progress
+ * await updateHistory({
+ *   content_id: "manga-uuid",
+ *   media_type: "manga",
+ *   latest_unit_id: "chapter-uuid",
+ *   manga_last_page_read: 15
+ * })
+ *
+ * // Update anime watching progress
+ * await updateHistory({
+ *   content_id: "anime-uuid",
+ *   media_type: "anime",
+ *   latest_unit_id: "episode-uuid",
+ *   anime_last_episode_time_viewed: "12:34"
  * })
  */
 export async function updateHistory(
-  data: UpdateHistoryData
-): Promise<HistoryMedia> {
-  const url = endpoint("history");
-
-  const response = await serverApi.post<StandardResponse<unknown>>(url, data);
+  input: UpdateHistoryInput
+): Promise<HistoryItem> {
+  const response = await serverApi.post<StandardResponse<HistoryItem>>(
+    "/history",
+    input
+  );
 
   if (!isSuccessResponse(response)) {
     throw new Error(response.message || "Failed to update history");
   }
 
-  // Immediately expire history cache
+  // Invalidate history caches
   updateTag("user-history");
+  updateTag("continue-reading");
 
-  return ApiParser.parse(HistoryMediaSchema, response);
+  return ApiParser.parse(HistoryItemSchema, response);
 }
+
+// =============================================================================
+// DELETE HISTORY
+// =============================================================================
 
 /**
  * Delete a history entry
+ * API: DELETE /api/v1/history/:id
  *
  * @example
- * await deleteHistory("123")
+ * await deleteHistory("history-entry-uuid")
  */
 export async function deleteHistory(id: string): Promise<void> {
-  const url = endpoint("history", id);
-
-  const response = await serverApi.delete<StandardResponse<unknown>>(url);
+  const response = await serverApi.delete<StandardResponse<unknown>>(
+    `/history/${id}`
+  );
 
   if (!isSuccessResponse(response)) {
     throw new Error(response.message || "Failed to delete history");
   }
 
-  // Immediately expire history cache
+  // Invalidate history caches
   updateTag("user-history");
-  updateTag(`history-${id}`);
+  updateTag("continue-reading");
 }
 
+// =============================================================================
+// CLEAR ALL HISTORY
+// =============================================================================
+
 /**
- * Clear all history
+ * Clear all history for the current user
+ * API: POST /api/v1/history/clear
  *
  * @example
  * await clearHistory()
  */
 export async function clearHistory(): Promise<void> {
-  const url = endpoint("history", "clear");
-
-  const response = await serverApi.post<StandardResponse<unknown>>(url);
+  const response = await serverApi.post<StandardResponse<unknown>>(
+    "/history/clear"
+  );
 
   if (!isSuccessResponse(response)) {
     throw new Error(response.message || "Failed to clear history");
   }
 
-  // Immediately expire history cache
+  // Invalidate all history caches
+  updateTag("user-history");
+  updateTag("continue-reading");
+}
+
+// =============================================================================
+// MARK UNIT COMPLETE
+// =============================================================================
+
+/**
+ * Mark a chapter/episode as completed
+ * API: POST /api/v1/progress/:media_type/:media_id/units/:unit_id/complete
+ *
+ * Called when user finishes reading a chapter or watching an episode.
+ *
+ * @example
+ * await markUnitComplete("novel", "novel-uuid", "chapter-uuid")
+ */
+export async function markUnitComplete(
+  mediaType: "novel" | "manga" | "anime",
+  mediaId: string,
+  unitId: string
+): Promise<void> {
+  const response = await serverApi.post<StandardResponse<unknown>>(
+    `/progress/${mediaType}/${mediaId}/units/${unitId}/complete`
+  );
+
+  if (!isSuccessResponse(response)) {
+    throw new Error(response.message || "Failed to mark unit as complete");
+  }
+
+  // Invalidate progress cache for this media
+  updateTag(`progress-${mediaType}-${mediaId}`);
   updateTag("user-history");
 }

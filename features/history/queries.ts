@@ -1,76 +1,97 @@
 /**
  * History Queries - Data fetching for Server Components
  * Uses React cache for automatic deduplication
+ *
+ * Backend API:
+ * - GET /api/v1/history - Paginated history list
+ * - GET /api/v1/history/recent - Recent items for "Continue" section
+ * - GET /api/v1/progress/:type/:id/units - Chapter read statuses
  */
 
-import {
-  HistoryMediaSchema,
-  type HistoryMedia,
-} from "@/features/history/types";
 import { serverApi } from "@/lib/api/server";
 import { isSuccessResponse, type StandardResponse } from "@/lib/api/types";
-import { endpoint } from "@/lib/api/utils/endpoint";
 import { ApiParser } from "@/lib/api/utils/parsers";
-import type { MEDIA_TYPE } from "@/lib/constants/default";
 import { cache } from "react";
+import {
+  HistoryItem,
+  HistoryItemSchema,
+  type HistoryQueryParams,
+  UnitProgress,
+  UnitProgressSchema,
+} from "./types";
+
+// =============================================================================
+// CONTINUE READING / RECENT HISTORY
+// =============================================================================
 
 /**
- * History query parameters
- */
-export interface HistoryQuery {
-  page?: number;
-  limit?: number;
-  type?: MEDIA_TYPE | "all";
-  sort?: "recent" | "title" | "updated";
-}
-
-/**
- * Get recent history
- * Returns user's continue watching/reading list
+ * Get recent history for "Continue Reading/Watching" section
+ * API: GET /api/v1/history/recent
  *
  * @example
  * const history = await getRecentHistory({ limit: 12 })
  */
 export const getRecentHistory = cache(
-  async (params?: { limit?: number }): Promise<HistoryMedia[]> => {
-    const url = endpoint("history", params || {});
+  async (params?: { limit?: number }): Promise<HistoryItem[]> => {
+    const queryParams = new URLSearchParams();
+    if (params?.limit) {
+      queryParams.append("limit", params.limit.toString());
+    }
 
-    const response = await serverApi.get<StandardResponse<unknown>>(url, {
+    const url = `/history/recent${
+      queryParams.toString() ? `?${queryParams.toString()}` : ""
+    }`;
+
+    const response = await serverApi.get<StandardResponse<HistoryItem[]>>(url, {
       next: {
         revalidate: 60, // Cache 1 minute
-        tags: ["user-history"],
+        tags: ["user-history", "continue-reading"],
       },
     });
 
     if (!isSuccessResponse(response)) {
-      throw new Error(response.message || "Failed to fetch history");
+      throw new Error(response.message || "Failed to fetch recent history");
     }
 
-    return ApiParser.parseResponseArray(HistoryMediaSchema, response);
+    return ApiParser.parseResponseArray(HistoryItemSchema, response);
   }
 );
 
+// =============================================================================
+// HISTORY LIST (PAGINATED)
+// =============================================================================
+
 /**
- * Get paginated history with filters and sorting
+ * Get paginated history with filters
+ * API: GET /api/v1/history
  *
  * @example
- * const history = await getHistory({ page: 1, type: "anime", sort: "recent" })
+ * const { items, page, total_pages } = await getHistory({ page: 1, type: "novel" })
  */
 export const getHistory = cache(
   async (
-    params?: Partial<HistoryQuery>
+    params?: Partial<HistoryQueryParams>
   ): Promise<{
-    items: HistoryMedia[];
+    items: HistoryItem[];
     page: number;
     limit: number;
     total_items: number;
     total_pages: number;
   }> => {
-    const url = endpoint("history", params || {});
+    const queryParams = new URLSearchParams();
+    if (params?.page) queryParams.append("page", params.page.toString());
+    if (params?.limit) queryParams.append("limit", params.limit.toString());
+    if (params?.type && params.type !== "all")
+      queryParams.append("type", params.type);
+    if (params?.sort) queryParams.append("sort", params.sort);
 
-    const response = await serverApi.get<StandardResponse<unknown>>(url, {
+    const url = `/history${
+      queryParams.toString() ? `?${queryParams.toString()}` : ""
+    }`;
+
+    const response = await serverApi.get<StandardResponse<HistoryItem[]>>(url, {
       next: {
-        revalidate: 60, // Cache 1 minute
+        revalidate: 60,
         tags: ["user-history"],
       },
     });
@@ -79,7 +100,7 @@ export const getHistory = cache(
       throw new Error(response.message || "Failed to fetch history");
     }
 
-    const items = ApiParser.parseResponseArray(HistoryMediaSchema, response);
+    const items = ApiParser.parseResponseArray(HistoryItemSchema, response);
 
     return {
       items,
@@ -91,27 +112,57 @@ export const getHistory = cache(
   }
 );
 
+// =============================================================================
+// UNIT PROGRESS (FOR CHAPTER LIST)
+// =============================================================================
+
 /**
- * Get history item by ID
+ * Get read status for all chapters in a media
+ * API: GET /api/v1/progress/:media_type/:media_id/units
  *
  * @example
- * const item = await getHistoryById("550e8400-e29b-41d4-a716-446655440000")
+ * const progress = await getUnitProgress("novel", "novel-uuid")
+ * // Returns array of { unit_id, status, is_read, completed_at }
  */
-export const getHistoryById = cache(
-  async (id: string): Promise<HistoryMedia> => {
-    const url = endpoint("history", id);
+export const getUnitProgress = cache(
+  async (
+    mediaType: "novel" | "manga" | "anime",
+    mediaId: string
+  ): Promise<UnitProgress[]> => {
+    const url = `/progress/${mediaType}/${mediaId}/units`;
 
-    const response = await serverApi.get<StandardResponse<unknown>>(url, {
-      next: {
-        revalidate: 60, // Cache 1 minute
-        tags: [`history-${id}`, "user-history"],
-      },
-    });
+    const response = await serverApi.get<StandardResponse<UnitProgress[]>>(
+      url,
+      {
+        next: {
+          revalidate: 60,
+          tags: ["user-history", `progress-${mediaType}-${mediaId}`],
+        },
+      }
+    );
 
     if (!isSuccessResponse(response)) {
-      throw new Error(response.message || "Failed to fetch history item");
+      // Return empty array if no progress found (not an error)
+      return [];
     }
 
-    return ApiParser.parse(HistoryMediaSchema, response);
+    return ApiParser.parseResponseArray(UnitProgressSchema, response);
+  }
+);
+
+/**
+ * Helper: Create a map of unit_id -> is_read for easy lookup
+ *
+ * @example
+ * const readMap = await getUnitProgressMap("novel", "novel-uuid")
+ * const isRead = readMap.get("chapter-uuid") // true/false
+ */
+export const getUnitProgressMap = cache(
+  async (
+    mediaType: "novel" | "manga" | "anime",
+    mediaId: string
+  ): Promise<Map<string, boolean>> => {
+    const progress = await getUnitProgress(mediaType, mediaId);
+    return new Map(progress.map((p) => [p.unit_id, p.is_read]));
   }
 );

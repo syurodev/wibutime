@@ -1,5 +1,6 @@
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
+import { HistoryTracker } from "@/features/history/components/history-tracker";
 import { ChapterContentWrapper } from "@/features/novel-chapter/components/chapter-content-wrapper";
 import { ChapterNavigation } from "@/features/novel-chapter/components/chapter-navigation";
 import { getChapter } from "@/features/novel-chapter/queries";
@@ -121,6 +122,13 @@ export default async function ChapterPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Track reading progress */}
+      <HistoryTracker
+        contentId={novel.id}
+        mediaType="novel"
+        unitId={foundChapter.id}
+      />
+
       {/* Navigation Bar */}
       <div className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
         <Container className="flex h-14 items-center justify-between">

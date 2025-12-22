@@ -1,3 +1,4 @@
+import { getTopOrganizations } from "@/features/organization/queries";
 import { Organization } from "@/features/organization/types";
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
@@ -71,49 +72,11 @@ function formatNumber(num: number): string {
 export default async function TopOrganizationSection() {
   const MIN_ITEMS = 3;
 
-  // Mock data for testing UI
-  const data: Partial<Organization>[] = [
-    {
-      id: "1",
-      name: "Manhua VN Team",
-      slug: "manhua-vn",
-      avatar_url: "",
-      member_count: 48,
-      completed_translations: 256,
-      is_recruiting: true,
-      rank_change: 3,
-      description: { text: "Nhóm dịch manhua Việt hóa chất lượng cao" },
-    },
-    {
-      id: "2",
-      name: "Light Novel Club",
-      slug: "ln-club",
-      avatar_url: "",
-      member_count: 32,
-      completed_translations: 189,
-      is_recruiting: false,
-      rank_change: -2,
-      description: { text: "Dịch light novel Nhật Bản" },
-    },
-    {
-      id: "3",
-      name: "Webtoon Empire",
-      slug: "webtoon-empire",
-      avatar_url: undefined,
-      member_count: 25,
-      completed_translations: 142,
-      is_recruiting: true,
-      rank_change: 0,
-      description: { text: "Chuyên manhwa Hàn Quốc" },
-    },
-  ];
-
-  // Uncomment to use real API:
-  // const data: Organization[] = await getTopOrganizations({
-  //   limit: MIN_ITEMS,
-  //   include_rank_change: true,
-  //   period: "week",
-  // });
+  const data: Organization[] = await getTopOrganizations({
+    limit: MIN_ITEMS,
+    include_rank_change: true,
+    period: "week",
+  });
 
   // Ensure we always have MIN_ITEMS items, pad with null for placeholders
   const displayData: (Partial<Organization> | null)[] = [
@@ -151,29 +114,36 @@ export default async function TopOrganizationSection() {
         if (isPlaceholder) {
           return (
             <div
-              className="relative overflow-hidden rounded-xl p-3 bg-background/80 backdrop-blur-sm border border-white/5"
+              className="relative overflow-hidden rounded-xl p-3 bg-background/80 backdrop-blur-sm border border-dashed border-white/10"
               key={`placeholder-${index}`}
             >
               <div className="flex items-start gap-3">
+                {/* Rank Number */}
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-bold text-sm bg-muted/30 text-muted-foreground/50 mt-0.5">
                   {rank}
                 </div>
-                <div className="size-10 rounded-lg bg-muted/30 animate-pulse shrink-0" />
+
+                {/* Avatar placeholder */}
+                <div className="size-10 shrink-0 rounded-lg bg-muted/30 flex items-center justify-center">
+                  <Building2 className="size-5 text-muted-foreground/30" />
+                </div>
+
+                {/* Content skeleton */}
                 <div className="flex-1 min-w-0">
                   {/* Name & Slug */}
                   <div className="flex items-center justify-between gap-2">
                     <div className="min-w-0">
-                      <div className="h-4 w-28 bg-muted/30 rounded animate-pulse" />
-                      <div className="h-3 w-20 bg-muted/20 rounded animate-pulse mt-1" />
+                      <div className="h-4 w-28 bg-muted/30 rounded" />
+                      <div className="h-3 w-20 bg-muted/20 rounded mt-1" />
                     </div>
                     <div className="h-5 w-8 bg-muted/20 rounded-full" />
                   </div>
                   {/* Description */}
-                  <div className="mt-1 h-3 w-32 bg-muted/20 rounded animate-pulse" />
+                  <div className="mt-1.5 h-3 w-32 bg-muted/20 rounded" />
                   {/* Stats */}
-                  <div className="mt-1.5 flex items-center gap-3">
-                    <div className="h-3 w-14 bg-muted/20 rounded animate-pulse" />
-                    <div className="h-3 w-16 bg-muted/20 rounded animate-pulse" />
+                  <div className="mt-2 flex items-center gap-3">
+                    <div className="h-3 w-14 bg-muted/20 rounded" />
+                    <div className="h-3 w-16 bg-muted/20 rounded" />
                   </div>
                 </div>
               </div>
