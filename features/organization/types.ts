@@ -24,7 +24,6 @@ export const OrganizationSchema = z.object({
   rank_change: z.number().int().optional().nullable(),
 });
 
-// ... existing code ...
 export type Organization = z.infer<typeof OrganizationSchema>;
 
 export const CreateOrganizationSchema = z.object({

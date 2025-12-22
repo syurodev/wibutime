@@ -1,4 +1,5 @@
 import { Creator, CreatorUtils } from "@/features/creator/types";
+import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { BookOpen, Eye, Pen, Sparkles, Users } from "lucide-react";
 import Image from "next/image";
@@ -127,12 +128,12 @@ export default async function TopCreatorSection() {
           <span className="text-[10px] text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
             This Week
           </span>
-          <a
+          <Link
             href="/creators"
             className="text-[10px] text-primary hover:underline"
           >
             See All →
-          </a>
+          </Link>
         </div>
       </div>
       {displayData.map((x, index) => {

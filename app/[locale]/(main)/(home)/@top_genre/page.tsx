@@ -1,4 +1,5 @@
 import { Genre } from "@/features/genre/types";
+import { Link } from "@/i18n/routing";
 import { Trend } from "@/lib/constants/trend";
 import { cn } from "@/lib/utils";
 import { BookOpen, Eye, Tags, TrendingUp } from "lucide-react";
@@ -127,12 +128,12 @@ export default async function TopGenreSection() {
           <span className="text-[10px] text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
             This Week
           </span>
-          <a
+          <Link
             href="/genres"
             className="text-[10px] text-primary hover:underline"
           >
             See All →
-          </a>
+          </Link>
         </div>
       </div>
       {displayData.map((x, index) => {

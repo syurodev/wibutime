@@ -17,7 +17,9 @@ export const getMyOrganizations = cache(
   async (): Promise<MyOrganizationsResponse> => {
     const url = endpoints.myOrganizations();
 
-    const response = await serverApi.get<StandardResponse<unknown>>(url, {
+    const response = await serverApi.get<
+      StandardResponse<MyOrganizationsResponse>
+    >(url, {
       next: {
         tags: ["organizations", "my-organizations"],
         revalidate: 0, // Always fetch fresh data for personal workspaces
@@ -59,16 +61,19 @@ export const getTopOrganizations = cache(
 
     const url = `${baseUrl}?${queryParams.toString()}`;
 
-    const response = await serverApi.get<StandardResponse<unknown>>(url, {
-      next: {
-        revalidate: 300, // Cache 5 minutes
-        tags: [
-          "organizations",
-          "top-organizations",
-          `top-orgs-${params?.period}-${params?.limit}-${params?.include_rank_change}`,
-        ],
-      },
-    });
+    const response = await serverApi.get<StandardResponse<Organization[]>>(
+      url,
+      {
+        next: {
+          revalidate: 300, // Cache 5 minutes
+          tags: [
+            "organizations",
+            "top-organizations",
+            `top-orgs-${params?.period}-${params?.limit}-${params?.include_rank_change}`,
+          ],
+        },
+      }
+    );
 
     if (!isSuccessResponse(response)) {
       throw new Error(response.message || "Failed to fetch top organizations");
