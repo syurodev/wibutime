@@ -24,6 +24,15 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
 import { loginAction } from "../actions/auth.actions"
+import {
+  passkeyAuthenticateBeginAction,
+  passkeyAuthenticateCompleteAction,
+} from "../actions/passkey.actions"
+import {
+  encodeCredential,
+  normalizeRequestOptions,
+  PublicKeyCredentialRequestOptionsJSON,
+} from "../lib/passkey-client"
 
 const getFormSchema = (t: any) =>
   z.object({
@@ -45,6 +54,7 @@ export function LoginForm({
 }: Omit<React.ComponentProps<"form">, "onSubmit">) {
   const t = useTranslations("auth.validation")
   const [isLoading, setIsLoading] = useState(false)
+  const [isPasskeyLoading, setIsPasskeyLoading] = useState(false)
   const setAuth = useAuthStore((state) => state.setAuth)
   const router = useRouter()
 
@@ -91,6 +101,60 @@ export function LoginForm({
       toast.error(error.message || "Failed to login")
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const onPasskeyLogin = async () => {
+    setIsPasskeyLoading(true)
+    try {
+      if (!("credentials" in navigator) || !navigator.credentials) {
+        throw new Error("Passkey is not supported on this device/browser")
+      }
+
+      const identifier =
+        (
+          document.getElementById("identifier") as HTMLInputElement | null
+        )?.value?.trim() ?? ""
+
+      const begin = await passkeyAuthenticateBeginAction(
+        identifier.length > 0 ? identifier : undefined
+      )
+
+      // Yubico's AssertionRequest.toJson() wraps options inside "publicKeyCredentialRequestOptions"
+      const rawOptions = begin.options as unknown as Record<string, unknown>
+      const requestOptions = (rawOptions.publicKeyCredentialRequestOptions ??
+        rawOptions) as unknown as PublicKeyCredentialRequestOptionsJSON
+      const publicKey = normalizeRequestOptions(requestOptions)
+
+      const credential = (await navigator.credentials.get({
+        publicKey,
+      })) as PublicKeyCredential | null
+
+      if (!credential) {
+        throw new Error("No credential returned")
+      }
+
+      const complete = await passkeyAuthenticateCompleteAction({
+        session_key: begin.session_key,
+        credential: encodeCredential(credential, false),
+      })
+
+      const decodedPayload = complete.access_token.split(".")[1]
+      let sub = identifier || "User"
+      try {
+        if (decodedPayload) {
+          const payloadObj = JSON.parse(atob(decodedPayload))
+          if (payloadObj.sub) sub = payloadObj.sub
+        }
+      } catch {}
+
+      setAuth({ id: sub, email: sub, name: sub }, complete.access_token)
+      toast.success("Login successful")
+      router.push("/")
+    } catch (error: any) {
+      toast.error(error.message || "Failed to login with passkey")
+    } finally {
+      setIsPasskeyLoading(false)
     }
   }
 
@@ -144,6 +208,14 @@ export function LoginForm({
         <FieldSeparator>Or continue with</FieldSeparator>
         <Field>
           <div className="flex flex-col gap-2">
+            <Button
+              variant="outline"
+              type="button"
+              disabled={isLoading || isPasskeyLoading}
+              onClick={onPasskeyLogin}
+            >
+              {isPasskeyLoading ? "Opening Passkey..." : "Login with Passkey"}
+            </Button>
             <Button variant="outline" type="button" disabled={isLoading}>
               <Image
                 src={icons.google}

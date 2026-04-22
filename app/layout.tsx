@@ -1,5 +1,9 @@
+import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
+import { TooltipProvider } from "@/components/ui/tooltip"
+import { AnonymousSessionInit } from "@/features/auth/components/anonymous-session-init"
 import { cn } from "@/lib/utils"
+import { QueryProvider } from "@/providers/query-provider"
 import { Geist_Mono, Inter } from "next/font/google"
 import "./globals.css"
 
@@ -27,7 +31,12 @@ export default function RootLayout({
     >
       <body>
         <Toaster position="top-right" closeButton />
-        {children}
+        <ThemeProvider>
+          <QueryProvider>
+            <AnonymousSessionInit />
+            <TooltipProvider>{children}</TooltipProvider>
+          </QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

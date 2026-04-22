@@ -1,7 +1,7 @@
 import "server-only"
 import { cache } from "react"
 import { redirect } from "next/navigation"
-import { getSession } from "./session"
+import { getAccessToken } from "./session"
 
 export interface SessionPayload {
   token: string
@@ -9,7 +9,7 @@ export interface SessionPayload {
 }
 
 export const verifySession = cache(async (): Promise<SessionPayload> => {
-  const token = await getSession()
+  const token = await getAccessToken()
 
   if (!token) {
     redirect("/login")
@@ -20,7 +20,7 @@ export const verifySession = cache(async (): Promise<SessionPayload> => {
 
 export const getOptionalSession = cache(
   async (): Promise<SessionPayload | null> => {
-    const token = await getSession()
+    const token = await getAccessToken()
     if (!token) return null
     return { token, isAnonymous: false }
   }

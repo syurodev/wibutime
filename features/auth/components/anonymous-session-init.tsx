@@ -14,8 +14,10 @@ export function AnonymousSessionInit() {
       // We use a lightweight ping to our Route Handler which checks server-side.
       const check = await fetch("/api/sessions/check", { method: "GET" })
       if (check.ok) {
-        const { hasSession } = (await check.json()) as { hasSession: boolean }
-        if (hasSession) return
+        const { hasDeviceSession } = (await check.json()) as {
+          hasDeviceSession: boolean
+        }
+        if (hasDeviceSession) return
       }
 
       await fetch("/api/sessions/anonymous", {

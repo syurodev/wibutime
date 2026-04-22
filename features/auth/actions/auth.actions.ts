@@ -2,7 +2,12 @@
 
 import { endpoints } from "@/lib/endpoints"
 import { redirect } from "next/navigation"
-import { deleteSession, setSession } from "../lib/session"
+import {
+  deleteAccessToken,
+  deleteRefreshToken,
+  setAccessToken,
+  setRefreshToken,
+} from "../lib/session"
 import { LoginResponse } from "@/types/auth"
 
 const BACKEND_URL = process.env.BACKEND_URL ?? "http://localhost:8080"
@@ -36,14 +41,16 @@ export async function loginAction(credentials: LoginCredentials): Promise<LoginR
   }
 
   const data = (await res.json()) as LoginResponse
-  await setSession(data.access_token)
+  await setAccessToken(data.access_token)
+  await setRefreshToken(data.refresh_token)
   
   // Cleanly return the access_token and other details back to the client
   return data
 }
 
 export async function logout(): Promise<void> {
-  await deleteSession()
+  await deleteAccessToken()
+  await deleteRefreshToken()
   redirect("/login")
 }
 
@@ -93,7 +100,8 @@ export async function verifyMagicLinkAction(token: string): Promise<LoginRespons
   }
 
   const data = (await res.json()) as LoginResponse
-  await setSession(data.access_token)
+  await setAccessToken(data.access_token)
+  await setRefreshToken(data.refresh_token)
   
   return data
 }

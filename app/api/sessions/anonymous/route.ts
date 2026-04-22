@@ -1,6 +1,7 @@
 import { cookies } from "next/headers"
 import { NextRequest, NextResponse } from "next/server"
 import { endpoints } from "@/lib/endpoints"
+import { deleteLegacySessionCookie } from "@/features/auth/lib/session"
 
 const BACKEND_URL = process.env.BACKEND_URL ?? "http://localhost:8080"
 const SESSION_MAX_AGE = 60 * 60 * 24 * 30 // 30 days
@@ -53,13 +54,16 @@ export async function POST(request: NextRequest) {
   const data = (await res.json()) as AnonymousSessionResponse
 
   const cookieStore = await cookies()
-  cookieStore.set("session_token", data.session_token, {
+  cookieStore.set("device_token", data.session_token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     maxAge: SESSION_MAX_AGE,
     path: "/",
   })
+
+  // Best-effort cleanup: legacy cookie name used previously.
+  await deleteLegacySessionCookie()
 
   return NextResponse.json({ success: true })
 }
