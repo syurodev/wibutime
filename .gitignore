@@ -34,3 +34,5 @@ pnpm-debug.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# Added by code-review-graph
+.code-review-graph/

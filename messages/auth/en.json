@@ -1,0 +1,25 @@
+{
+  "login": "Login",
+  "logout": "Logout",
+  "register": "Register",
+  "email": "Email",
+  "password": "Password",
+  "name": "Name",
+  "verifyOtp": "Verify OTP",
+  "verifyAction": "Verify",
+  "otpDescription": "Please enter the 6-digit code sent to your email.",
+  "magicLinkLoginTitle": "Login with Magic Link",
+  "magicLinkLoginDesc": "Enter your email. We'll send you a link to login.",
+  "magicLinkSentMessage": "A magic link has been sent to your email. Please check your inbox.",
+  "verifyingMagicLink": "Verifying...",
+  "sending": "Sending...",
+  "sendMagicLink": "Send Magic Link",
+  "validation": {
+    "identifierRequired": "Email or username is required",
+    "passwordMinLength": "Password must be at least 8 characters",
+    "nameRequired": "Name is required",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Invalid email address",
+    "otpLength": "OTP must be exactly 6 digits"
+  }
+}

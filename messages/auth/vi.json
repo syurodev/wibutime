@@ -1,0 +1,25 @@
+{
+  "login": "Đăng nhập",
+  "logout": "Đăng xuất",
+  "register": "Đăng ký",
+  "email": "Email",
+  "password": "Mật khẩu",
+  "name": "Họ và tên",
+  "verifyOtp": "Xác thực OTP",
+  "verifyAction": "Xác thực",
+  "otpDescription": "Vui lòng nhập mã 6 số được gửi về email của bạn.",
+  "magicLinkLoginTitle": "Đăng nhập bằng Magic Link",
+  "magicLinkLoginDesc": "Nhập email của bạn. Chúng tôi sẽ gửi một liên kết để đăng nhập.",
+  "magicLinkSentMessage": "Link đăng nhập đã được gửi đến email của bạn. Vui lòng kiểm tra hộp thư đến.",
+  "verifyingMagicLink": "Đang xác thực...",
+  "sending": "Đang gửi...",
+  "sendMagicLink": "Gửi Magic Link",
+  "validation": {
+    "identifierRequired": "Email hoặc tên đăng nhập không được để trống",
+    "passwordMinLength": "Mật khẩu phải có ít nhất 8 ký tự",
+    "nameRequired": "Họ và tên không được để trống",
+    "emailRequired": "Email không được để trống",
+    "emailInvalid": "Địa chỉ email không hợp lệ",
+    "otpLength": "OTP phải có đúng 6 chữ số"
+  }
+}
